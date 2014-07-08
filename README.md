@@ -85,8 +85,8 @@ tail -f /var/log/messages|grep vmbix
 ## Configure host in zabbix UI
 1. Import any template from zabbix_templates.
 2. Create a host based on imported template. There are at least two ways of configuring host connection:
-..* Set host ip to 127.0.0.1 or to the ip of the server where VmBix runs. Set "Connect to" to "IP address". Set port to 12050 or the one you've set in vmbix config file.
-..* Set port to 12050 or the one you've set in vmbix config file. Use iptables rule to redirect all outgoing connections to port 12050 to localhost (assumes you run vmbix and zabbix server on the same server):
+  * Set host ip to 127.0.0.1 or to the ip of the server where VmBix runs. Set "Connect to" to "IP address". Set port to 12050 or the one you've set in vmbix config file.
+  * Set port to 12050 or the one you've set in vmbix config file. Use iptables rule to redirect all outgoing connections to port 12050 to localhost (assumes you run vmbix and zabbix server on the same server):
 ```
 iptables -A OUTPUT -t nat -p tcp --dport 12050 -j DNAT --to 127.0.0.1:12050
 ```
