@@ -1,5 +1,6 @@
 # VmBix
 VmBix is a multi-thread TCP server written in java, it accepts connection from zabbix server or zabbix get (supports some custom zabbix checks) and translates them to vmware api calls.
+
 This project is a fork of the original VmBix by ihryamzik (https://code.google.com/p/vmbix/) 
 
 ## Build from source
@@ -11,8 +12,10 @@ git clone https://github.com/dav3860/vmbix.git
 ```
 
 ### Compile
+```
 cd vmbix
 ant
+```
 Ant should download required jargs and vijava libraries, compile the sources and place compiled code to VmBix folder.
 
 ## Installation
