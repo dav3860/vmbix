@@ -1,0 +1,157 @@
+<!-- http://eqlbin.blogspot.com/2011/09/apache-ant.html -->
+<project name = "vmbix" default="all">
+	<property file="settings.txt" />
+	<!-- <echo>main-class = ${main-class}</echo> -->
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+	</path>
+	
+	<target name="compile">
+		<echo>Compiling...</echo>
+		<mkdir dir="build/classes"/>
+		<javac srcdir="${java.src}" destdir="build/classes" classpathref="classpath"/>
+	</target>
+		
+	<target name="jar">
+		<mkdir dir="${jar.dir}"/>
+		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="build/classes">
+			<!-- <fileset dir="lib">
+				<include name="**/*.jar"/>
+			</fileset> -->
+			<zipgroupfileset dir="lib" includes="*.jar" /> 
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}" />
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="run">
+		<java fork="true" classname="${main-class}">
+			<classpath>
+				<path refid="classpath"/>
+				<path location="${jar.dir}/${ant.project.name}.jar"/>
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="download.jargs">
+		<mkdir dir="${downloaded}"/>
+		<get src="${jargsurl}" dest="${downloaded}/jargs.zip" verbose="true" usetimestamp="true"/>
+	</target>
+	
+	<target name="download.vijava">
+		<mkdir dir="${downloaded}"/>
+		<get src="${vijavaurl}" dest="${downloaded}/vijava.zip" verbose="true" usetimestamp="true"/>
+	</target>
+
+        <target name="download.gson">
+                <mkdir dir="${downloaded}"/>
+                <get src="${gsonurl}" dest="${downloaded}/gson.zip" verbose="true" usetimestamp="true"/>
+        </target>
+	
+	<target name="unzip.jargs">
+		<unzip src="${downloaded}/jargs.zip" dest="${downloaded}/jargs">
+			<patternset>
+				<include name="**/*.jar"/>
+				<exclude name="**/*test*.jar"/>
+			</patternset>
+		</unzip>
+	</target>
+
+        <target name="unzip.gson">
+                <unzip src="${downloaded}/gson.zip" dest="${downloaded}/gson">
+                        <patternset>
+                                <include name="**/*.jar"/>
+                                <exclude name="**/*test*.jar"/>
+                        </patternset>
+                </unzip>
+        </target>
+	
+	<target name="copy.vijava">
+		<mkdir dir="${lib.dir}"/>
+		<unzip src="${downloaded}/vijava.zip" dest="${downloaded}/vijava"/>
+		<copy todir="${lib.dir}" flatten="true">
+			<fileset dir="${downloaded}/vijava">
+				<include name="**/*.jar"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="copy.jargs" depends="unzip.jargs">
+		<mkdir dir="${lib.dir}"/>
+		<copy todir="${lib.dir}" flatten="true">
+			<fileset dir="${downloaded}/jargs">
+				<include name="**/*.jar"/>
+			</fileset>
+		</copy>
+	</target>
+
+        <target name="copy.gson" depends="unzip.gson">
+                <mkdir dir="${lib.dir}"/>
+                <copy todir="${lib.dir}" flatten="true">
+                        <fileset dir="${downloaded}/gson">
+                                <include name="**/*.jar"/>
+                        </fileset>
+                </copy>
+        </target>
+
+	<target name="get.jargs" depends="download.jargs, copy.jargs"/>
+	<target name="get.vijava" depends="download.vijava, copy.vijava"/>
+        <target name="get.gson" depends="download.gson, copy.gson"/>
+	<target name="get.libs" depends="get.vijava, get.jargs, get.gson"/>
+	
+	<target name="store">
+		<delete dir="${store.dir}"/>
+		<mkdir dir="${store.dir}/rmp-based"/>
+		<copy todir="${store.dir}/rmp-based">
+			<fileset dir="${rpmbased.src}"/>
+		</copy>
+		<copy todir="${store.dir}/rmp-based/usr/local/vmbix">
+			<fileset dir="${jar.dir}"/>
+		</copy>
+		<copy todir="${store.dir}/zabbix_templates">
+			<fileset dir="src/zabbix_templates"/>
+		</copy>
+	</target>
+	
+	<target name="zip">
+		<delete file="${store.dir}.zip"/>
+		<zip destfile="${store.dir}.zip" basedir="${store.dir}" compress="true" level="9" keepcompression="true"/>
+	</target>
+	<target name="clean">
+		<delete>
+			<fileset dir="." includes="*.zip"/>
+		</delete>
+		<!-- <echo>store.prefix=${store.prefix}</echo>
+
+		<pathconvert refid="ds" property="includes" pathsep="${line.separator}">
+			<regexpmapper from="(^.*$)" to="\1${file.separator}**" />
+		</pathconvert>
+		<echo file="includesfile">${includes}</echo>
+		<delete verbose="true">
+			<fileset dir="." id="storedir">
+			    <filename regex="./${store.prefix}*"/>
+			</fileset>
+			<exclude name="src/*"/>
+			<exclude name="./^${store.prefix}"/>
+				<resource name="${store.prefix}*"/>
+		</delete> -->
+		<delete dir="build"/>
+		<delete dir="${store.dir}"/>
+	</target>
+	
+	<target name="clean.all" depends="clean">
+		<delete dir="${downloaded}"/>
+		<delete dir="${lib.dir}"/>
+	</target>
+	
+	<target name="make" depends="compile, jar, store, zip"/>
+	
+	<target name="all" depends="get.libs, compile, jar, store"/>
+	<target name="checks">
+		<echo>${cheks.cmd}</echo>
+		<exec executable="/bin/sh">
+		  <arg value="${java.src}/../ant/showChecks.sh"/>
+		</exec>
+	</target>
+</project> 

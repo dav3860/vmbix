@@ -1,0 +1,104 @@
+#!/bin/sh
+#
+# chkconfig: - 12 88 
+# description: Provides a bridge between zabbix checks and vmware api.
+# processname: /usr/sbin/nslcd
+# config: /etc/nslcd.conf
+# pidfile: /var/run/nslcd/nslcd.pid
+#
+
+### BEGIN INIT INFO
+# Provides: vmbixd
+# Required-Start: $network
+# Required-Stop:
+# Default-Start:
+# Default-Stop:
+# Short-Description: zabbix 2 vmware-api proxy
+# Description: Provides a bridge between zabbix checks and vmware api.
+### END INIT INFO
+
+configfile=/etc/vmbix/vmbix.conf
+pidfile=/var/run/vmbix.pid
+
+program="/usr/local/sbin/vmbixd"
+prog=${program##*/}
+
+
+if [ -f /etc/rc.d/init.d/functions ]; then
+	. /etc/rc.d/init.d/functions
+fi
+
+RETVAL=0
+
+start() {
+    echo -n $"Starting $prog: "
+    # . $configfile
+    # daemon $program "-P '$listenport' -s '$serviceurl' -u '$username' -f '$pidfile' -p '$password'"
+    daemon $program "-c '$configfile' -f '$pidfile'"
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$prog
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    if test -e "$pidfile"
+        then
+        if ps -p $(cat $pidfile) -o command|grep -q "$pidfile"
+            then
+            killproc -p $pidfile $program
+            RETVAL=$?
+        else
+            killproc $program
+            RETVAL=1
+        fi
+    else
+        killproc $program
+        RETVAL=1
+    fi
+    echo
+    # if [ $RETVAL -eq 0 ]; then
+	rm -f /var/lock/subsys/$prog
+    # fi
+}
+
+restart() {
+    stop
+    sleep 1
+    start
+}
+
+# See how we were called.
+case "$1" in
+    start)
+        [ -f /var/lock/subsys/$prog ] && exit 0
+        $1
+        ;;
+    stop)
+        [ -f /var/lock/subsys/$prog ] || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    status)
+        status -p $pidfile $program
+        RETVAL=$?
+        ;;
+    condrestart|try-restart)
+        [ -f /var/lock/subsys/$prog ] && restart || :
+        ;;
+    reload)
+        echo "can't reload configuration, you have to restart it"
+        RETVAL=3
+        ;;
+    force-reload)
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        exit 1
+        ;;
+esac
+exit $RETVAL

@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# vmware api comunication daemon
+# This daemon connects to vCenter with vijava SDK
+# and gives access to some statistics over tcp/ip socket
+#
+# Written by Roman Belyakovsky
+#            ihryamzik@gmail.com
+#
+jar=/usr/local/vmbix/vmbix.jar
+java=""
+type -P java > /dev/null && java=$(type -P java) ||
+test -e "/usr/bin/java"  && java=/usr/bin/java ||
+{ echo "java not found"  && exit 1; }
+test -e "$jar" || { echo "$jar jar not found"  && exit 1; }
+$java -jar $jar $*
