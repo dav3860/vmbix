@@ -1704,7 +1704,6 @@ public class VmBix {
                   qSpec.setIntervalId(20); // real-time values
    
                   PerfEntityMetricBase[] pValues = performanceManager.queryPerf(new PerfQuerySpec[] {qSpec});
-                  System.out.println("counter : " + perfCounterName + " - taille : " + pValues.length);
                   intValue = 0L;
                   if(pValues != null) {
                     for(int i=0; i<pValues.length; ++i) {
