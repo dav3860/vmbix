@@ -85,12 +85,27 @@ tail -f /var/log/messages|grep vmbix
 ## Configure host in zabbix UI
 1. Import any template from zabbix_templates.
 2. Create a host based on imported template. There are at least two ways of configuring host connection:
-  * Set host ip to 127.0.0.1 or to the ip of the server where VmBix runs. Set "Connect to" to "IP address". Set port to 12050 or the one you've set in vmbix config file.
+  * Set host ip to 127.0.0.1 or to the ip of the server where VmBix runs. Set "Connect to" to "IP address" and set port to 12050 or the one you've set in vmbix config file.
   * Set port to 12050 or the one you've set in vmbix config file. Use iptables rule to redirect all outgoing connections to port 12050 to localhost (assumes you run vmbix and zabbix server on the same server):
 ```
 iptables -A OUTPUT -t nat -p tcp --dport 12050 -j DNAT --to 127.0.0.1:12050
 ```
 Edit ports and "--to" parameter if needed. Ensure that iptables service is started.
+
+## Querying VmBix in CLI
+You can query VmBix like a Zabbix agent using the zabbix_get tool :
+```
+# zabbix_get -s 127.0.0.1 -p 12050 -k about[*]
+VMware vCenter Server 5.1.0 build-1364037
+# zabbix_get -s 127.0.0.1 -p 12050 -k esx.status[esx01.domain.local]
+1
+# zabbix_get -s 127.0.0.1 -p 12050 -k vm.guest.os[MYVM01]
+CentOS 4/5/6 (64 bits)
+# zabbix_get -s 127.0.0.1 -p 12050 -k esx.discovery[*]
+{"data":[{"{#ESXHOST}":"esx01.domain.local"},{"{#ESXHOST}":"esx02.domain.local"}]}
+# zabbix_get -s 127.0.0.1 -p 12050 -k vm.counter[MYVM01,virtualDisk.totalReadLatency,scsi0:1,300]
+2
+```
 
 ## Supported zabbix checks
 ```
