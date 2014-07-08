@@ -4,7 +4,7 @@ VmBix is a multi-thread TCP server written in java, it accepts connection from z
 This project is a fork of the original VmBix by ihryamzik (https://code.google.com/p/vmbix/) 
 
 ## Build from source
-Note: you'll need to intall jdk and ant to follow this article. Sources could also be compiled manually, without ant.
+Note: you'll need to install jdk and ant to follow this article. Sources could also be compiled manually, without ant.
 
 ### Download source code
 ```
@@ -16,7 +16,7 @@ git clone https://github.com/dav3860/vmbix.git
 cd vmbix
 ant
 ```
-Ant should download required jargs and vijava libraries, compile the sources and place compiled code to VmBix folder.
+Ant should download required jargs, gson and vijava libraries, compile the sources and place compiled code to VmBix folder.
 
 ## Installation
 ### Copy files
@@ -56,7 +56,7 @@ Note: if some option is presented both in command line and in config file, comma
 User name, password and vsphere service url are the required option.
 
 ## Configure daemon
-It is strongly recommended to check you parameters before writing them down to a config file. Run vmbix with you username, password and service url:
+It is strongly recommended to check your parameters before writing them down to a config file. Run vmbix with your username, password and service url:
 
 ```
 $ vmbix -P 12050 -u username -p password -s https://vcenter.mycompany.com/sdk
