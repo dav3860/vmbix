@@ -266,6 +266,7 @@ vmbix now displays a version number when called without arguments.
   * about : display vCenter SDK version
   * guest IP/hostname methods
   * etc
+
 * The status/powerstate methods now return an integer value instead of a string (ex: "poweredOff"). This is better to store integers than strings in Zabbix and allows for graphing. Typically :
 ```
  Running State:
@@ -282,6 +283,7 @@ vmbix now displays a version number when called without arguments.
  4 -> unknown
 ```
 * The Zabbix templates haven't been updated yet.
+
 1.0.1
 * Fixed host used memory checks(returned cpu used MHz instead of memory used MB), fixed a custom multiplier for the same item.
 * Added several items:
@@ -293,5 +295,6 @@ vmbix now displays a version number when called without arguments.
   * Average consumed memory usage in % for all powered on vms.
   * Average balooned memory usage in % for all powered on vms.
   * Average active memory usage in % for all powered on vms.
+
 1.0.0
 First release
