@@ -3,8 +3,11 @@ VmBix is a multi-thread TCP server written in java, it accepts connection from z
 
 This project is a fork of the original VmBix by ihryamzik (https://code.google.com/p/vmbix/) 
 
-## Build from source
-Note: you'll need to install jdk and ant to follow this article. Sources could also be compiled manually, without ant.
+## Get the latest release binaries
+Check the [Releases](https://github.com/dav3860/vmbix/releases) section for the latest ZIP archive of VmBix. Extract the archive and install the files (see below).
+
+## Or build from source
+Note: you'll need to install JDK and Apache Ant to follow this article. Sources could also be compiled manually, without ant.
 
 ### Download source code
 ```
@@ -22,15 +25,16 @@ Ant should download required jargs, gson and vijava libraries, compile the sourc
 ### Copy files
 Your VmBix folder should look like this:
 ```
-find VmBix-beta-0.0.1/ -type f
-VmBix-beta-0.0.1/rmp-based/etc/init.d/vmbixd          # init script, will start vmbixd as daemon
-VmBix-beta-0.0.1/rmp-based/etc/vmbix/vmbix.conf       # config file
-VmBix-beta-0.0.1/rmp-based/usr/local/sbin/vmbix       # sbin script to run the tool
-VmBix-beta-0.0.1/rmp-based/usr/local/sbin/vmbixd      # like vmbix but will start in background
-VmBix-beta-0.0.1/rmp-based/usr/local/vmbix/vmbix.jar  # jar file itself
-VmBix-beta-0.0.1/zabbix_templates/Datastore.xml       # Datastore zabbix template
-VmBix-beta-0.0.1/zabbix_templates/Host.xml            # Host zabbix template 
-VmBix-beta-0.0.1/zabbix_templates/VM.xml              # Virtual Machine zabbix template
+find VmBix-x.y.z/ -type f
+VmBix-x.y.z/rmp-based/etc/init.d/vmbixd                      # init script, will start vmbixd as daemon
+VmBix-x.y.z/rmp-based/etc/vmbix/vmbix.conf                   # config file
+VmBix-x.y.z/rmp-based/usr/local/sbin/vmbix                   # sbin script to run the tool
+VmBix-x.y.z/rmp-based/usr/local/sbin/vmbixd                  # like vmbix but will start in background
+VmBix-x.y.z/rmp-based/usr/local/vmbix/vmbix.jar              # jar file itself
+VmBix-x.y.z/zabbix_templates/new/template_vmbix_vcenter.xml  # vCenter and datastore zabbix template
+VmBix-x.y.z/zabbix_templates/new/template_vmbix_esx.xml      # Host zabbix template 
+VmBix-x.y.z/zabbix_templates/new/template_vmbix_vm.xml       # Virtual Machine zabbix template
+[...]
 ```
 Copy files from VmBix/rmp-based/ folder to you system accordingly to there paths. Make shell scripts executable:
 
@@ -85,25 +89,25 @@ tail -f /var/log/messages|grep vmbix
 ## Configure host in zabbix UI
 1. Import any template from zabbix_templates.
 2. Create a host based on imported template. There are at least two ways of configuring host connection:
-  * Set host ip to 127.0.0.1 or to the ip of the server where VmBix runs. Set "Connect to" to "IP address" and set port to 12050 or the one you've set in vmbix config file.
+  * Set host ip to 127.x.y.z or to the ip of the server where VmBix runs. Set "Connect to" to "IP address" and set port to 12050 or the one you've set in vmbix config file.
   * Set port to 12050 or the one you've set in vmbix config file. Use iptables rule to redirect all outgoing connections to port 12050 to localhost (assumes you run vmbix and zabbix server on the same server):
 ```
-iptables -A OUTPUT -t nat -p tcp --dport 12050 -j DNAT --to 127.0.0.1:12050
+iptables -A OUTPUT -t nat -p tcp --dport 12050 -j DNAT --to 127.x.y.z:12050
 ```
 Edit ports and "--to" parameter if needed. Ensure that iptables service is started.
 
 ## Querying VmBix in CLI
 You can query VmBix like a Zabbix agent using the zabbix_get tool :
 ```
-# zabbix_get -s 127.0.0.1 -p 12050 -k about[*]
+# zabbix_get -s 127.x.y.z -p 12050 -k about[*]
 VMware vCenter Server 5.1.0 build-1364037
-# zabbix_get -s 127.0.0.1 -p 12050 -k esx.status[esx01.domain.local]
+# zabbix_get -s 127.x.y.z -p 12050 -k esx.status[esx01.domain.local]
 1
-# zabbix_get -s 127.0.0.1 -p 12050 -k vm.guest.os[MYVM01]
+# zabbix_get -s 127.x.y.z -p 12050 -k vm.guest.os[MYVM01]
 CentOS 4/5/6 (64 bits)
-# zabbix_get -s 127.0.0.1 -p 12050 -k esx.discovery[*]
+# zabbix_get -s 127.x.y.z -p 12050 -k esx.discovery[*]
 {"data":[{"{#ESXHOST}":"esx01.domain.local"},{"{#ESXHOST}":"esx02.domain.local"}]}
-# zabbix_get -s 127.0.0.1 -p 12050 -k vm.counter[MYVM01,virtualDisk.totalReadLatency,scsi0:1,300]
+# zabbix_get -s 127.x.y.z -p 12050 -k vm.counter[MYVM01,virtualDisk.totalReadLatency,scsi0:1,300]
 2
 ```
 
@@ -176,3 +180,112 @@ vm.storage.committed[name]
 vm.storage.uncommitted[name]
 vm.storage.unshared[name]
 ```
+
+## How to implement your own checks
+1. Find a function called
+```
+private void checkAllPatterns                (String string, PrintWriter out  )
+```
+2. Add your own pattern. For example this string:
+```
+Pattern pHostCpuUsed            = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.cpu\\.load\\[(.+),used\\]"             );        // :checks host cpu usage
+```
+will be responsible for this item:
+```
+esx.cpu.load[{HOST.DNS},used]
+```
+3. Scroll down to the next block of code in the same function starting with "String found;", add you own "found=" block:
+```
+found = checkPattern(pHostCpuUsed           ,string); if (found != null) { getHostCpuUsed           (found, out); return; }
+```
+This one calls a function called "getHostCpuUsed" with {HOST.DNS} as an a first argument and a PrintWriter instance as a second one.
+
+4. Your function should accept String and PrintWriter arguments. It should return values like that:
+```
+out.print(value);
+out.flush();
+```
+5. Add a usage line to the methods() fucntion :
+```
+static void methods() {
+        System.err.print(
+            "Available methods :                                  \n" 
+            [...]
+          + "esx.cpu.load[name,used]                              \n"
+```
+
+## Version history
+1.1.4 :
+* Better error handling for performance counters
+* The counter[name] method was removed. You can now get the list of the available performance counters with these new methods :
+```
+esx.counter.list[name]
+vm.counter.list[name]
+```
+* Two new methods to get the instance list of a specific performance counter. The output is JSON-formatted for Zabbix Low-Level Discovery :
+```
+esx.counter.discovery[name,counter,[interval]]
+vm.counter.discovery[name,counter,[interval]]
+```
+For example, to get the read latency on a VM vDisks :
+```
+# zabbix_get -s 127.0.0.1 -p 12050 -k vm.counter.discovery[VMNAME,virtualDisk.totalReadLatency]
+{"data":[{"{#METRICINSTANCE}":"scsi2:2"},{"{#METRICINSTANCE}":"scsi2:1"},{"{#METRICINSTANCE}":"scsi2:0"},{"{#METRICINSTANCE}":"scsi2:6"},{"{#METRICINSTANCE}":"scsi2:5"},{"{#METRICINSTANCE}":"scsi2:4"},{"{#M$
+# zabbix_get -s 127.0.0.1 -p 12050 -k vm.counter[VMNAME,virtualDisk.totalReadLatency,scsi2:4,300]
+6
+```
+1.1.1
+
+Added performance counters for ESX hosts.
+Added new methods for datastores (danrog):
+ datastore.size[name,provisioned]
+ datastore.size[name,uncommitted]
+vmbix now displays a version number when called without arguments.
+1.1.0
+
+Fixed the unnecessary carriage return in the output
+Added Zabbix Low-Level Discovery methods to automatically create datastores, hosts, virtual machines, and VM disks. A JSON-formatted output is displayed (using Google GSON), ex:
+ # zabbix_get -s localhost -p 12050 -k esx.discovery[*]
+ {"data":[{"{#ESXHOST}":"esx0.domain.local"},{"{#ESXHOST}":"esx1.domain.local"}]}
+Added several items:
+VMWare Performance Manager counters:
+  counters[name]: list the available counters for an entity (VM, host, datastore)
+  vm.counter[name,counter,[instance,interval]]: displays the value of the counter with optional interval/instance
+The method outputs an aggregated sum or average of real-time values, ex:
+  # zabbix_get -s localhost -p 12050 -k vm.counter[VMNAME,cpu.ready,,200] 
+491
+An additional interval parameter was added to the configuration file to specify the default interval for the performance counter queries.
+VM Tools status methods
+ping : always returns 1, to check vmbix availability
+about : display vCenter SDK version
+guest IP/hostname methods
+etc
+The status/powerstate methods now return an integer value instead of a string (ex: "poweredOff"). This is better to store integers than strings in Zabbix and allows for graphing. Typically :
+ Running State:
+ 0 -> poweredOff
+ 1 -> poweredOn
+ 2 -> suspended
+ 3 -> unknown 
+
+ Status:
+ 0 -> grey
+ 1 -> green
+ 2 -> yellow
+ 3 -> red
+ 4 -> unknown
+The Zabbix templates haven't been updated yet.
+1.0.1
+
+Fixed host used memory checks(returned cpu used MHz instead of memory used MB), fixed a custom multiplier for the same item.
+Added several items:
+Average private memory usage in % for all powered on vms.
+Average shared memory usage in % for all powered on vms.
+Average swapped memory usage in % for all powered on vms.
+Average compressed memory usage in % for all powered on vms.
+Average overheadConsumed memory usage in % for all powered on vms.
+Average consumed memory usage in % for all powered on vms.
+Average balooned memory usage in % for all powered on vms.
+Average active memory usage in % for all powered on vms.
+1.0.0
+
+First release
