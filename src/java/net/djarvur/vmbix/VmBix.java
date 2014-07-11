@@ -2384,9 +2384,9 @@ public class VmBix {
 
        /**
         * Returns a status of the virtual machine VM Tools version
-        * 0 -> guestToolsCurrent
-        * 1 -> guestToolsNeedUpgrade
-        * 2 -> guestToolsNotInstalled
+        * 0 -> guestToolsNotInstalled
+        * 1 -> guestToolsCurrent
+        * 2 -> guestToolsNeedUpgrade
         * 3 -> guestToolsUnmanaged
         * 4 -> other
         */          
