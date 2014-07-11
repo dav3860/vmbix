@@ -2383,58 +2383,85 @@ public class VmBix {
         }   
 
        /**
-        * Returns a true if the virtual machine VM Tools are up-to-date
-        * Returns false if not
+        * Returns a status of the virtual machine VM Tools version
+        * 0 -> guestToolsCurrent
+        * 1 -> guestToolsNeedUpgrade
+        * 2 -> guestToolsNotInstalled
+        * 3 -> guestToolsUnmanaged
+        * 4 -> other
         */          
         private void getVmGuestToolsVersionStatus                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
             VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
-            String guestToolsVersionStatus;
+            Integer intStatus;
             if (vm == null) {
                 long end = System.currentTimeMillis();
                 System.out.print("No vm named '" + vmName + "' found\n");
-                guestToolsVersionStatus = "";
+                intStatus = 4;
             } else {
                 VirtualMachineSummary vmSummary = vm.getSummary();
                 VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
                 if (vmGuest == null) {
                   long end = System.currentTimeMillis();
                   System.out.print("Cannot query guest OS for VM '" + vmName + "'\n");
-                  guestToolsVersionStatus = "";
+                  intStatus = 4;
                 } else {
-                  guestToolsVersionStatus = vmGuest.getToolsVersionStatus();
+                  String guestToolsVersionStatus = vmGuest.getToolsVersionStatus();
+                  if (guestToolsVersionStatus.equals("guestToolsNotInstalled")){
+                      intStatus = 0;
+                  } else if (guestToolsVersionStatus.equals("guestToolsCurrent")){
+                      intStatus = 1;
+                  } else if (guestToolsVersionStatus.equals("guestToolsNeedUpgrade")){
+                      intStatus = 2;
+                  } else if (guestToolsVersionStatus.equals("guestToolsUnmanaged")){
+                      intStatus = 3;                    
+                  } else {
+                      intStatus = 4;
+                  }
                   long end = System.currentTimeMillis();
                 }
             }
-            out.print(guestToolsVersionStatus );
+            out.print(intStatus);
             out.flush();
         }        
 
        /**
-        * Returns a true if the virtual machine VM Tools are running
-        * Returns false if not
+        * Returns the virtual machine VM Tools running state
+        * 0 -> guestToolsNotRunning
+        * 1 -> guestToolsRunning
+        * 2 -> guestToolsExecutingScripts
+        * 3 -> other
         */          
         private void getVmGuestToolsRunningStatus                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
             VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
-            String guestToolsRunningStatus;
+            Integer intStatus;
             if (vm == null) {
                 long end = System.currentTimeMillis();
                 System.out.print("No vm named '" + vmName + "' found\n");
-                guestToolsRunningStatus = "";
+                intStatus = 3;
             } else {
                 VirtualMachineSummary vmSummary = vm.getSummary();
                 VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
                 if (vmGuest == null) {
                   long end = System.currentTimeMillis();
                   System.out.print("Cannot query guest OS for VM '" + vmName + "'\n");
-                  guestToolsRunningStatus = "";
+                  intStatus = 3;
                 } else {
-                  guestToolsRunningStatus = vmGuest.getToolsRunningStatus();
+                  String guestToolsRunningStatus = vmGuest.getToolsRunningStatus();
+                   if (guestToolsRunningStatus.equals("guestToolsNotRunning")){
+                      intStatus = 0;
+                  } else if (guestToolsRunningStatus.equals("guestToolsRunning")){
+                      intStatus = 1;
+                  } else if (guestToolsRunningStatus.equals("guestToolsExecutingScripts")){
+                      intStatus = 2;              
+                  } else {
+                      intStatus = 3;
+                  }                 
                   long end = System.currentTimeMillis();
                 }
             }
-            out.print(guestToolsRunningStatus );
+            out.print(intStatus);
             out.flush();
         }         
 

@@ -1,4 +1,4 @@
-ver=1.1.4
+ver=1.1.5
 lib.dir=lib
 pkgname=net.djarvur.vmbix.
 # pkgname=
