@@ -1,6 +1,21 @@
 # VmBix
 VmBix is a multi-thread TCP server written in java, it accepts connection from zabbix server or zabbix get (supports some custom zabbix checks) and translates them to vmware api calls.
-
+Starting from version 2.2, Zabbix can natively monitor a VMWare environment. But there are a few drawbacks :
+* The monitored items are not all very relevant
+* The created ESX and VM hosts are mostly read-only. You cannot attach them different templates or monitor them with an agent.
+VmBix helps you to overcome this limitations, with very good performance. Vmbix also exposes VMWare API methods that are not included in Zabbix, for example the [Performance Counters](http://fr.slideshare.net/alanrenouf/vsphere-apis-for-performance-monitoring). You can use these VmBix methods to query interesting VMWare metrics, for example :
+```
+esx.counter[esx01.domain.local,cpu.ready]
+1135
+```
+```
+vm.counter.discovery[VM01,virtualDisk.totalReadLatency]
+{"data":[{"{#METRICINSTANCE}":"scsi2:2"},{"{#METRICINSTANCE}":"scsi2:1"},{"{#METRICINSTANCE}":"scsi2:0"},{"{#METRICINSTANCE}":"scsi2:6"},{"{#METRICINSTANCE}":"scsi2:5"},{"{#METRICINSTANCE}":"scsi2:4"},{"{#METRICINSTANCE}":"scsi2:3"},{"{#METRICINSTANCE}":"scsi2:8"},{"{#METRICINSTANCE}":"scsi0:0"},{"{#METRICINSTANCE}":"scsi1:0"},{"{#METRICINSTANCE}":"scsi1:1"},{"{#METRICINSTANCE}":"scsi1:2"},{"{#METRICINSTANCE}":"scsi1:3"}]}
+```
+```
+vm.counter[VM01,virtualDisk.totalReadLatency,scsi2:4,300]
+2
+```
 This project is a fork of the original VmBix by ihryamzik (https://code.google.com/p/vmbix/) 
 
 ## Get the latest release binaries
@@ -87,10 +102,15 @@ For logs, check:
 tail -f /var/log/messages|grep vmbix
 ```
 ## Configure host in zabbix UI
-1. Import any template from zabbix_templates.
-2. Create a host based on imported template. There are at least two ways of configuring host connection:
+1. Import the templates from zabbix_templates. There are two types of template (with or without the wrapper script).
+  * Without the wrapper script, the items in Zabbix are configured with the "Zabbix agent" type. So Zabbix directly talks to VmBix using the Zabbix agent protocol. This is good, but that means that the monitored hosts cannot be monitored using the Zabbix agent in addition to VmBix. This is a limitation for virtual machines for example.
+  * With the wrapper script, the items in Zabbix are configured with the "External script" type. Zabbix uses a python wrapper script to talk to VmBix. So it is still possible to use an agent for the monitored hosts. The python scripts "zget.py" and "vmbixget.py" need to be in the Zabbix external scripts directory and must have the permissions to be run by the zabbix user.
+2. Create a host named "VmBix" or "VmWare" for example and link the vCenter template to it. There are at least two ways of configuring this host connection:
   * Set host ip to 127.x.y.z or to the ip of the server where VmBix runs. Set "Connect to" to "IP address" and set port to 12050 or the one you've set in vmbix config file.
   * Set port to 12050 or the one you've set in vmbix config file. Use iptables rule to redirect all outgoing connections to port 12050 to localhost (assumes you run vmbix and zabbix server on the same server):
+3. The vCenter template uses Low-level Discovery to discover and create the datastores, the ESX hosts and the virtual machines. 
+  * The ESX and VM templates are automatically linked to the created hosts.
+  * Or, you can disable the ESX or VM discovery and create the hosts manually or using a Zabbix API script. This allows the hosts to be fully edited (you can add different templates, macros, etc). Then, link the right VmBix template to your hosts (ESX or VM).
 ```
 iptables -A OUTPUT -t nat -p tcp --dport 12050 -j DNAT --to 127.x.y.z:12050
 ```
@@ -215,6 +235,24 @@ static void methods() {
 ```
 
 ## Version history
+1.1.5
+* The status codes for the vm.guest.tools.version and vm.guest.tools.running methods are now numeric :
+```
+vm.guest.tools.version :
+0 -> guestToolsNotInstalled
+1 -> guestToolsCurrent
+2 -> guestToolsNeedUpgrade
+3 -> guestToolsUnmanaged
+4 -> unknown
+
+vm.guest.tools.running :
+0 -> guestToolsNotRunning
+1 -> guestToolsRunning
+2 -> guestToolsExecutingScripts
+3 -> unknown
+```
+You may create mapping tables in Zabbix for this purpose.
+
 1.1.4
 * Better error handling for performance counters
 * The counter[name] method was removed. You can now get the list of the available performance counters with these new methods :

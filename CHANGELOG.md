@@ -1,4 +1,22 @@
-### v1.1.4 :
+### v1.1.5
+* The status codes for the vm.guest.tools.version and vm.guest.tools.running methods are now numeric :
+```
+vm.guest.tools.version :
+0 -> guestToolsNotInstalled
+1 -> guestToolsCurrent
+2 -> guestToolsNeedUpgrade
+3 -> guestToolsUnmanaged
+4 -> unknown
+
+vm.guest.tools.running :
+0 -> guestToolsNotRunning
+1 -> guestToolsRunning
+2 -> guestToolsExecutingScripts
+3 -> unknown
+```
+You may create mapping tables in Zabbix for this purpose.
+
+### v1.1.4
 * Better error handling for performance counters
 * The counter[name] method was removed. You can now get the list of the available performance counters with these new methods :
 ```
