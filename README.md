@@ -112,6 +112,7 @@ tail -f /var/log/messages|grep vmbix
 iptables -A OUTPUT -t nat -p tcp --dport 12050 -j DNAT --to 127.x.y.z:12050
 ```
 Edit ports and "--to" parameter if needed. Ensure that iptables service is started.
+
 3. The vCenter template uses Low-level Discovery to discover and create the datastores, the ESX hosts and the virtual machines. 
   * The ESX and VM templates are automatically linked to the created hosts.
   * Or, you can disable the ESX or VM discovery and create the hosts manually or using a Zabbix API script. This allows the hosts to be fully edited (you can add different templates, macros, etc). Then, link the right VmBix template to your hosts (ESX or VM).
