@@ -107,12 +107,10 @@ tail -f /var/log/messages|grep vmbix
   * With the wrapper script, the items in Zabbix are configured with the "External script" type. Zabbix uses a python wrapper script to talk to VmBix. So it is still possible to use an agent for the monitored hosts. The python scripts "zget.py" and "vmbixget.py" need to be in the Zabbix external scripts directory and must have the permissions to be run by the zabbix user.
 2. Create a host named "VmBix" or "VmWare" for example and link the vCenter template to it. There are at least two ways of configuring this host connection:
   * Set host ip to 127.x.y.z or to the ip of the server where VmBix runs. Set "Connect to" to "IP address" and set port to 12050 or the one you've set in vmbix config file.
-  * Set port to 12050 or the one you've set in vmbix config file. Use iptables rule to redirect all outgoing connections to port 12050 to localhost (assumes you run vmbix and zabbix server on the same server):
+  * Set port to 12050 or the one you've set in vmbix config file. Use iptables rule to redirect all outgoing connections to port 12050 to localhost (assumes you run vmbix and zabbix server on the same server). Edit ports and "--to" parameter if needed. Ensure that iptables service is started.
 ```
 iptables -A OUTPUT -t nat -p tcp --dport 12050 -j DNAT --to 127.x.y.z:12050
 ```
-Edit ports and "--to" parameter if needed. Ensure that iptables service is started.
-
 3. The vCenter template uses Low-level Discovery to discover and create the datastores, the ESX hosts and the virtual machines. 
   * The ESX and VM templates are automatically linked to the created hosts.
   * Or, you can disable the ESX or VM discovery and create the hosts manually or using a Zabbix API script. This allows the hosts to be fully edited (you can add different templates, macros, etc). Then, link the right VmBix template to your hosts (ESX or VM).
