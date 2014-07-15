@@ -30,6 +30,7 @@ public class VmBix {
     static ArrayList<Socket> sockets;
     static ServiceInstance serviceInstance;
     static InventoryNavigator inventoryNavigator;
+    static PerformanceManager performanceManager;
     static String  sdkUrl;
     static String  uname;
     static String  passwd;
@@ -254,7 +255,7 @@ public class VmBix {
         if (sockets.size() < 150){
             sockets.add(socket);
             if (sockets.size() > ( Thread.activeCount() - 2) ){
-                Request request = new Request (serviceInstance, null, inventoryNavigator);
+                Request request = new Request (serviceInstance, null, inventoryNavigator, performanceManager);
                 Connection thread = new Connection (request);
                 thread.start();
             }
@@ -269,7 +270,7 @@ public class VmBix {
             return null;
         } else {
             
-            Request request = new Request (serviceInstance, sockets.remove(0), null);
+            Request request = new Request (serviceInstance, sockets.remove(0), null, null);
             return request;
         }
     }
@@ -283,6 +284,7 @@ public class VmBix {
         }
         Folder rootFolder = serviceInstance.getRootFolder();
         inventoryNavigator = new InventoryNavigator(serviceInstance.getRootFolder());
+        performanceManager = serviceInstance.getPerformanceManager();
         long end = System.currentTimeMillis();
         System.out.println("Connected to " + sdkUrl + ", time taken:" + (end-start) + "ms");
     }
@@ -313,7 +315,7 @@ public class VmBix {
         catch (IOException e){
             System.out.println("Connection update error: " + e.toString() );
         }
-        return new Request (serviceInstance, null, inventoryNavigator); 
+        return new Request (serviceInstance, null, inventoryNavigator, performanceManager); 
     }
     
     static void sleep(int delay) {
@@ -349,10 +351,12 @@ public class VmBix {
         public Socket          socket;
         public ServiceInstance serviceInstance;
         public InventoryNavigator inventoryNavigator;
-        Request(ServiceInstance si, Socket socket, InventoryNavigator iv) {
+        public PerformanceManager performanceManager;
+        Request(ServiceInstance si, Socket socket, InventoryNavigator iv, PerformanceManager pm) {
             this.socket         = socket;
             this.serviceInstance = si;
             this.inventoryNavigator = iv;
+            this.performanceManager = pm;
         }
     }
     
@@ -360,10 +364,12 @@ public class VmBix {
         Socket connected;
         ServiceInstance serviceInstance;
         InventoryNavigator inventoryNavigator;
+        PerformanceManager performanceManager;
         Connection(Request request) {
             // this.connected = connected;
             this.serviceInstance    = request.serviceInstance;
             this.inventoryNavigator = request.inventoryNavigator;
+            this.performanceManager = request.performanceManager;
         }
         static private String checkPattern           (Pattern pattern, String string  )                    {
             Matcher matcher = pattern.matcher(string);
@@ -540,6 +546,7 @@ public class VmBix {
                     Request request = VmBix.updateConnectionSafe();
                     serviceInstance    = request.serviceInstance;
                     inventoryNavigator = request.inventoryNavigator;
+                    performanceManager = request.performanceManager;
                     required = true;
                 }
                 // else !!
@@ -1391,8 +1398,6 @@ public class VmBix {
               VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
               String pState = vmrti.getPowerState().toString();
               if (pState.equals("poweredOn")) {
-                PerformanceManager performanceManager = serviceInstance.getPerformanceManager();
-
                 // retrieve all the available performance counters
                 PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
                 Hashtable ctrTable = new Hashtable(pcis.length * 2);
@@ -1465,8 +1470,6 @@ public class VmBix {
               VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
               String pState = vmrti.getPowerState().toString();
               if (pState.equals("poweredOn")) {
-                PerformanceManager performanceManager = serviceInstance.getPerformanceManager();
-
                 // find out the refresh rate for the virtual machine
                 PerfProviderSummary pps = performanceManager.queryPerfProviderSummary(vm);
 
@@ -1541,11 +1544,11 @@ public class VmBix {
                           out.print(intValue);
                         }
                       } else {
-                        System.out.println("No returned value");
+                        System.out.println("No returned value for " + vmName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
                       }
                     }
                   } else {
-                    System.out.println("No returned value");
+                    System.out.println("No returned value for " + vmName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
                   }
                   long end = System.currentTimeMillis();
                 }
@@ -1582,8 +1585,6 @@ public class VmBix {
               HostRuntimeInfo hostrti = host.getRuntime();
               String pState = hostrti.getPowerState().toString();
               if (pState.equals("poweredOn")) {
-                PerformanceManager performanceManager = serviceInstance.getPerformanceManager();
-
                 // retrieve all the available performance counters
                 PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
                 Hashtable ctrTable = new Hashtable(pcis.length * 2);
@@ -1656,8 +1657,6 @@ public class VmBix {
               HostRuntimeInfo hostrti = host.getRuntime();
               String pState = hostrti.getPowerState().toString();
               if (pState.equals("poweredOn")) {
-                PerformanceManager performanceManager = serviceInstance.getPerformanceManager();
-
                 // find out the refresh rate for the virtual machine
                 // PerfProviderSummary pps = performanceManager.queryPerfProviderSummary(host);
 
@@ -1732,11 +1731,11 @@ public class VmBix {
                           out.print(intValue);
                         }
                       } else {
-                        System.out.println("No returned value");
+                        System.out.println("No returned value for " + hostName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
                       }
                     }
                   } else {
-                    System.out.println("No returned value");
+                    System.out.println("No returned value for " + hostName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
                   }
                   long end = System.currentTimeMillis();
                 }
@@ -1761,7 +1760,6 @@ public class VmBix {
               HostRuntimeInfo hostrti = host.getRuntime();
               String pState = hostrti.getPowerState().toString();
               if (pState.equals("poweredOn")) {          
-                PerformanceManager performanceManager = serviceInstance.getPerformanceManager();
                 PerfMetricId[] metricIdList = performanceManager.queryAvailablePerfMetric(host, null, null, 20);
                 
                 // Get the counter ids of the available metrics
@@ -1806,7 +1804,6 @@ public class VmBix {
               VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
               String pState = vmrti.getPowerState().toString();
               if (pState.equals("poweredOn")) {          
-                PerformanceManager performanceManager = serviceInstance.getPerformanceManager();
                 PerfMetricId[] metricIdList = performanceManager.queryAvailablePerfMetric(vm, null, null, 20);
                 
                 // Get the counter ids of the available metrics
