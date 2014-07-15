@@ -199,7 +199,7 @@ public class VmBix {
             + "vm.cpu.load[name,used]                               \n"                                                                                    
             + "vm.discovery[*]                                      \n"                                                                                    
             + "vm.folder[name]                                      \n"                                                                                    
-            + "vm.guest.disk.all[name]                              \n"                                                                                    
+            + "vm.guest.disk.discovery[name]                        \n"                                                                                    
             + "vm.guest.disk.capacity[name,disk]                    \n"                                                                                    
             + "vm.guest.disk.free[name,disk]                        \n"                                                                                    
             + "vm.guest.ip[name]                                    \n"                                                                                    
@@ -439,6 +439,7 @@ public class VmBix {
             Pattern pVmGuestFullName        = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.os\\[(.+)\\]"                   );        // 
             Pattern pVmGuestHostName        = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.name\\[(.+)\\]"                 );        // 
             Pattern pVmGuestDisks           = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.all\\[(.+)\\]"           );        // 
+            Pattern pVmGuestDisksDiscovery  = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.discovery\\[(.+)\\]"     );        //             
             Pattern pVmGuestDiskCapacity    = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.capacity\\[(.+),(.+)\\]" );        // 
             Pattern pVmGuestDiskFreeSpace   = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.free\\[(.+),(.+)\\]"     );        // 
             Pattern pVmAvailablePerfCounters= Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.counter\\.list\\[(.+)\\]"               );        //                                     
@@ -508,6 +509,7 @@ public class VmBix {
             found = checkPattern(pVmGuestHostName       ,string); if (found != null) { getVmGuestHostName       (found, out); return; }
             found = checkPattern(pVmGuestIpAddress      ,string); if (found != null) { getVmGuestIpAddress      (found, out); return; }
             found = checkPattern(pVmGuestDisks          ,string); if (found != null) { getVmGuestDisks          (found, out); return; }
+            found = checkPattern(pVmGuestDisksDiscovery ,string); if (found != null) { getVmGuestDisks          (found, out); return; }            
             founds = checkMultiplePattern(pVmGuestDiskCapacity    ,string); if (founds != null) { getVmGuestDiskCapacity          (founds[0], founds[1], out); return; }
             founds = checkMultiplePattern(pVmGuestDiskFreeSpace   ,string); if (founds != null) { getVmGuestDiskFreeSpace         (founds[0], founds[1], out); return; }
             found = checkPattern(pVmAvailablePerfCounters ,string); if (found != null) { getVmAvailablePerfCounters (found, out);        return; }                                    
@@ -2195,13 +2197,11 @@ public class VmBix {
             if (vm == null) {
                 long end = System.currentTimeMillis();
                 System.out.print("No vm named '" + vmName + "' found\n");
-                jArray = null;
             } else {
                 GuestInfo gInfo = vm.getGuest();
                 if (gInfo == null) {
                   long end = System.currentTimeMillis();
                   System.out.print("Cannot query guest OS for VM '" + vmName + "'\n");   
-                  jArray = null;                  
                 } else {
                   GuestDiskInfo[] vmDisks = gInfo.getDisk();
                   if (vmDisks != null) {
@@ -2212,7 +2212,6 @@ public class VmBix {
                       jArray.add(jObject);
                     }
                   } else {
-                    jArray = null;
                     long end = System.currentTimeMillis();
                   }
                 }
