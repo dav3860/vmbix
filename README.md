@@ -109,8 +109,8 @@ All the ESX servers, datastores and virtual machines will automatically be disco
   * With the wrapper script, the VmBix items in Zabbix are configured with an "External script" type. Zabbix uses a python wrapper script to talk to VmBix. So it is still possible to use a Zabbix agent to monitor the hosts. The python scripts "zget.py" and "vmbixget.py" need to be in the Zabbix external scripts directory and must have the permissions to be run by the zabbix user.
 
 2. Create a host named "VmBix" for example and link it with the VmBix vCenter template (with or without the script). The host must be configured like this :
-* Set host ip to 127.0.0.1 or IP of the server where VmBix runs. 
-* Set "Connect to" to "IP address" and set port to 12050 or the one you've set in vmbix config file.
+  * Set host ip to 127.0.0.1 or IP of the server where VmBix runs. 
+  * Set "Connect to" to "IP address" and set port to 12050 or the one you've set in vmbix config file.
 
 Wait for the ESX servers, datastores and virtual machines to be discovered and created. The VM and ESX hosts will be automatically linked to the VmBix ESX or VM template.
 
