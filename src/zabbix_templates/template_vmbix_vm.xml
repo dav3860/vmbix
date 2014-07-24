@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>2.0</version>
-    <date>2014-05-09T09:21:57Z</date>
+    <date>2014-05-09T09:22:07Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -9,8 +9,8 @@
     </groups>
     <templates>
         <template>
-            <template>Template VmBix VM with wrapper</template>
-            <name>Template VmBix VM with wrapper</name>
+            <template>Template VmBix VM</template>
+            <name>Template VmBix VM</name>
             <groups>
                 <group>
                     <name>Templates</name>
@@ -45,11 +45,11 @@
             <items>
                 <item>
                     <name>Active memory</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},active]&quot;]</key>
+                    <key>vm.memory[{HOST.HOST},active]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -87,11 +87,11 @@
                 </item>
                 <item>
                     <name>Ballooned memory</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},ballooned]&quot;]</key>
+                    <key>vm.memory[{HOST.HOST},ballooned]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -129,11 +129,11 @@
                 </item>
                 <item>
                     <name>Compressed memory</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},compressed]&quot;]</key>
+                    <key>vm.memory[{HOST.HOST},compressed]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -171,11 +171,11 @@
                 </item>
                 <item>
                     <name>Consolidation Needed</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.consolidation[{HOST.HOST},needed]&quot;]</key>
+                    <key>vm.consolidation[{HOST.HOST},needed]</key>
                     <delay>1800</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -213,11 +213,11 @@
                 </item>
                 <item>
                     <name>Consumed memory</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},consumed]&quot;]</key>
+                    <key>vm.memory[{HOST.HOST},consumed]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -255,11 +255,11 @@
                 </item>
                 <item>
                     <name>CPU Cores</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.cpu.load[{HOST.HOST},cores]&quot;]</key>
+                    <key>vm.cpu.load[{HOST.HOST},cores]</key>
                     <delay>3600</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -297,11 +297,11 @@
                 </item>
                 <item>
                     <name>CPU Freq</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.cpu.load[{HOST.HOST},total]&quot;]</key>
+                    <key>vm.cpu.load[{HOST.HOST},total]</key>
                     <delay>3600</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -339,11 +339,11 @@
                 </item>
                 <item>
                     <name>CPU Ready</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.counter[{HOST.HOST},cpu.ready]&quot;]</key>
+                    <key>vm.counter[{HOST.HOST},cpu.ready]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -403,7 +403,7 @@
                     <snmpv3_privpassphrase/>
                     <formula>1</formula>
                     <delay_flex/>
-                    <params>(last(&quot;vmbixget.py[\&quot;vm.counter[{HOST.HOST},cpu.ready]\&quot;]&quot;) / {$PERF_MGR_INTERVAL}) * 100</params>
+                    <params>(last(&quot;vm.counter[{HOST.HOST},cpu.ready]&quot;) / {$PERF_MGR_INTERVAL}) * 100</params>
                     <ipmi_sensor/>
                     <data_type>0</data_type>
                     <authtype>0</authtype>
@@ -445,7 +445,7 @@
                     <snmpv3_privpassphrase/>
                     <formula>1</formula>
                     <delay_flex/>
-                    <params>last(&quot;vmbixget.py[\&quot;vm.cpu.load[{HOST.HOST},total]\&quot;]&quot;)*last(&quot;vmbixget.py[\&quot;vm.cpu.load[{HOST.HOST},cores]\&quot;]&quot;)</params>
+                    <params>last(&quot;vm.cpu.load[{HOST.HOST},total]&quot;)*last(&quot;&quot;vm.cpu.load[{HOST.HOST},cores]&quot;)</params>
                     <ipmi_sensor/>
                     <data_type>0</data_type>
                     <authtype>0</authtype>
@@ -487,7 +487,7 @@
                     <snmpv3_privpassphrase/>
                     <formula>1</formula>
                     <delay_flex/>
-                    <params>(last(&quot;vmbixget.py[\&quot;vm.cpu.load[{HOST.HOST},used]\&quot;]&quot;)/last(&quot;vm.cpu.load[{HOST.HOST},all]&quot;))*100</params>
+                    <params>(last(&quot;vm.cpu.load[{HOST.HOST},used]&quot;)/last(&quot;vm.cpu.load[{HOST.HOST},all]&quot;))*100</params>
                     <ipmi_sensor/>
                     <data_type>0</data_type>
                     <authtype>0</authtype>
@@ -507,11 +507,11 @@
                 </item>
                 <item>
                     <name>CPU Used</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.cpu.load[{HOST.HOST},used]&quot;]</key>
+                    <key>vm.cpu.load[{HOST.HOST},used]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -549,11 +549,11 @@
                 </item>
                 <item>
                     <name>Network Rx (bits/s)</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.counter[{HOST.HOST},net.bytesRx]&quot;]</key>
+                    <key>vm.counter[{HOST.HOST},net.bytesRx]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -591,11 +591,11 @@
                 </item>
                 <item>
                     <name>Network Tx (bits/s)</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.counter[{HOST.HOST},net.bytesTx]&quot;]</key>
+                    <key>vm.counter[{HOST.HOST},net.bytesTx]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -633,11 +633,11 @@
                 </item>
                 <item>
                     <name>Overhead consumed memory</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},overheadConsumed]&quot;]</key>
+                    <key>vm.memory[{HOST.HOST},overheadConsumed]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -675,11 +675,11 @@
                 </item>
                 <item>
                     <name>Private memory</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},private]&quot;]</key>
+                    <key>vm.memory[{HOST.HOST},private]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -717,11 +717,11 @@
                 </item>
                 <item>
                     <name>Shared memory</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},shared]&quot;]</key>
+                    <key>vm.memory[{HOST.HOST},shared]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -759,11 +759,11 @@
                 </item>
                 <item>
                     <name>Swapped memory</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},swapped]&quot;]</key>
+                    <key>vm.memory[{HOST.HOST},swapped]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -801,11 +801,11 @@
                 </item>
                 <item>
                     <name>Total memory</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},total]&quot;]</key>
+                    <key>vm.memory[{HOST.HOST},total]</key>
                     <delay>1800</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -843,11 +843,11 @@
                 </item>
                 <item>
                     <name>VM ESX Host</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.host[{HOST.HOST}]&quot;]</key>
+                    <key>vm.host[{HOST.HOST}]</key>
                     <delay>1800</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -885,11 +885,11 @@
                 </item>
                 <item>
                     <name>VM Folder</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.folder[{HOST.HOST}]&quot;]</key>
+                    <key>vm.folder[{HOST.HOST}]</key>
                     <delay>1800</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -927,11 +927,11 @@
                 </item>
                 <item>
                     <name>VM Power State</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.powerstate[{HOST.HOST}]&quot;]</key>
+                    <key>vm.powerstate[{HOST.HOST}]</key>
                     <delay>120</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -969,11 +969,11 @@
                 </item>
                 <item>
                     <name>VM Status</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.status[{HOST.HOST}]&quot;]</key>
+                    <key>vm.status[{HOST.HOST}]</key>
                     <delay>120</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -1011,11 +1011,11 @@
                 </item>
                 <item>
                     <name>VM Tools mounted</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.guest.tools.mounted[{HOST.HOST}]&quot;]</key>
+                    <key>vm.guest.tools.mounted[{HOST.HOST}]</key>
                     <delay>1800</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -1031,7 +1031,7 @@
                     <snmpv3_authpassphrase/>
                     <snmpv3_privprotocol>0</snmpv3_privprotocol>
                     <snmpv3_privpassphrase/>
-                    <formula>1048576</formula>
+                    <formula>1</formula>
                     <delay_flex/>
                     <params/>
                     <ipmi_sensor/>
@@ -1055,10 +1055,10 @@
             <discovery_rules>
                 <discovery_rule>
                     <name>Mounted disks</name>
-                    <type>10</type>
+                    <type>0</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.guest.disk.all[{HOST.HOST}]&quot;]</key>
+                    <key>vm.guest.disk.discovery[{HOST.HOST}]</key>
                     <delay>3600</delay>
                     <status>0</status>
                     <allowed_hosts/>
@@ -1084,11 +1084,11 @@
                     <item_prototypes>
                         <item_prototype>
                             <name>Disk {#GUESTDISK} capacity</name>
-                            <type>10</type>
+                            <type>0</type>
                             <snmp_community/>
                             <multiplier>0</multiplier>
                             <snmp_oid/>
-                            <key>vmbixget.py[&quot;vm.guest.disk.capacity[{HOST.HOST},{#GUESTDISK}]&quot;]</key>
+                            <key>vm.guest.disk.capacity[{HOST.HOST},{#GUESTDISK}]</key>
                             <delay>3600</delay>
                             <history>90</history>
                             <trends>365</trends>
@@ -1126,11 +1126,11 @@
                         </item_prototype>
                         <item_prototype>
                             <name>Disk {#GUESTDISK} free space</name>
-                            <type>10</type>
+                            <type>0</type>
                             <snmp_community/>
                             <multiplier>0</multiplier>
                             <snmp_oid/>
-                            <key>vmbixget.py[&quot;vm.guest.disk.free[{HOST.HOST},{#GUESTDISK}]&quot;]</key>
+                            <key>vm.guest.disk.free[{HOST.HOST},{#GUESTDISK}]</key>
                             <delay>900</delay>
                             <history>90</history>
                             <trends>365</trends>
@@ -1190,7 +1190,7 @@
                             <snmpv3_privpassphrase/>
                             <formula>1</formula>
                             <delay_flex/>
-                            <params>last(&quot;vmbixget.py[\&quot;vm.guest.disk.free[{HOST.HOST},{#GUESTDISK}]\&quot;]&quot;)/last(&quot;vmbixget.py[\&quot;vm.guest.disk.capacity[{HOST.HOST},{#GUESTDISK}]\&quot;]&quot;)*100</params>
+                            <params>last(&quot;vm.guest.disk.free[{HOST.HOST},{#GUESTDISK}]&quot;)/last(&quot;vm.guest.disk.capacity[{HOST.HOST},{#GUESTDISK}]&quot;)*100</params>
                             <ipmi_sensor/>
                             <data_type>0</data_type>
                             <authtype>0</authtype>
@@ -1211,7 +1211,7 @@
                     </item_prototypes>
                     <trigger_prototypes>
                         <trigger_prototype>
-                            <expression>(({TRIGGER.VALUE}=0 &amp; ({Template VmBix VM with wrapper:vm.guest.disk.free.pct[{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_PCT_NOK} &amp; {Template VmBix VM with wrapper:vmbixget.py[&quot;vm.guest.disk.free[{HOST.HOST},{#GUESTDISK}]&quot;].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_NOK})) | ({TRIGGER.VALUE}=1 &amp; ({Template VmBix VM with wrapper:vm.guest.disk.free.pct[{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_PCT_OK} &amp; {Template VmBix VM with wrapper:vmbixget.py[&quot;vm.guest.disk.free[{HOST.HOST},{#GUESTDISK}]&quot;].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_OK}))) &amp; {Template VmBix VM with wrapper:vmbixget.py[&quot;vm.guest.disk.capacity[{HOST.HOST},{#GUESTDISK}]&quot;].last()}#0</expression>
+                            <expression>(({TRIGGER.VALUE}=0 &amp; ({Template VmBix VM:vm.guest.disk.free.pct[{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_PCT_NOK} &amp; {Template VmBix VM:vm.guest.disk.free[{HOST.HOST},{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_NOK})) | ({TRIGGER.VALUE}=1 &amp; ({Template VmBix VM:vm.guest.disk.free.pct[{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_PCT_OK} &amp; {Template VmBix VM:vm.guest.disk.free[{HOST.HOST},{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_OK}))) &amp; {Template VmBix VM:vm.guest.disk.capacity[{HOST.HOST},{#GUESTDISK}].last()}#0</expression>
                             <name>Low free disk space on {#GUESTDISK}</name>
                             <url/>
                             <status>0</status>
@@ -1247,8 +1247,8 @@
                                     <calc_fnc>2</calc_fnc>
                                     <type>2</type>
                                     <item>
-                                        <host>Template VmBix VM with wrapper</host>
-                                        <key>vmbixget.py[&quot;vm.guest.disk.capacity[{HOST.HOST},{#GUESTDISK}]&quot;]</key>
+                                        <host>Template VmBix VM</host>
+                                        <key>vm.guest.disk.capacity[{HOST.HOST},{#GUESTDISK}]</key>
                                     </item>
                                 </graph_item>
                                 <graph_item>
@@ -1259,8 +1259,8 @@
                                     <calc_fnc>2</calc_fnc>
                                     <type>0</type>
                                     <item>
-                                        <host>Template VmBix VM with wrapper</host>
-                                        <key>vmbixget.py[&quot;vm.guest.disk.free[{HOST.HOST},{#GUESTDISK}]&quot;]</key>
+                                        <host>Template VmBix VM</host>
+                                        <key>vm.guest.disk.free[{HOST.HOST},{#GUESTDISK}]</key>
                                     </item>
                                 </graph_item>
                             </graph_items>
@@ -1301,7 +1301,7 @@
     </templates>
     <triggers>
         <trigger>
-            <expression>{Template VmBix VM with wrapper:vmbixget.py[&quot;vm.memory[{HOST.HOST},ballooned]&quot;].last(10m)}&gt;0</expression>
+            <expression>{Template VmBix VM:vm.memory[{HOST.HOST},ballooned].last(10m)}&gt;0</expression>
             <name>Ballooning memory</name>
             <url/>
             <status>0</status>
@@ -1311,7 +1311,7 @@
             <dependencies/>
         </trigger>
         <trigger>
-            <expression>{Template VmBix VM with wrapper:vmbixget.py[&quot;vm.consolidation[{HOST.HOST},needed]&quot;].last()}#0</expression>
+            <expression>{Template VmBix VM:vm.consolidation[{HOST.HOST},needed].last()}#0</expression>
             <name>Consolidation is needed</name>
             <url/>
             <status>0</status>
@@ -1321,7 +1321,7 @@
             <dependencies/>
         </trigger>
         <trigger>
-            <expression>{Template VmBix VM with wrapper:vmbixget.py[&quot;vm.memory[{HOST.HOST},swapped]&quot;].last(10m)}&gt;0</expression>
+            <expression>{Template VmBix VM:vm.memory[{HOST.HOST},swapped].last(10m)}&gt;0</expression>
             <name>VM is swapping</name>
             <url/>
             <status>0</status>
@@ -1358,7 +1358,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
+                        <host>Template VmBix VM</host>
                         <key>vm.cpu.load[{HOST.HOST},all]</key>
                     </item>
                 </graph_item>
@@ -1370,8 +1370,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.cpu.load[{HOST.HOST},used]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.cpu.load[{HOST.HOST},used]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -1382,7 +1382,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
+                        <host>Template VmBix VM</host>
                         <key>vm.cpu.ready.pct[{HOST.HOST}]</key>
                     </item>
                 </graph_item>
@@ -1414,8 +1414,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},total]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.memory[{HOST.HOST},total]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -1426,8 +1426,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},active]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.memory[{HOST.HOST},active]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -1438,8 +1438,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},ballooned]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.memory[{HOST.HOST},ballooned]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -1450,8 +1450,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},compressed]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.memory[{HOST.HOST},compressed]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -1462,8 +1462,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},consumed]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.memory[{HOST.HOST},consumed]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -1474,8 +1474,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},overheadConsumed]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.memory[{HOST.HOST},overheadConsumed]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -1486,8 +1486,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},private]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.memory[{HOST.HOST},private]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -1498,8 +1498,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},shared]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.memory[{HOST.HOST},shared]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -1510,8 +1510,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.memory[{HOST.HOST},swapped]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.memory[{HOST.HOST},swapped]</key>
                     </item>
                 </graph_item>
             </graph_items>
@@ -1542,8 +1542,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.counter[{HOST.HOST},net.bytesRx]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.counter[{HOST.HOST},net.bytesRx]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -1554,8 +1554,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix VM with wrapper</host>
-                        <key>vmbixget.py[&quot;vm.counter[{HOST.HOST},net.bytesTx]&quot;]</key>
+                        <host>Template VmBix VM</host>
+                        <key>vm.counter[{HOST.HOST},net.bytesTx]</key>
                     </item>
                 </graph_item>
             </graph_items>

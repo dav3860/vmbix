@@ -386,7 +386,7 @@
                             <group_prototypes/>
                             <templates>
                                 <template>
-                                    <name>Template VmBix ESX with wrapper</name>
+                                    <name>Template VmBix ESX</name>
                                 </template>
                             </templates>
                         </host_prototype>
@@ -438,7 +438,7 @@
                             <group_prototypes/>
                             <templates>
                                 <template>
-                                    <name>Template VmBix VM with wrapper</name>
+                                    <name>Template VmBix VM</name>
                                 </template>
                             </templates>
                         </host_prototype>
