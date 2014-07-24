@@ -103,9 +103,11 @@ tail -f /var/log/messages|grep vmbix
 ```
 ## Configure Zabbix
 All the ESX servers, datastores and virtual machines will automatically be discovered and created in Zabbix. Here is how to configure Zabbix :
+
 1. Import the templates from zabbix_templates (import the vCenter templates after the others). There are two types of template : with or without the wrapper script. The wrapper script method is useful if you want to monitor your virtual machines with a Zabbix agent in addition to VmBix.
   * Without the wrapper script, the VmBix items in Zabbix are configured with the "Zabbix agent" type. So Zabbix directly talks to VmBix using the Zabbix agent protocol on port 12050 by default. This is good, but it means that the hosts cannot also be monitored using the Zabbix agent as all the created hosts will have an IP of 127.0.0.1 and a port of 12050 by default for their "agent" interface. This is a limitation for virtual machines for example.
   * With the wrapper script, the VmBix items in Zabbix are configured with an "External script" type. Zabbix uses a python wrapper script to talk to VmBix. So it is still possible to use a Zabbix agent to monitor the hosts. The python scripts "zget.py" and "vmbixget.py" need to be in the Zabbix external scripts directory and must have the permissions to be run by the zabbix user.
+
 2. Create a host named "VmBix" for example and link it with the VmBix vCenter template (with or without the script). The host must be configured like this :
 * Set host ip to 127.0.0.1 or IP of the server where VmBix runs. 
 * Set "Connect to" to "IP address" and set port to 12050 or the one you've set in vmbix config file.
