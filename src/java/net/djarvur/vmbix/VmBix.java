@@ -342,7 +342,6 @@ public class VmBix {
     static void server() throws IOException {
         // long start = System.currentTimeMillis();
         ctrTable = updateConnection();
-        System.out.println("ctrTableServer : " + ctrTable);
         System.out.println("starting server on port");
         ServerSocket listen = new ServerSocket (port);//(port, backlog, bindaddr)
         System.out.println("port opened, server started");
@@ -372,7 +371,6 @@ public class VmBix {
             this.inventoryNavigator = iv;
             this.performanceManager = pm;
             this.ctrTable = ct;
-            System.out.println("ctrTableReq : " + this.ctrTable);
         }
     }
     
