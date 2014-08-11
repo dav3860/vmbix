@@ -2373,7 +2373,7 @@ public class VmBix {
                   System.out.print("Cannot query guest OS for VM '" + vmName + "'\n");
                   intStatus = 4;
                 } else {
-                  String guestToolsVersionStatus = vmGuest.getToolsVersionStatus();
+                  String guestToolsVersionStatus = vmGuest.getToolsVersionStatus2();
                   if (guestToolsVersionStatus.equals("guestToolsNotInstalled")){
                       intStatus = 0;
                   } else if (guestToolsVersionStatus.equals("guestToolsCurrent")){
@@ -2415,7 +2415,7 @@ public class VmBix {
                   System.out.print("Cannot query guest OS for VM '" + vmName + "'\n");
                   intStatus = 3;
                 } else {
-                  String guestToolsRunningStatus = vmGuest.getToolsRunningStatus2();
+                  String guestToolsRunningStatus = vmGuest.getToolsRunningStatus();
                    if (guestToolsRunningStatus.equals("guestToolsNotRunning")){
                       intStatus = 0;
                   } else if (guestToolsRunningStatus.equals("guestToolsRunning")){
