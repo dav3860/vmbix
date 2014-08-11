@@ -238,6 +238,9 @@ static void methods() {
 ```
 
 ## Version history
+1.1.8
+* Use the toolsVersionStatus2 instead of toolsVersionStatus property to get the VM Tools status of a virtual machine. Needs VSphere 5.x.
+
 1.1.7
 * Improved the perf counter methods performance
 * Added a python script using Zabbix_API (https://github.com/gescheit/scripts/tree/master/zabbix) to create the VMs in Zabbix without host prototypes

@@ -2415,7 +2415,7 @@ public class VmBix {
                   System.out.print("Cannot query guest OS for VM '" + vmName + "'\n");
                   intStatus = 3;
                 } else {
-                  String guestToolsRunningStatus = vmGuest.getToolsRunningStatus();
+                  String guestToolsRunningStatus = vmGuest.getToolsRunningStatus2();
                    if (guestToolsRunningStatus.equals("guestToolsNotRunning")){
                       intStatus = 0;
                   } else if (guestToolsRunningStatus.equals("guestToolsRunning")){
