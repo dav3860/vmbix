@@ -2381,9 +2381,19 @@ public class VmBix {
                   } else if (guestToolsVersionStatus.equals("guestToolsNeedUpgrade")){
                       intStatus = 2;
                   } else if (guestToolsVersionStatus.equals("guestToolsUnmanaged")){
-                      intStatus = 3;                    
-                  } else {
+                      intStatus = 3;
+                  } else if (guestToolsVersionStatus.equals("guestToolsBlacklisted")){
                       intStatus = 4;
+                  } else if (guestToolsVersionStatus.equals("guestToolsSupportedNew")){
+                      intStatus = 5;
+                  } else if (guestToolsVersionStatus.equals("guestToolsSupportedOld")){
+                      intStatus = 6;
+                  } else if (guestToolsVersionStatus.equals("guestToolsTooNew")){
+                      intStatus = 7;
+                  } else if (guestToolsVersionStatus.equals("guestToolsTooOld")){
+                      intStatus = 8;                       
+                  } else {
+                      intStatus = 9;
                   }
                   long end = System.currentTimeMillis();
                 }

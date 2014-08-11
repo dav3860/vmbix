@@ -240,6 +240,20 @@ static void methods() {
 ## Version history
 1.1.8
 * Use the toolsVersionStatus2 instead of toolsVersionStatus property to get the VM Tools version status of a virtual machine. Needs VSphere 5.x.
+* The status codes now are :
+```
+vm.guest.tools.version :
+0 -> guestToolsNotInstalled
+1 -> guestToolsCurrent
+2 -> guestToolsNeedUpgrade
+3 -> guestToolsUnmanaged
+4 -> guestToolsBlacklisted
+5 -> guestToolsSupportedNew
+6 -> guestToolsSupportedOld
+7 -> guestToolsTooNew
+8 -> guestToolsTooOld
+9 -> unknown
+```
 
 1.1.7
 * Improved the perf counter methods performance
