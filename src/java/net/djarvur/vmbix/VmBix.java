@@ -458,7 +458,8 @@ public class VmBix {
             Pattern pVmStorageCommitted     = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.committed\\[(.+)\\]"          );        // 
             Pattern pVmStorageUncommitted   = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.uncommitted\\[(.+)\\]"        );        // 
             Pattern pVmStorageUnshared      = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.unshared\\[(.+)\\]"           );        // 
-            Pattern pVmGuestFullName        = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.os\\[(.+)\\]"                   );        // 
+            Pattern pVmGuestShortName       = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.os\\.short\\[(.+)\\]"           );        // 
+            Pattern pVmGuestFullName        = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.os\\[(.+)\\]"                   );        //
             Pattern pVmGuestHostName        = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.name\\[(.+)\\]"                 );        // 
             Pattern pVmGuestDisks           = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.all\\[(.+)\\]"           );        // 
             Pattern pVmGuestDisksDiscovery  = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.discovery\\[(.+)\\]"     );        //             
@@ -527,6 +528,7 @@ public class VmBix {
             found = checkPattern(pVmStorageCommitted    ,string); if (found != null) { getVmStorageCommitted    (found, out); return; }
             found = checkPattern(pVmStorageUncommitted  ,string); if (found != null) { getVmStorageUncommitted  (found, out); return; }
             found = checkPattern(pVmStorageUnshared     ,string); if (found != null) { getVmStorageUnshared     (found, out); return; }
+            found = checkPattern(pVmGuestShortName      ,string); if (found != null) { getVmGuestShortName      (found, out); return; }
             found = checkPattern(pVmGuestFullName       ,string); if (found != null) { getVmGuestFullName       (found, out); return; }
             found = checkPattern(pVmGuestHostName       ,string); if (found != null) { getVmGuestHostName       (found, out); return; }
             found = checkPattern(pVmGuestIpAddress      ,string); if (found != null) { getVmGuestIpAddress      (found, out); return; }
@@ -2126,6 +2128,32 @@ public class VmBix {
             out.print(guestFullName );
             out.flush();
         } 
+
+       /**
+        * Returns the guest OS short description of a virtual machine
+        */
+        private void getVmGuestShortName                  (String vmName,   PrintWriter out) throws IOException {
+            long start = System.currentTimeMillis();
+            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            String guestShortName;
+            if (vm == null) {
+                long end = System.currentTimeMillis();
+                System.out.print("No vm named '" + vmName + "' found\n");
+                guestShortName = "";
+            } else {
+		GuestInfo gInfo = vm.getGuest();
+                if (gInfo == null) {
+                  long end = System.currentTimeMillis();
+                  System.out.print("Cannot query guest OS for VM '" + vmName + "'\n");
+                  guestShortName = "";
+                } else {
+                  guestShortName = gInfo.getGuestFamily();
+                  long end = System.currentTimeMillis();
+                }
+            }
+            out.print(guestShortName );
+            out.flush();
+        }
 
        /**
         * Returns the guest OS hostname of a virtual machine
