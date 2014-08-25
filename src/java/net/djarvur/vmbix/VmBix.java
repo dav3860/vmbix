@@ -200,13 +200,15 @@ public class VmBix {
             + "vm.cpu.load[name,total]                              \n"                                                                                    
             + "vm.cpu.load[name,used]                               \n"                                                                                    
             + "vm.discovery[*]                                      \n"                                                                                    
-            + "vm.folder[name]                                      \n"                                                                                    
+            + "vm.folder[name]                                      \n"
+            + "vm.annotation[name]                                  \n"                                                                                    
             + "vm.guest.disk.discovery[name]                        \n"                                                                                    
             + "vm.guest.disk.capacity[name,disk]                    \n"                                                                                    
             + "vm.guest.disk.free[name,disk]                        \n"                                                                                    
             + "vm.guest.ip[name]                                    \n"                                                                                    
             + "vm.guest.name[name]                                  \n"                                                                                    
             + "vm.guest.os[name]                                    \n"                                                                                    
+            + "vm.guest.os.short[name]                              \n"
             + "vm.guest.tools.mounted[name]                         \n"                                                                                    
             + "vm.guest.tools.running[name]                         \n"                                                                                    
             + "vm.guest.tools.version[name]                         \n"                                                                                    
@@ -455,6 +457,7 @@ public class VmBix {
             Pattern pVmHost                 = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.host\\[(.+)\\]"                         );        // 
             Pattern pVmPowerState           = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.powerstate\\[(.+)\\]"                   );        // 
             Pattern pVmFolder               = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.folder\\[(.+)\\]"                       );        // 
+            Pattern pVmAnnotation           = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.annotation\\[(.+)\\]"                   );        //
             Pattern pVmStorageCommitted     = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.committed\\[(.+)\\]"          );        // 
             Pattern pVmStorageUncommitted   = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.uncommitted\\[(.+)\\]"        );        // 
             Pattern pVmStorageUnshared      = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.unshared\\[(.+)\\]"           );        // 
@@ -525,6 +528,7 @@ public class VmBix {
             found = checkPattern(pVmHost                ,string); if (found != null) { getVmHost                (found, out); return; }
             found = checkPattern(pVmPowerState          ,string); if (found != null) { getVmPowerState          (found, out); return; }
             found = checkPattern(pVmFolder              ,string); if (found != null) { getVmFolder              (found, out); return; }
+            found = checkPattern(pVmAnnotation          ,string); if (found != null) { getVmAnnotation          (found, out); return; }
             found = checkPattern(pVmStorageCommitted    ,string); if (found != null) { getVmStorageCommitted    (found, out); return; }
             found = checkPattern(pVmStorageUncommitted  ,string); if (found != null) { getVmStorageUncommitted  (found, out); return; }
             found = checkPattern(pVmStorageUnshared     ,string); if (found != null) { getVmStorageUnshared     (found, out); return; }
@@ -1361,6 +1365,28 @@ public class VmBix {
             out.print(cores );
             out.flush();
         }        
+
+       /**
+        * Returns the annotation of a virtual machine
+        */
+        private void getVmAnnotation                   (String vmName,   PrintWriter out) throws IOException {
+            long start = System.currentTimeMillis();
+            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            String an;
+            if (vm == null) {
+                long end = System.currentTimeMillis();
+                System.out.print("No vm named '" + vmName + "' found\n");
+                // request took:" + (end-start) + "\n");
+                an = "";
+            } else {
+                VirtualMachineConfigInfo vmcfg = vm.getConfig();
+                an = vmcfg.getAnnotation();
+                long end = System.currentTimeMillis();
+            }
+            out.print(an);
+            out.flush();
+        }
+
 
        /**
         * Returns the power state of a virtual machine
