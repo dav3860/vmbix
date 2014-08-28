@@ -2266,6 +2266,7 @@ public class VmBix {
                     {
                       if (vmDisks[j].getDiskPath().equals(vmDisk)) {
                         size = vmDisks[j].getCapacity();
+                        out.print(size );
                       }
                     }
                     long end = System.currentTimeMillis();
@@ -2275,7 +2276,6 @@ public class VmBix {
                   }
                 }
             }
-            out.print(size );
             out.flush();
         }   
        /**
@@ -2300,6 +2300,7 @@ public class VmBix {
                     {
                       if (vmDisks[j].getDiskPath().equals(vmDisk)) {
                         size = vmDisks[j].getFreeSpace();
+                        out.print(size);
                       }
                     }
                     long end = System.currentTimeMillis();
@@ -2309,7 +2310,6 @@ public class VmBix {
                   }  
                 }
             }
-            out.print(size);
             out.flush();
         }                
 
