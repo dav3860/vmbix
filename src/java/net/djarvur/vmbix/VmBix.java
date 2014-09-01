@@ -840,8 +840,10 @@ public class VmBix {
             for(int j=0; j<vms.length; j++)
             {
                 VirtualMachine vm = (VirtualMachine) vms[j];
+                VirtualMachineConfigInfo vmcfg = vm.getConfig();
                 JsonObject jObject = new JsonObject();
                 jObject.addProperty("{#VIRTUALMACHINE}", vm.getName());
+                jObject.addProperty("{#UUID}", vmcfg.getUuid());
                 jArray.add(jObject);
             }
             JsonObject jOutput = new JsonObject();
@@ -1565,13 +1567,15 @@ public class VmBix {
                           }
                           out.print(intValue);
                         }
-                      } else {
-                        System.out.println("No returned value for " + vmName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
-                      }
+                      } 
+//                      else {
+//                        System.out.println("No returned value for " + vmName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
+//                      }
                     }
-                  } else {
-                    System.out.println("No returned value for " + vmName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
                   }
+//                  else {
+//                    System.out.println("No returned value for " + vmName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
+//                  }
                   long end = System.currentTimeMillis();
                 }
               } else {
@@ -1729,13 +1733,15 @@ public class VmBix {
                           }
                           out.print(intValue);
                         }
-                      } else {
-                        System.out.println("No returned value for " + hostName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
-                      }
+                      } 
+//                      else {
+//                        System.out.println("No returned value for " + hostName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
+//                      }
                     }
-                  } else {
-                    System.out.println("No returned value for " + hostName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
-                  }
+                  } 
+//                  else {
+//                    System.out.println("No returned value for " + hostName + "/" + perfCounterName + "/" + instanceName + "/" + newInterval);
+//                  }
                   long end = System.currentTimeMillis();
                 }
               } else {
