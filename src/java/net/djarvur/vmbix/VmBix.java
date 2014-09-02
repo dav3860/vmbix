@@ -34,11 +34,13 @@ public class VmBix {
     static ServiceInstance serviceInstance;
     static InventoryNavigator inventoryNavigator;
     static PerformanceManager performanceManager;
-    static Hashtable<String,List> ctrTable;
     static long CACHE_TTL = 5; // in minutes
-    static Cache<String, ManagedEntity> morCache = CacheBuilder.newBuilder()
+    static Cache<String, ManagedEntity> meCache = CacheBuilder.newBuilder()
     .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
     .build();
+    static Cache<String, List> counterCache = CacheBuilder.newBuilder()
+    .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
+    .build();    
     static String  sdkUrl;
     static String  uname;
     static String  passwd;
@@ -269,7 +271,7 @@ public class VmBix {
         if (sockets.size() < 150){
             sockets.add(socket);
             if (sockets.size() > ( Thread.activeCount() - 2) ){
-                Request request = new Request (serviceInstance, null, inventoryNavigator, performanceManager, ctrTable);
+                Request request = new Request (serviceInstance, null, inventoryNavigator, performanceManager);
                 Connection thread = new Connection (request);
                 thread.start();
             }
@@ -284,34 +286,23 @@ public class VmBix {
             return null;
         } else {
             
-            Request request = new Request (serviceInstance, sockets.remove(0), null, null, null);
+            Request request = new Request (serviceInstance, sockets.remove(0), null, null);
             return request;
         }
     }
     
-    public static synchronized Hashtable<String,List> updateConnection() throws IOException{
+    public static synchronized void updateConnection() throws IOException{
         long start = System.currentTimeMillis();
         serviceInstance = new ServiceInstance(new URL(sdkUrl), uname, passwd, true);
         if (serviceInstance == null) {
             System.out.println("serviceInstance in null! Connection failed.");
-            return null;
+            return;
         }
         Folder rootFolder = serviceInstance.getRootFolder();
         inventoryNavigator = new InventoryNavigator(serviceInstance.getRootFolder());
         performanceManager = serviceInstance.getPerformanceManager();
         // retrieve all the available performance counters
         PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
-        Hashtable<String,List> ctrTable = new Hashtable<String,List>();
-        for(int i = 0; i < pcis.length; i++) {
-          String perfCounter  = pcis[i].getGroupInfo().getKey() + "." + pcis[i].getNameInfo().getKey();
-          List<String> ctrProps = new ArrayList<String>();
-          ctrProps.add(String.valueOf(pcis[i].getKey()));
-          ctrProps.add(pcis[i].getStatsType().toString());
-          ctrTable.put(perfCounter, ctrProps);
-        }
-        long end = System.currentTimeMillis();
-        System.out.println("Connected to " + sdkUrl + ", time taken:" + (end-start) + "ms");
-        return ctrTable;
     }
     
     public static synchronized void shutdown() {
@@ -335,12 +326,12 @@ public class VmBix {
     
     public static synchronized Request updateConnectionSafe() {
         try {
-            ctrTable = updateConnection();
+            updateConnection();
         }
         catch (IOException e){
             System.out.println("Connection update error: " + e.toString() );
         }
-        return new Request (serviceInstance, null, inventoryNavigator, performanceManager, ctrTable); 
+        return new Request (serviceInstance, null, inventoryNavigator, performanceManager); 
     }
     
     static void sleep(int delay) {
@@ -354,7 +345,7 @@ public class VmBix {
     
     static void server() throws IOException {
         // long start = System.currentTimeMillis();
-        ctrTable = updateConnection();
+        updateConnection();
         System.out.println("starting server on port");
         ServerSocket listen = new ServerSocket (port);//(port, backlog, bindaddr)
         System.out.println("port opened, server started");
@@ -377,13 +368,11 @@ public class VmBix {
         public ServiceInstance serviceInstance;
         public InventoryNavigator inventoryNavigator;
         public PerformanceManager performanceManager;
-        public Hashtable<String,List> ctrTable;
-        Request(ServiceInstance si, Socket socket, InventoryNavigator iv, PerformanceManager pm, Hashtable<String,List> ct) {
+        Request(ServiceInstance si, Socket socket, InventoryNavigator iv, PerformanceManager pm) {
             this.socket         = socket;
             this.serviceInstance = si;
             this.inventoryNavigator = iv;
             this.performanceManager = pm;
-            this.ctrTable = ct;
         }
     }
     
@@ -392,13 +381,11 @@ public class VmBix {
         ServiceInstance serviceInstance;
         InventoryNavigator inventoryNavigator;
         PerformanceManager performanceManager;
-        Hashtable<String,List> ctrTable;
         Connection(Request request) {
             // this.connected = connected;
             this.serviceInstance    = request.serviceInstance;
             this.inventoryNavigator = request.inventoryNavigator;
             this.performanceManager = request.performanceManager;
-            this.ctrTable = request.ctrTable;
         }
         static private String checkPattern           (Pattern pattern, String string  )                    {
             Matcher matcher = pattern.matcher(string);
@@ -580,7 +567,6 @@ public class VmBix {
                     serviceInstance    = request.serviceInstance;
                     inventoryNavigator = request.inventoryNavigator;
                     performanceManager = request.performanceManager;
-                    ctrTable           = request.ctrTable;
                     required = true;
                 }
                 // else !!
@@ -612,7 +598,7 @@ public class VmBix {
         }
         
         private ManagedEntity getManagedEntityByUuid (String uuid, String meType    ) throws IOException {
-           ManagedEntity me = morCache.getIfPresent(uuid);
+           ManagedEntity me = meCache.getIfPresent(uuid);
            if (me != null) {
                return me;
            }
@@ -639,7 +625,7 @@ public class VmBix {
                if (uuid.equals(meUuid)) {
                    me = ent;
                }
-               morCache.put(meUuid, ent);
+               meCache.put(meUuid, ent);
            }
            return me;
         }
@@ -650,6 +636,25 @@ public class VmBix {
             //    mes = inventoryNavigator.searchManagedEntities(meType);
             //}
             return mes;
+        }
+        
+        private List getCounterByName (String name    ) throws IOException {
+           List counter = counterCache.getIfPresent(name);
+           if (counter != null) {
+               return counter;
+           }           
+           PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
+            for(int i = 0; i < pcis.length; i++) {
+                String perfCounter  = pcis[i].getGroupInfo().getKey() + "." + pcis[i].getNameInfo().getKey();
+                List<String> ctrProps = new ArrayList<String>();
+                ctrProps.add(String.valueOf(pcis[i].getKey()));
+                ctrProps.add(pcis[i].getStatsType().toString());                
+                if (perfCounter.equals(name)) {
+                    counter = ctrProps;
+                }    
+                counterCache.put(perfCounter, ctrProps);
+            }
+            return counter;
         }
         
        /**
@@ -1506,14 +1511,13 @@ public class VmBix {
               String pState = vmrti.getPowerState().toString();
               if (pState.equals("poweredOn")) {
                 // Check if counter exists
-                Boolean exists = ctrTable.containsKey(perfCounterName);
-               
-                if (exists == false) {
-                  System.out.println("Metric " + perfCounterName + " doesn't exist for VM " + vmName);
+                List counter = getCounterByName(perfCounterName);
+                if (counter == null) {
+                  System.out.println("Metric " + perfCounterName + " doesn't exist for vm " + vmName);
                   long end = System.currentTimeMillis();
                 } else {
-                  // The counter exists
-                  Integer perfCounterId = Integer.valueOf((String)ctrTable.get(perfCounterName).get(0));
+                  // The counter exists                
+                  Integer perfCounterId = Integer.valueOf((String)counter.get(0));
                   
                   PerfMetricId[] queryAvailablePerfMetric = performanceManager.queryAvailablePerfMetric(vm, null, null, 20);
                   for (int i2 = 0; i2 < queryAvailablePerfMetric.length; i2++) {
@@ -1570,16 +1574,15 @@ public class VmBix {
               String pState = vmrti.getPowerState().toString();
               if (pState.equals("poweredOn")) {
                 // Check if counter exists
-                Boolean exists = ctrTable.containsKey(perfCounterName);
-
-                if (exists == false) {
+                List counter = getCounterByName(perfCounterName);
+                if (counter == null) {
                   System.out.println("Metric " + perfCounterName + " doesn't exist for vm " + vmName);
                   long end = System.currentTimeMillis();
                   intValue = 0L;
                 } else {
                   // The counter exists                
-                  Integer perfCounterId = Integer.valueOf((String)ctrTable.get(perfCounterName).get(0));
-                  String perfCounterType = (String)ctrTable.get(perfCounterName).get(1);
+                  Integer perfCounterId = Integer.valueOf((String)counter.get(0));
+                  String perfCounterType = (String)counter.get(1);
                   
                   ArrayList<PerfMetricId> perfMetricIds = new ArrayList<PerfMetricId>();
 
@@ -1672,14 +1675,13 @@ public class VmBix {
               String pState = hostrti.getPowerState().toString();
               if (pState.equals("poweredOn")) {
                 // Check if counter exists
-                Boolean exists = ctrTable.containsKey(perfCounterName);
-               
-                if (exists == false) {
+                List counter = getCounterByName(perfCounterName);
+                if (counter == null) {
                   System.out.println("Metric " + perfCounterName + " doesn't exist for host " + hostName);
                   long end = System.currentTimeMillis();
                 } else {
                   // The counter exists
-                  Integer perfCounterId = Integer.valueOf((String)ctrTable.get(perfCounterName).get(0));
+                  Integer perfCounterId = Integer.valueOf((String)counter.get(0));
                   
                   PerfMetricId[] queryAvailablePerfMetric = performanceManager.queryAvailablePerfMetric(host, null, null, 20);
                   for (int i2 = 0; i2 < queryAvailablePerfMetric.length; i2++) {
@@ -1736,16 +1738,15 @@ public class VmBix {
               String pState = hostrti.getPowerState().toString();
               if (pState.equals("poweredOn")) {
                 // Check if counter exists
-                Boolean exists = ctrTable.containsKey(perfCounterName);
-               
-                if (exists == false) {
+                List counter = getCounterByName(perfCounterName);
+                if (counter == null) {
                   System.out.println("Metric " + perfCounterName + " doesn't exist for host " + hostName);
                   long end = System.currentTimeMillis();
                   intValue = 0L;
                 } else {
                   // The counter exists
-                  Integer perfCounterId = Integer.valueOf((String)ctrTable.get(perfCounterName).get(0));
-                  String perfCounterType = (String)ctrTable.get(perfCounterName).get(1);
+                  Integer perfCounterId = Integer.valueOf((String)counter.get(0));
+                  String perfCounterType = (String)counter.get(1);
                   
                   ArrayList<PerfMetricId> perfMetricIds = new ArrayList<PerfMetricId>();
                   PerfMetricId metricId = new PerfMetricId();
