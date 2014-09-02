@@ -17,6 +17,7 @@ import java.rmi.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import java.util.concurrent.TimeUnit;
 import java.net.URL;
 import com.vmware.vim25.*;
 import com.vmware.vim25.mo.*;
@@ -25,19 +26,26 @@ import jargs.gnu.CmdLineParser;
 import java.lang.management.*;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.Cache;
 
 public class VmBix {
     static ArrayList<Socket> sockets;
     static ServiceInstance serviceInstance;
     static InventoryNavigator inventoryNavigator;
     static PerformanceManager performanceManager;
-    static Hashtable<String,List> ctrTable;    
+    static Hashtable<String,List> ctrTable;
+    static long CACHE_TTL = 5; // in minutes
+    static Cache<String, ManagedEntity> morCache = CacheBuilder.newBuilder()
+    .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
+    .build();
     static String  sdkUrl;
     static String  uname;
     static String  passwd;
     static Integer port;
     static String  pidFile;
     static Integer interval = 300; // Default interval of 300s for performance metrics queries
+    static Boolean useUuid = false; // Use object name by default
     
     public static void main(String[] args) {
         try {
@@ -52,6 +60,7 @@ public class VmBix {
             CmdLineParser.Option oPid    = parser.addStringOption( 'f', "pid");
             CmdLineParser.Option oInterval = parser.addStringOption( 'i', "interval"); // Default interval for performance manager
             CmdLineParser.Option oConfig = parser.addStringOption( 'c', "config");
+            CmdLineParser.Option oUseUuid = parser.addStringOption( 'u', "uuid");
             
             try {
                 parser.parse(args);
@@ -62,12 +71,13 @@ public class VmBix {
                 System.exit(1);
             }
           
-            sdkUrl  = (String )parser.getOptionValue(oSurl  );
-            uname   = (String )parser.getOptionValue(oUname );
-            passwd  = (String )parser.getOptionValue(oPasswd);
-            port    = (Integer)parser.getOptionValue(oPort  );
-            pidFile = (String )parser.getOptionValue(oPid   );
-            if ( interval == null ) interval = (Integer )parser.getOptionValue(oInterval   );
+            sdkUrl  = (String )parser.getOptionValue(oSurl   );
+            uname   = (String )parser.getOptionValue(oUname  );
+            passwd  = (String )parser.getOptionValue(oPasswd );
+            port    = (Integer)parser.getOptionValue(oPort   );
+            pidFile = (String )parser.getOptionValue(oPid    );
+            useUuid = (Boolean)parser.getOptionValue(oUseUuid);
+            if ( interval == null ) interval = (Integer)parser.getOptionValue(oInterval   );
         
             String config = (String )parser.getOptionValue(oConfig);
             if (config != null) {
@@ -81,7 +91,8 @@ public class VmBix {
                     if ( sdkUrl  == null ) sdkUrl  =                  prop.getProperty("serviceurl" );
                     if ( port    == null ) port    = Integer.parseInt(prop.getProperty("listenport"));
                     if ( pidFile == null ) pidFile =                  prop.getProperty("pidfile"    );
-                    if ( interval == null ) interval = Integer.parseInt(prop.getProperty("interval"));                    
+                    if ( interval == null ) interval = Integer.parseInt(prop.getProperty("interval"));
+                    if ( useUuid == null ) useUuid = Boolean.parseBoolean(prop.getProperty("useuuid"));
                 }
                 catch (IOException e) {
                     usage(e.toString());
@@ -579,12 +590,58 @@ public class VmBix {
             return required;
         }
         
-        private ManagedEntity getManagedEntityByName (String vmName, String meType    ) throws IOException {
-            ManagedEntity me = inventoryNavigator.searchManagedEntity(meType, vmName);
-            if (reconnectRequred(me)){
-                me = inventoryNavigator.searchManagedEntity(meType, vmName);
+        private ManagedEntity getManagedEntity (String id, String meType ) throws IOException {
+            ManagedEntity me = null;
+            if (useUuid) {
+                me = getManagedEntityByUuid (id, meType);
+                if (reconnectRequred(me)){
+                    me = getManagedEntityByUuid (id, meType);
+                }
+            } else {
+                me = getManagedEntityByName (id, meType);
+                if (reconnectRequred(me)){
+                    me = getManagedEntityByName (id, meType);
+                }
             }
             return me;
+        }
+        
+        private ManagedEntity getManagedEntityByName (String name, String meType    ) throws IOException {
+            ManagedEntity me = inventoryNavigator.searchManagedEntity(meType, name);
+            return me;
+        }
+        
+        private ManagedEntity getManagedEntityByUuid (String uuid, String meType    ) throws IOException {
+           ManagedEntity me = morCache.getIfPresent(uuid);
+           if (me != null) {
+               return me;
+           }
+           ManagedEntity[] mes = getManagedEntities(meType);
+           String meUuid = null;
+           for (int i=0; mes!=null && i<mes.length; i++) {
+               ManagedEntity ent = mes[i];
+               if (ent == null) {
+                   continue;
+               }
+               if (meType.equals("HostSystem")) {
+                   HostSystem host = (HostSystem) ent;
+                   HostListSummary hs = host.getSummary();
+                   HostHardwareSummary hd = hs.getHardware();
+                   meUuid = hd.getUuid();
+               } else if (meType.equals("VirtualMachine")) {
+                   VirtualMachine vm = (VirtualMachine) ent;
+                   VirtualMachineConfigInfo vmcfg = vm.getConfig();
+                   meUuid = vmcfg.getUuid();
+               }
+               if (meUuid == null) {
+                   continue;
+               }
+               if (uuid.equals(meUuid)) {
+                   me = ent;
+               }
+               morCache.put(meUuid, ent);
+           }
+           return me;
         }
 
         private ManagedEntity[] getManagedEntities (String meType    ) throws IOException {
@@ -622,7 +679,7 @@ public class VmBix {
         */        
         private void getHostConnection                   (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer intStatus;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -655,7 +712,7 @@ public class VmBix {
         */                
         private void getHostStatus                   (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer intStatus;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -686,7 +743,7 @@ public class VmBix {
         */            
         private void getHostDeadPaths                   (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer nb = 0;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -710,7 +767,7 @@ public class VmBix {
         */              
         private void getHostActivePaths                   (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer nb = 0;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -734,7 +791,7 @@ public class VmBix {
         */      
         private void getHostStandbyPaths                   (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer nb = 0;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -758,7 +815,7 @@ public class VmBix {
         */      
         private void getHostDisabledPaths                   (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer nb = 0;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -782,7 +839,7 @@ public class VmBix {
         */         
         private void getVmStatus                   (String vmName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer intStatus;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -813,7 +870,7 @@ public class VmBix {
         */           
         private void getHostMaintenance                   (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Boolean is;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -863,8 +920,11 @@ public class VmBix {
             for(int j=0; j<hs.length; j++)
             {
                 HostSystem h = (HostSystem) hs[j];
+                HostListSummary hsum = h.getSummary();
+                HostHardwareSummary hd = hsum.getHardware();
                 JsonObject jObject = new JsonObject();
                 jObject.addProperty("{#ESXHOST}", h.getName());
+                jObject.addProperty("{#UUID}", hd.getUuid());                
                 jArray.add(jObject);
             }
             JsonObject jOutput = new JsonObject();
@@ -899,7 +959,7 @@ public class VmBix {
         */             
         private void getHostCpuUsed                  (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer usedMhz;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -928,7 +988,7 @@ public class VmBix {
         */             
         private void getHostCpuTotal                 (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer totalMhz;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -950,7 +1010,7 @@ public class VmBix {
         */          
         private void getHostCpuCores                 (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Short cores;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -977,7 +1037,7 @@ public class VmBix {
         */          
         private void getHostMemUsed                  (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer usedMB;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -1006,7 +1066,7 @@ public class VmBix {
         */         
         private void getHostMemTotal                 (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Long totalMemBytes;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -1034,7 +1094,7 @@ public class VmBix {
         */
         private void getHostVMs                 (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer nbVM;
             nbVM = 0;
             if (host == null) {
@@ -1060,7 +1120,7 @@ public class VmBix {
         */         
         private void getHostVmsStatsPrivate          (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer amount;
             int sum = 0;
             int activeVms = 0;
@@ -1088,7 +1148,7 @@ public class VmBix {
         */              
         private void getHostVmsStatsShared           (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer amount;
             int sum = 0;
             int activeVms = 0;
@@ -1116,7 +1176,7 @@ public class VmBix {
         */              
         private void getHostVmsStatsSwapped          (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer amount;
             int sum = 0;
             int activeVms = 0;
@@ -1146,7 +1206,7 @@ public class VmBix {
         */              
         private void getHostVmsStatsCompressed       (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer amount;
             int sum = 0;
             int activeVms = 0;
@@ -1174,7 +1234,7 @@ public class VmBix {
         */              
         private void getHostVmsStatsOverhCons        (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer amount;
             int sum = 0;
             int activeVms = 0;
@@ -1202,7 +1262,7 @@ public class VmBix {
         */              
         private void getHostVmsStatsConsumed         (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer amount;
             int sum = 0;
             int activeVms = 0;
@@ -1230,7 +1290,7 @@ public class VmBix {
         */              
         private void getHostVmsStatsBallooned         (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer amount;
             int sum = 0;
             int activeVms = 0;
@@ -1258,7 +1318,7 @@ public class VmBix {
         */              
         private void getHostVmsStatsActive           (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Integer amount;
             int sum = 0;
             int activeVms = 0;
@@ -1286,7 +1346,7 @@ public class VmBix {
         */          
         private void getVmCpuUsed                    (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer usedMhz;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -1316,7 +1376,7 @@ public class VmBix {
         */          
         private void getVmCpuTotal                   (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer mhz;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -1348,7 +1408,7 @@ public class VmBix {
         */  
         private void getVmCpuCores                   (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer cores;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -1373,7 +1433,7 @@ public class VmBix {
         */
         private void getVmAnnotation                   (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             String an;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -1395,7 +1455,7 @@ public class VmBix {
         */          
         private void getVmPowerState                   (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer intStatus;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -1437,7 +1497,7 @@ public class VmBix {
             }
             long start = System.currentTimeMillis();
             JsonArray jArray = new JsonArray();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             if (vm == null) {
                 long end = System.currentTimeMillis();
                 System.out.println("No VM named '" + vmName + "' found\n");
@@ -1500,7 +1560,7 @@ public class VmBix {
               newInterval = Integer.parseInt(params[3]);
             }
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Long intValue;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -1603,7 +1663,7 @@ public class VmBix {
             }
             long start = System.currentTimeMillis();
             JsonArray jArray = new JsonArray();            
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             if (host == null) {
                 long end = System.currentTimeMillis();
                 System.out.println("No host named '" + hostName + "' found\n");
@@ -1666,7 +1726,7 @@ public class VmBix {
               newInterval = Integer.parseInt(params[3]);
             }
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             Long intValue;
             if (host == null) {
                 long end = System.currentTimeMillis();
@@ -1757,7 +1817,7 @@ public class VmBix {
         */           
         private void getHostAvailablePerfCounters                   (String hostName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            HostSystem host = (HostSystem)getManagedEntityByName(hostName,"HostSystem");
+            HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
             if (host == null) {
                 long end = System.currentTimeMillis();
                 System.out.println("No host named '" + hostName + "' found\n");
@@ -1801,7 +1861,7 @@ public class VmBix {
         */           
         private void getVmAvailablePerfCounters                   (String vmName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             if (vm == null) {
                 long end = System.currentTimeMillis();
                 System.out.println("No vm named '" + vmName + "' found\n");
@@ -1868,7 +1928,7 @@ public class VmBix {
         */             
         private void getVmFolder                   (String vmName, PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             String vmFolder = "";
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -1890,7 +1950,7 @@ public class VmBix {
         */             
         private void getVmMemPrivate                 (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer amount;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -1913,7 +1973,7 @@ public class VmBix {
         */                  
         private void getVmMemShared                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer amount;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -1936,7 +1996,7 @@ public class VmBix {
         */          
         private void getVmMemSwapped                 (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer amount;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -1959,7 +2019,7 @@ public class VmBix {
         */                  
         private void getVmMemCompressed              (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Long amount;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -1982,7 +2042,7 @@ public class VmBix {
         */                  
         private void getVmMemOverheadConsumed        (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer amount;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2005,7 +2065,7 @@ public class VmBix {
         */                  
         private void getVmMemConsumed                (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer amount;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2028,7 +2088,7 @@ public class VmBix {
         */                  
         private void getVmMemBallooned                (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer amount;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2051,7 +2111,7 @@ public class VmBix {
         */                  
         private void getVmMemActive                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer amount;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2074,7 +2134,7 @@ public class VmBix {
         */                  
         private void getVmConsolidationNeeded                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Boolean is;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2096,7 +2156,7 @@ public class VmBix {
         */          
         private void getVmToolsInstallerMounted                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Boolean is;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2117,7 +2177,7 @@ public class VmBix {
         */        
         private void getVmHost                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             String vmHost;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2139,7 +2199,7 @@ public class VmBix {
         */                
         private void getVmGuestFullName                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             String guestFullName;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2166,7 +2226,7 @@ public class VmBix {
         */
         private void getVmGuestShortName                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             String guestShortName;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2192,7 +2252,7 @@ public class VmBix {
         */              
         private void getVmGuestHostName                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             String guestHostName;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2220,7 +2280,7 @@ public class VmBix {
         */              
         private void getVmGuestDisks                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             JsonArray jArray = new JsonArray();
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2255,7 +2315,7 @@ public class VmBix {
         */      
         private void getVmGuestDiskCapacity                  (String vmName, String vmDisk,  PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Long size = 0L;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2289,7 +2349,7 @@ public class VmBix {
         */      
         private void getVmGuestDiskFreeSpace                  (String vmName, String vmDisk,  PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Long size = 0L;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2324,7 +2384,7 @@ public class VmBix {
         */          
         private void getVmGuestIpAddress                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             String guestIpAddress;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2351,7 +2411,7 @@ public class VmBix {
         */          
         private void getVmStorageCommitted                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Long size;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2372,7 +2432,7 @@ public class VmBix {
         */          
         private void getVmStorageUncommitted                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Long size;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2393,7 +2453,7 @@ public class VmBix {
         */          
         private void getVmStorageUnshared                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Long size;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2419,7 +2479,7 @@ public class VmBix {
         */          
         private void getVmGuestToolsVersionStatus                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer intStatus;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2471,7 +2531,7 @@ public class VmBix {
         */          
         private void getVmGuestToolsRunningStatus                  (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer intStatus;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2507,7 +2567,7 @@ public class VmBix {
         */          
         private void getVmMemSize                    (String vmName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            VirtualMachine vm = (VirtualMachine)getManagedEntityByName(vmName,"VirtualMachine");
+            VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
             Integer amount;
             if (vm == null) {
                 long end = System.currentTimeMillis();
@@ -2530,7 +2590,7 @@ public class VmBix {
         */                  
         private void getDatastoreSizeFree            (String dsName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            Datastore ds = (Datastore)getManagedEntityByName(dsName,"Datastore");
+            Datastore ds = (Datastore)getManagedEntity(dsName,"Datastore");
             Long freeSpace;
             if (ds == null) {
                 long end = System.currentTimeMillis();
@@ -2555,7 +2615,7 @@ public class VmBix {
         */                  
         private void getDatastoreSizeTotal           (String dsName,   PrintWriter out) throws IOException {
             long start = System.currentTimeMillis();
-            Datastore ds = (Datastore)getManagedEntityByName(dsName,"Datastore");
+            Datastore ds = (Datastore)getManagedEntity(dsName,"Datastore");
             Long capacity;
             if (ds == null) {
                 long end = System.currentTimeMillis();
@@ -2580,7 +2640,7 @@ public class VmBix {
         */          
         private void getDatastoreSizeProvisioned            (String dsName,   PrintWriter out) throws IOException { 
             long start = System.currentTimeMillis(); 
-            Datastore ds = (Datastore)getManagedEntityByName(dsName,"Datastore"); 
+            Datastore ds = (Datastore)getManagedEntity(dsName,"Datastore"); 
             Long provSpace; 
             if (ds == null) { 
                 long end = System.currentTimeMillis(); 
@@ -2609,7 +2669,7 @@ public class VmBix {
         */  
         private void getDatastoreSizeUncommitted            (String dsName,   PrintWriter out) throws IOException { 
             long start = System.currentTimeMillis(); 
-            Datastore ds = (Datastore)getManagedEntityByName(dsName,"Datastore"); 
+            Datastore ds = (Datastore)getManagedEntity(dsName,"Datastore"); 
             Long freeSpace; 
             if (ds == null) { 
                 long end = System.currentTimeMillis(); 

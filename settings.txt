@@ -16,9 +16,4 @@ downloaded=downloaded
 jargsurl=http://sourceforge.net/projects/jargs/files/latest/download?source=files
 vijavaurl=http://sourceforge.net/projects/vijava/files/latest/download?source=files
 gsonurl=https://google-gson.googlecode.com/files/google-gson-2.2.4-release.zip
-
-cheks.cmd=cat ${java.src}/net/djarvur/vmbix/VmBix.java|grep "Pattern p[A-Z]"|cut -d "*" -f 3|sed -E 's/\\\\//g;s/(.*)\\(.*\\)(.*)"(.*)\\);.*\\/\\//\\1name\\2\\3/g'
-
-# cat ${java.src}/net/djarvur/vmbix/VmBix.java|grep "Pattern p[A-Z]"|cut -d "*" -f 3|sed -E 's/\\//g;s/(.*)\(.*\)(.*)"(.*)\);.*\/\//\1name\2\3/g'
-
-# cat src/java/net/djarvur/vmbix/VmBix.java |grep "Pattern p[A-Z]"|cut -d "*" -f 3|sed -E 's/\\//g;s/(.*)\(.*\)(.*)"(.*)/\1name\2/g'
+guavaurl=http://search.maven.org/remotecontent?filepath=com/google/guava/guava/18.0/guava-18.0.jar

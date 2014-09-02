@@ -48,6 +48,11 @@
                 <mkdir dir="${downloaded}"/>
                 <get src="${gsonurl}" dest="${downloaded}/gson.zip" verbose="true" usetimestamp="true"/>
         </target>
+
+        <target name="download.guava">
+                <mkdir dir="${downloaded}/guava"/>
+                <get src="${guavaurl}" dest="${downloaded}/guava/guava.jar" verbose="true" usetimestamp="true"/>
+        </target>
 	
 	<target name="unzip.jargs">
 		<unzip src="${downloaded}/jargs.zip" dest="${downloaded}/jargs">
@@ -95,10 +100,20 @@
                 </copy>
         </target>
 
+        <target name="copy.guava">
+                <mkdir dir="${lib.dir}"/>
+                <copy todir="${lib.dir}" flatten="true">
+                        <fileset dir="${downloaded}/guava">
+                                <include name="**/*.jar"/>
+                        </fileset>
+                </copy>
+        </target>
+
 	<target name="get.jargs" depends="download.jargs, copy.jargs"/>
 	<target name="get.vijava" depends="download.vijava, copy.vijava"/>
         <target name="get.gson" depends="download.gson, copy.gson"/>
-	<target name="get.libs" depends="get.vijava, get.jargs, get.gson"/>
+        <target name="get.guava" depends="download.guava, copy.guava"/>
+	<target name="get.libs" depends="get.vijava, get.jargs, get.gson, get.guava"/>
 	
 	<target name="store">
 		<delete dir="${store.dir}"/>
