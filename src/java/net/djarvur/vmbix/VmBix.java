@@ -36,9 +36,11 @@ public class VmBix {
     static PerformanceManager performanceManager;
     static long CACHE_TTL = 5; // in minutes
     static Cache<String, ManagedEntity> meCache = CacheBuilder.newBuilder()
+    .maximumSize(10000)
     .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
     .build();
     static Cache<String, List> counterCache = CacheBuilder.newBuilder()
+    .maximumSize(1000)
     .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
     .build();    
     static String  sdkUrl;
