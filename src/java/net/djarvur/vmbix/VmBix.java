@@ -1,13 +1,34 @@
 /*
-# vmware api comunication daemon
-# This daemon connects to vCenter with vijava SDK
-# and gives access to some statistics over tcp/ip socket
+# VmBix - VMWare API communication daemon.
+# This daemon connects to vCenter with VIJAVA SDK
+# and gives access to some statistics over TCP/IP socket.
 #
-# Written by Roman Belyakovsky
-#            ihryamzik@gmail.com
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer
+#    in this position and unchanged.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# Copyright (c) 2014 <dav3860chom@yahoo.fr>
+# All rights reserved.
+#
+# Initial releases by Roman Belyakovsky (ihryamzik@gmail.com).
 # 
-# Release 1.x by dav3860
-#                  dav3860chom@yahoo.fr
 */
 
 package net.djarvur.vmbix;
@@ -35,8 +56,12 @@ public class VmBix {
     static InventoryNavigator inventoryNavigator;
     static PerformanceManager performanceManager;
     static long CACHE_TTL = 5; // in minutes
-    static Cache<String, ManagedEntity> meCache = CacheBuilder.newBuilder()
+    static Cache<String, ManagedEntity> vmCache = CacheBuilder.newBuilder()
     .maximumSize(10000)
+    .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
+    .build();
+    static Cache<String, ManagedEntity> hvCache = CacheBuilder.newBuilder()
+    .maximumSize(1000)
     .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
     .build();
     static Cache<String, List> counterCache = CacheBuilder.newBuilder()
@@ -571,15 +596,22 @@ public class VmBix {
         
         private ManagedEntity getManagedEntity (String id, String meType ) throws IOException {
             ManagedEntity me = null;
-            if (useUuid) {
-                me = getManagedEntityByUuid (id, meType);
-                if (reconnectRequred(me)){
-                    me = getManagedEntityByUuid (id, meType);
-                }
-            } else {
+            if (meType.equals("Datastore")) {
                 me = getManagedEntityByName (id, meType);
                 if (reconnectRequred(me)){
                     me = getManagedEntityByName (id, meType);
+                }
+            } else {
+                if (useUuid) {
+                    me = getManagedEntityByUuid (id, meType);
+                    if (reconnectRequred(me)){
+                        me = getManagedEntityByUuid (id, meType);
+                    }
+                } else {
+                    me = getManagedEntityByName (id, meType);
+                    if (reconnectRequred(me)){
+                        me = getManagedEntityByName (id, meType);
+                    }
                 }
             }
             return me;
@@ -591,34 +623,43 @@ public class VmBix {
         }
         
         private ManagedEntity getManagedEntityByUuid (String uuid, String meType    ) throws IOException {
-           ManagedEntity me = meCache.getIfPresent(uuid);
-           if (me != null) {
+            ManagedEntity me = null;
+            if (meType.equals("HostSystem")) {
+              me = hvCache.getIfPresent(uuid);
+            } else if (meType.equals("VirtualMachine")) {
+              me = vmCache.getIfPresent(uuid);
+            }
+            if (me != null) {
                return me;
-           }
-           ManagedEntity[] mes = getManagedEntities(meType);
-           String meUuid = null;
-           for (int i=0; mes!=null && i<mes.length; i++) {
+            }
+            ManagedEntity[] mes = getManagedEntities(meType);
+            String meUuid = null;
+            for (int i=0; mes!=null && i<mes.length; i++) {
                ManagedEntity ent = mes[i];
                if (ent == null) {
-                   continue;
+                  continue;
                }
                if (meType.equals("HostSystem")) {
-                   HostSystem host = (HostSystem) ent;
-                   HostListSummary hs = host.getSummary();
-                   HostHardwareSummary hd = hs.getHardware();
-                   meUuid = hd.getUuid();
+                  HostSystem host = (HostSystem) ent;
+                  HostListSummary hs = host.getSummary();
+                  HostHardwareSummary hd = hs.getHardware();
+                  meUuid = hd.getUuid();
                } else if (meType.equals("VirtualMachine")) {
-                   VirtualMachine vm = (VirtualMachine) ent;
-                   VirtualMachineConfigInfo vmcfg = vm.getConfig();
-                   meUuid = vmcfg.getUuid();
+                  VirtualMachine vm = (VirtualMachine) ent;
+                  VirtualMachineConfigInfo vmcfg = vm.getConfig();
+                  meUuid = vmcfg.getUuid();
                }
                if (meUuid == null) {
-                   continue;
+                  continue;
                }
                if (uuid.equals(meUuid)) {
-                   me = ent;
-                   meCache.put(meUuid, ent);
-                   break;
+                  me = ent;
+                  if (meType.equals("HostSystem")) {
+                    hvCache.put(meUuid, ent);
+                  } else if (meType.equals("VirtualMachine")) {
+                    vmCache.put(meUuid, ent);
+                  }                   
+                  break;
                }
            }
            return me;
