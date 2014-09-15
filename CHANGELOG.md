@@ -1,9 +1,19 @@
-1.1.9-dev
+1.2
+* Added the UUID to the JSON formatted output for the esx.discovery method. 
+* Added the UUID to the JSON formatted output for the vm.discovery method.
+* VMs and ESX hosts can now be queried by UUID instead of the name. The useuuid parameter must be set to "true" in the configuration file. Example :
+
+```
+zabbix_get -s localhost -p 12050 -k esx.status["32333536-3030-5a43-3244-3238314c319b"]
+1
+```
+
+* Added caching of the virtual machines, ESX hosts and performance counters objects.
+* Added the methods vm.name and esx.name to query the display names when using UUID and the primary identifier.
 * Added the method vm.guest.os.short to get the OS family.
 * Added the method vm.annotation to get the annotations.
 * Do not print 0 when we cannot query VM disks.
 * Decreased verbosity.
-* Added the UUID to the JSON formatted output for the vm.discovery method.
 
 1.1.8
 * Use the toolsVersionStatus2 instead of toolsVersionStatus property to get the VM Tools version status of a virtual machine. Needs VSphere 5.x.
