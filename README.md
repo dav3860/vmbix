@@ -10,7 +10,31 @@ esx.counter[esx01.domain.local,cpu.ready]
 ```
 ```
 vm.counter.discovery[VM01,virtualDisk.totalReadLatency]
-{"data":[{"{#METRICINSTANCE}":"scsi2:2"},{"{#METRICINSTANCE}":"scsi2:1"},{"{#METRICINSTANCE}":"scsi2:0"},{"{#METRICINSTANCE}":"scsi2:6"},{"{#METRICINSTANCE}":"scsi2:5"},{"{#METRICINSTANCE}":"scsi2:4"},{"{#METRICINSTANCE}":"scsi2:3"}]}
+{
+    "data": [
+        {
+            "{#METRICINSTANCE}": "scsi2:2"
+        },
+        {
+            "{#METRICINSTANCE}": "scsi2:1"
+        },
+        {
+            "{#METRICINSTANCE}": "scsi2:0"
+        },
+        {
+            "{#METRICINSTANCE}": "scsi2:6"
+        },
+        {
+            "{#METRICINSTANCE}": "scsi2:5"
+        },
+        {
+            "{#METRICINSTANCE}": "scsi2:4"
+        },
+        {
+            "{#METRICINSTANCE}": "scsi2:3"
+        }
+    ]
+}
 ```
 ```
 vm.counter[VM01,virtualDisk.totalReadLatency,scsi2:4,300]
