@@ -8,6 +8,7 @@ VmBix helps you to overcome this limitations, with very good performance. Vmbix 
 esx.counter[esx01.domain.local,cpu.ready]
 1135
 ```
+
 ```
 vm.counter.discovery[VM01,virtualDisk.totalReadLatency]
 {
@@ -36,10 +37,12 @@ vm.counter.discovery[VM01,virtualDisk.totalReadLatency]
     ]
 }
 ```
+
 ```
 vm.counter[VM01,virtualDisk.totalReadLatency,scsi2:4,300]
 2
 ```
+
 This project is a fork of the original VmBix by ihryamzik (https://code.google.com/p/vmbix/) 
 
 ## Get the latest release binaries
