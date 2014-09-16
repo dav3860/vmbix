@@ -3,7 +3,7 @@ VmBix is a multi-thread TCP server written in java, it accepts connections from 
 Starting from version 2.2, Zabbix can natively monitor a VMWare environment. But there are a few drawbacks :
 * The monitored items are not all very relevant.
 * The created ESX and VM hosts are mostly read-only. You cannot attach them different templates or monitor them with an agent.
-VmBix helps you to overcome this limitations, with very good performance. Vmbix also exposes VMWare API methods that are not included in Zabbix, for example the [Performance Counters](http://fr.slideshare.net/alanrenouf/vsphere-apis-for-performance-monitoring). You can use these VmBix methods to query interesting VMWare metrics, for example :
+VmBix helps you to overcome this limitations, with very good performance. It is multi-threaded and can be queried using a Zabbix loadable module. Vmbix also exposes VMWare API methods that are not included in Zabbix, for example the [Performance Counters](http://fr.slideshare.net/alanrenouf/vsphere-apis-for-performance-monitoring). You can use these VmBix methods to query interesting VMWare metrics, for example :
 ```
 TEST# esx.counter[esx01.domain.local,cpu.ready]
 1135
@@ -93,7 +93,7 @@ Try to run /usr/local/sbin/vmbix, you should get a "usage" output.
 ```
 # /usr/local/sbin/vmbix
 Usage:
-vmbix {-P|--port} listenPort {-s|--serviceurl} http[s]://serveraddr/sdk {-u|--username} username {-p|--password} password [-f|--pid pidfile]
+vmbix {-P|--port} listenPort {-s|--serviceurl} http[s]://serveraddr/sdk {-u|--username} username {-p|--password} password [-f|--pid pidfile] 
 or
 vmbix [-c|--config] config_file  [-f|--pid pidfile]
 ```
@@ -131,11 +131,11 @@ tail -f /var/log/messages|grep vmbix
 ## Configure Zabbix
 All the ESX servers, datastores and virtual machines will automatically be discovered and created in Zabbix. Here is how to configure Zabbix :
 
-1. Import the templates from zabbix_templates (import the vCenter templates after the others). There are two types of template : with or without the wrapper script. The wrapper script method is useful if you want to monitor your virtual machines with a Zabbix agent in addition to VmBix.
-  * Without the wrapper script, the VmBix items in Zabbix are configured with the "Zabbix agent" type. So Zabbix directly talks to VmBix using the Zabbix agent protocol on port 12050 by default. This is good, but it means that the hosts cannot also be monitored using the Zabbix agent as all the created hosts will have an IP of 127.0.0.1 and a port of 12050 by default for their "agent" interface. This is a limitation for virtual machines for example.
-  * With the wrapper script, the VmBix items in Zabbix are configured with an "External script" type. Zabbix uses a python wrapper script to talk to VmBix. So it is still possible to use a Zabbix agent to monitor the hosts. The python scripts "zget.py" and "vmbixget.py" need to be in the Zabbix external scripts directory and must have the permissions to be run by the zabbix user.
+1. Import the templates from zabbix_templates (import the vCenter templates after the others). There are two template flavours : with or without the Zabbix loadable module. The Zabbix loadable module method is useful if you want to monitor your virtual machines with a Zabbix agent in addition to VmBix.
+  * Without the module, the VmBix items in Zabbix are configured with the "Zabbix agent" type. So Zabbix directly talks to VmBix using the Zabbix agent protocol on port 12050 by default. This is good, but it means that the hosts cannot also be monitored using the Zabbix agent as all the created hosts will have an IP of 127.0.0.1 and a port of 12050 by default for their "agent" interface. This is a limitation for virtual machines for example.
+  * With the loadable module, the VmBix items in Zabbix are configured with an "Simple Check" type. Zabbix uses a loadable module to talk to VmBix. So it is still possible to use a Zabbix agent to monitor the hosts. The vmbix.so [loadable module](https://github.com/dav3860/vmbix_zabbix_module) must be installed on your server/proxy.
 
-2. Create a host named "VmBix" for example and link it with the VmBix vCenter template (with or without the script). The host must be configured like this :
+2. Create a host named "VmBix" for example and link it with the VmBix vCenter template (with or without the module). The host must be configured like this :
   * Set host ip to 127.0.0.1 or IP of the server where VmBix runs. 
   * Set "Connect to" to "IP address" and set port to 12050 or the one you've set in vmbix config file.
 
@@ -143,8 +143,8 @@ Wait for the ESX servers, datastores and virtual machines to be discovered and c
 
 You can also link additional templates to the created hosts by editing the corresponding host prototype in the VmBix vCenter template discovery rules. For example, if you use the wrapper script method, you can add a Zabbix agent monitoring template to your virtual machines.
 
-As these hosts are created using the host prototype mecanism in Zabbix, they will be almost read-only. For example, you can't edit one host to link it to a specific template. This must be made at the host prototype level, which can be a limitation if your virtual machines are different.
-To overcome this limitation, you can disable the VM discovery rule in the VmBix vCenter template and create your virtual machines manually in Zabbix (I do it using the API and a script of my own). Then, link them to the VmBix VM template (preferably with the script method). You can then edit them as any other host.
+As these hosts are created using the host prototype mechanism in Zabbix, they will be almost read-only. For example, you can't edit one host to link it to a specific template. This must be made at the host prototype level, which can be a limitation if your virtual machines are different.
+To overcome this limitation, you can disable the VM discovery rule in the VmBix vCenter template and create your virtual machines manually in Zabbix (I do it using the API and a script of my own). Then, link them to the VmBix VM template (preferably with the loadable module method). You can then edit them as any other host.
 
 ## Querying VmBix in CLI
 You can query VmBix like a Zabbix agent using the zabbix_get tool :
@@ -159,6 +159,11 @@ CentOS 4/5/6 (64 bits)
 {"data":[{"{#ESXHOST}":"esx01.domain.local"},{"{#ESXHOST}":"esx02.domain.local"}]}
 # zabbix_get -s 127.x.y.z -p 12050 -k vm.counter[MYVM01,virtualDisk.totalReadLatency,scsi0:1,300]
 2
+```
+If useuuid is set to true in the configuration file, objects are identified using their UUID :
+```
+# zabbix_get -s 127.x.y.z -p 12050 -k vm.guest.os[[421448c4-8970-28f0-05a5-90a20724bd08]
+CentOS 4/5/6 (64 bits)
 ```
 
 ## Supported zabbix checks

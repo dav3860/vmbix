@@ -1,3 +1,8 @@
+1.2.1
+* Removed debug.
+* Cosmetics.
+* Replaced the python script method by a loadable module.
+
 1.2
 * Added the UUID to the JSON formatted output for the esx.discovery method. 
 * Added the UUID to the JSON formatted output for the vm.discovery method.

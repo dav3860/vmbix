@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>2.0</version>
-    <date>2014-05-09T09:21:02Z</date>
+    <date>2014-09-16T13:11:33Z</date>
     <groups>
         <group>
             <name>Hypervisors</name>
@@ -15,8 +15,9 @@
     </groups>
     <templates>
         <template>
-            <template>Template VmBix vCenter with wrapper</template>
-            <name>Template VmBix vCenter with wrapper</name>
+            <template>Template VmBix vCenter Loadable Module</template>
+            <name>Template VmBix vCenter Loadable Module</name>
+            <description/>
             <groups>
                 <group>
                     <name>Templates</name>
@@ -51,11 +52,11 @@
             <items>
                 <item>
                     <name>About</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;about&quot;]</key>
+                    <key>vmbix[about]</key>
                     <delay>3600</delay>
                     <history>7</history>
                     <trends>365</trends>
@@ -90,14 +91,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>Latest event</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;event.latest[*]&quot;]</key>
+                    <key>vmbix[event.latest,*]</key>
                     <delay>60</delay>
                     <history>7</history>
                     <trends>365</trends>
@@ -132,14 +134,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>VMBIX Ping</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;ping&quot;]</key>
+                    <key>vmbix[ping]</key>
                     <delay>60</delay>
                     <history>7</history>
                     <trends>365</trends>
@@ -174,15 +177,16 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
             </items>
             <discovery_rules>
                 <discovery_rule>
                     <name>Datastores</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;datastore.discovery[*]&quot;]</key>
+                    <key>vmbix[datastore.discovery,*]</key>
                     <delay>3600</delay>
                     <status>0</status>
                     <allowed_hosts/>
@@ -202,17 +206,21 @@
                     <publickey/>
                     <privatekey/>
                     <port/>
-                    <filter>:</filter>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
                     <lifetime>30</lifetime>
                     <description/>
                     <item_prototypes>
                         <item_prototype>
                             <name>Datastore {#DATASTORE} free space</name>
-                            <type>10</type>
+                            <type>3</type>
                             <snmp_community/>
                             <multiplier>0</multiplier>
                             <snmp_oid/>
-                            <key>vmbixget.py[&quot;datastore.size[{#DATASTORE},free]&quot;]</key>
+                            <key>vmbix[datastore.size,{#DATASTORE},free]</key>
                             <delay>900</delay>
                             <history>90</history>
                             <trends>365</trends>
@@ -247,14 +255,15 @@
                                 </application>
                             </applications>
                             <valuemap/>
+                            <logtimefmt/>
                         </item_prototype>
                         <item_prototype>
                             <name>Datastore {#DATASTORE} total size</name>
-                            <type>10</type>
+                            <type>3</type>
                             <snmp_community/>
                             <multiplier>0</multiplier>
                             <snmp_oid/>
-                            <key>vmbixget.py[&quot;datastore.size[{#DATASTORE},total]&quot;]</key>
+                            <key>vmbix[datastore.size,{#DATASTORE},total]</key>
                             <delay>900</delay>
                             <history>90</history>
                             <trends>365</trends>
@@ -289,6 +298,7 @@
                                 </application>
                             </applications>
                             <valuemap/>
+                            <logtimefmt/>
                         </item_prototype>
                     </item_prototypes>
                     <trigger_prototypes/>
@@ -319,8 +329,8 @@
                                     <calc_fnc>2</calc_fnc>
                                     <type>2</type>
                                     <item>
-                                        <host>Template VmBix vCenter with wrapper</host>
-                                        <key>vmbixget.py[&quot;datastore.size[{#DATASTORE},total]&quot;]</key>
+                                        <host>Template VmBix vCenter Loadable Module</host>
+                                        <key>vmbix[datastore.size,{#DATASTORE},total]</key>
                                     </item>
                                 </graph_item>
                                 <graph_item>
@@ -331,8 +341,8 @@
                                     <calc_fnc>2</calc_fnc>
                                     <type>0</type>
                                     <item>
-                                        <host>Template VmBix vCenter with wrapper</host>
-                                        <key>vmbixget.py[&quot;datastore.size[{#DATASTORE},free]&quot;]</key>
+                                        <host>Template VmBix vCenter Loadable Module</host>
+                                        <key>vmbix[datastore.size,{#DATASTORE},free]</key>
                                     </item>
                                 </graph_item>
                             </graph_items>
@@ -342,10 +352,10 @@
                 </discovery_rule>
                 <discovery_rule>
                     <name>ESX Hosts</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.discovery[*]&quot;]</key>
+                    <key>vmbix[esx.discovery,*]</key>
                     <delay>3600</delay>
                     <status>0</status>
                     <allowed_hosts/>
@@ -365,7 +375,11 @@
                     <publickey/>
                     <privatekey/>
                     <port/>
-                    <filter>:</filter>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
                     <lifetime>30</lifetime>
                     <description/>
                     <item_prototypes/>
@@ -386,7 +400,7 @@
                             <group_prototypes/>
                             <templates>
                                 <template>
-                                    <name>Template VmBix ESX with wrapper</name>
+                                    <name>Template VmBix ESX Loadable Module</name>
                                 </template>
                             </templates>
                         </host_prototype>
@@ -394,10 +408,10 @@
                 </discovery_rule>
                 <discovery_rule>
                     <name>Virtual machines</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;vm.discovery[*]&quot;]</key>
+                    <key>vmbix[vm.discovery,*]</key>
                     <delay>900</delay>
                     <status>0</status>
                     <allowed_hosts/>
@@ -417,7 +431,11 @@
                     <publickey/>
                     <privatekey/>
                     <port/>
-                    <filter>:</filter>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
                     <lifetime>30</lifetime>
                     <description/>
                     <item_prototypes/>
@@ -438,7 +456,7 @@
                             <group_prototypes/>
                             <templates>
                                 <template>
-                                    <name>Template VmBix VM with wrapper</name>
+                                    <name>Template VmBix VM Loadable Module</name>
                                 </template>
                             </templates>
                         </host_prototype>
@@ -452,7 +470,7 @@
     </templates>
     <triggers>
         <trigger>
-            <expression>{Template VmBix vCenter with wrapper:vmbixget.py[&quot;ping&quot;].nodata(5m)}=1</expression>
+            <expression>{Template VmBix vCenter Loadable Module:vmbix[ping].nodata(5m)}=1</expression>
             <name>No response from VMBIX</name>
             <url/>
             <status>0</status>

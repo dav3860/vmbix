@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>2.0</version>
-    <date>2014-05-09T09:21:21Z</date>
+    <date>2014-09-16T13:05:19Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -9,8 +9,9 @@
     </groups>
     <templates>
         <template>
-            <template>Template VmBix ESX with wrapper</template>
-            <name>Template VmBix ESX with wrapper</name>
+            <template>Template VmBix ESX Loadable Module</template>
+            <name>Template VmBix ESX Loadable Module</name>
+            <description/>
             <groups>
                 <group>
                     <name>Templates</name>
@@ -39,11 +40,11 @@
             <items>
                 <item>
                     <name>CPU cores</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.cpu.load[{HOST.HOST},cores]&quot;]</key>
+                    <key>vmbix[esx.cpu.load,{HOST.HOST},cores]</key>
                     <delay>3600</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -78,14 +79,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>CPU freq</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.cpu.load[{HOST.HOST},total]&quot;]</key>
+                    <key>vmbix[esx.cpu.load,{HOST.HOST},total]</key>
                     <delay>3600</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -120,6 +122,7 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>CPU total</name>
@@ -145,7 +148,7 @@
                     <snmpv3_privpassphrase/>
                     <formula>1</formula>
                     <delay_flex/>
-                    <params>last(&quot;vmbixget.py[\&quot;esx.cpu.load[{HOST.HOST},total]\&quot;]&quot;) * last(&quot;vmbixget.py[\&quot;esx.cpu.load[{HOST.HOST},cores]\&quot;]&quot;)</params>
+                    <params>last(&quot;vmbix[esx.cpu.load,{HOST.HOST},total]&quot;) * last(&quot;vmbix[esx.cpu.load,{HOST.HOST},cores]&quot;)</params>
                     <ipmi_sensor/>
                     <data_type>0</data_type>
                     <authtype>0</authtype>
@@ -162,6 +165,7 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>CPU usage</name>
@@ -187,7 +191,7 @@
                     <snmpv3_privpassphrase/>
                     <formula>1</formula>
                     <delay_flex/>
-                    <params>(last(&quot;vmbixget.py[\&quot;esx.cpu.load[{HOST.HOST},used]\&quot;]&quot;)/last(&quot;esx.cpu.load[{HOST.HOST},all]&quot;))*100</params>
+                    <params>(last(&quot;vmbix[esx.cpu.load,{HOST.HOST},used]&quot;)/last(&quot;vmbix[esx.cpu.load,{HOST.HOST},all]&quot;))*100</params>
                     <ipmi_sensor/>
                     <data_type>0</data_type>
                     <authtype>0</authtype>
@@ -204,14 +208,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>CPU used</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.cpu.load[{HOST.HOST},used]&quot;]</key>
+                    <key>vmbix[esx.cpu.load,{HOST.HOST},used]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -246,14 +251,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>ESX Connection state</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.connection[{HOST.HOST}]&quot;]</key>
+                    <key>vmbix[esx.connection,{HOST.HOST}]</key>
                     <delay>120</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -288,14 +294,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>ESX Maintenance state</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.maintenance[{HOST.HOST}]&quot;]</key>
+                    <key>vmbix[esx.maintenance,{HOST.HOST}]</key>
                     <delay>120</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -330,14 +337,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>ESX Status</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.status[{HOST.HOST}]&quot;]</key>
+                    <key>vmbix[esx.status,{HOST.HOST}]</key>
                     <delay>120</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -372,6 +380,7 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>Memory load</name>
@@ -397,7 +406,7 @@
                     <snmpv3_privpassphrase/>
                     <formula>1</formula>
                     <delay_flex/>
-                    <params>(last(&quot;vmbixget.py[\&quot;esx.memory[{HOST.HOST},used]\&quot;]&quot;) * 100) / last(&quot;vmbixget.py[\&quot;esx.memory[{HOST.HOST},total]\&quot;]&quot;)</params>
+                    <params>(last(&quot;vmbix[esx.memory,{HOST.HOST},used]&quot;) * 100) / last(&quot;vmbix[esx.memory,{HOST.HOST},total]&quot;)</params>
                     <ipmi_sensor/>
                     <data_type>0</data_type>
                     <authtype>0</authtype>
@@ -414,14 +423,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>Memory Total</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.memory[{HOST.HOST},total]&quot;]</key>
+                    <key>vmbix[esx.memory,{HOST.HOST},total]</key>
                     <delay>3600</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -456,14 +466,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>Memory Used</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.memory[{HOST.HOST},used]&quot;]</key>
+                    <key>vmbix[esx.memory,{HOST.HOST},used]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -498,14 +509,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>Number of active paths</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.path[{HOST.HOST},active]&quot;]</key>
+                    <key>vmbix[esx.path,{HOST.HOST},active]</key>
                     <delay>900</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -540,14 +552,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>Number of dead paths</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.path[{HOST.HOST},dead]&quot;]</key>
+                    <key>vmbix[esx.path,{HOST.HOST},dead]</key>
                     <delay>900</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -582,14 +595,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>Number of disabled paths</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.path[{HOST.HOST},disabled]&quot;]</key>
+                    <key>vmbix[esx.path,{HOST.HOST},disabled]</key>
                     <delay>900</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -624,14 +638,15 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>Number of standby paths</name>
-                    <type>10</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbixget.py[&quot;esx.path[{HOST.HOST},standby]&quot;]</key>
+                    <key>vmbix[esx.path,{HOST.HOST},standby]</key>
                     <delay>900</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -666,6 +681,7 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
             </items>
             <discovery_rules/>
@@ -676,7 +692,7 @@
     </templates>
     <triggers>
         <trigger>
-            <expression>{Template VmBix ESX with wrapper:vmbixget.py[&quot;esx.maintenance[{HOST.HOST}]&quot;].last()}=1</expression>
+            <expression>{Template VmBix ESX Loadable Module:vmbix[esx.maintenance,{HOST.HOST}].last()}=1</expression>
             <name>ESX is in maintenance</name>
             <url/>
             <status>0</status>
@@ -686,7 +702,7 @@
             <dependencies/>
         </trigger>
         <trigger>
-            <expression>{Template VmBix ESX with wrapper:vmbixget.py[&quot;esx.connection[{HOST.HOST}]&quot;].last()}#0</expression>
+            <expression>{Template VmBix ESX Loadable Module:vmbix[esx.connection,{HOST.HOST}].last()}&lt;&gt;0</expression>
             <name>ESX is not connected</name>
             <url/>
             <status>0</status>
@@ -696,7 +712,7 @@
             <dependencies/>
         </trigger>
         <trigger>
-            <expression>{Template VmBix ESX with wrapper:vmbixget.py[&quot;esx.status[{HOST.HOST}]&quot;].last()}=3</expression>
+            <expression>{Template VmBix ESX Loadable Module:vmbix[esx.status,{HOST.HOST}].last()}=3</expression>
             <name>ESX status is Red</name>
             <url/>
             <status>0</status>
@@ -706,7 +722,7 @@
             <dependencies/>
         </trigger>
         <trigger>
-            <expression>{Template VmBix ESX with wrapper:vmbixget.py[&quot;esx.status[{HOST.HOST}]&quot;].last()}=2</expression>
+            <expression>{Template VmBix ESX Loadable Module:vmbix[esx.status,{HOST.HOST}].last()}=2</expression>
             <name>ESX status is Yellow</name>
             <url/>
             <status>0</status>
@@ -743,7 +759,7 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix ESX with wrapper</host>
+                        <host>Template VmBix ESX Loadable Module</host>
                         <key>esx.cpu.load[{HOST.HOST},all]</key>
                     </item>
                 </graph_item>
@@ -755,8 +771,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix ESX with wrapper</host>
-                        <key>vmbixget.py[&quot;esx.cpu.load[{HOST.HOST},used]&quot;]</key>
+                        <host>Template VmBix ESX Loadable Module</host>
+                        <key>vmbix[esx.cpu.load,{HOST.HOST},used]</key>
                     </item>
                 </graph_item>
             </graph_items>
@@ -787,8 +803,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix ESX with wrapper</host>
-                        <key>vmbixget.py[&quot;esx.memory[{HOST.HOST},total]&quot;]</key>
+                        <host>Template VmBix ESX Loadable Module</host>
+                        <key>vmbix[esx.memory,{HOST.HOST},total]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -799,8 +815,8 @@
                     <calc_fnc>2</calc_fnc>
                     <type>0</type>
                     <item>
-                        <host>Template VmBix ESX with wrapper</host>
-                        <key>vmbixget.py[&quot;esx.memory[{HOST.HOST},used]&quot;]</key>
+                        <host>Template VmBix ESX Loadable Module</host>
+                        <key>vmbix[esx.memory,{HOST.HOST},used]</key>
                     </item>
                 </graph_item>
             </graph_items>
