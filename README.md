@@ -146,6 +146,8 @@ You can also link additional templates to the created hosts by editing the corre
 As these hosts are created using the host prototype mechanism in Zabbix, they will be almost read-only. For example, you can't edit one host to link it to a specific template. This must be made at the host prototype level, which can be a limitation if your virtual machines are different.
 To overcome this limitation, you can disable the VM discovery rule in the VmBix vCenter template and create your virtual machines manually in Zabbix (I do it using the API and a script of my own). Then, link them to the VmBix VM template (preferably with the loadable module method). You can then edit them as any other host.
 
+You may need to increase the Timeout parameter in Zabbix configuration file.
+
 ## Querying VmBix in CLI
 You can query VmBix like a Zabbix agent using the zabbix_get tool :
 ```
