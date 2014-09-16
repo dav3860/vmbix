@@ -1,7 +1,7 @@
 1.2.1
 * Removed debug.
 * Cosmetics.
-* Replaced the python script method by a loadable module.
+* Replaced the python script method by a [Zabbix loadable module](https://github.com/dav3860/vmbix_zabbix_module).
 
 1.2
 * Added the UUID to the JSON formatted output for the esx.discovery method. 
