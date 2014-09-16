@@ -5,12 +5,12 @@ Starting from version 2.2, Zabbix can natively monitor a VMWare environment. But
 * The created ESX and VM hosts are mostly read-only. You cannot attach them different templates or monitor them with an agent.
 VmBix helps you to overcome this limitations, with very good performance. Vmbix also exposes VMWare API methods that are not included in Zabbix, for example the [Performance Counters](http://fr.slideshare.net/alanrenouf/vsphere-apis-for-performance-monitoring). You can use these VmBix methods to query interesting VMWare metrics, for example :
 ```
-esx.counter[esx01.domain.local,cpu.ready]
+TEST# esx.counter[esx01.domain.local,cpu.ready]
 1135
 ```
 
 ```
-vm.counter.discovery[VM01,virtualDisk.totalReadLatency]
+TEST# vm.counter.discovery[VM01,virtualDisk.totalReadLatency]
 {
     "data": [
         {
@@ -39,7 +39,7 @@ vm.counter.discovery[VM01,virtualDisk.totalReadLatency]
 ```
 
 ```
-vm.counter[VM01,virtualDisk.totalReadLatency,scsi2:4,300]
+TEST# vm.counter[VM01,virtualDisk.totalReadLatency,scsi2:4,300]
 2
 ```
 

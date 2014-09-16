@@ -89,7 +89,7 @@ public class VmBix {
             CmdLineParser.Option oPid    = parser.addStringOption( 'f', "pid");
             CmdLineParser.Option oInterval = parser.addStringOption( 'i', "interval"); // Default interval for performance manager
             CmdLineParser.Option oConfig = parser.addStringOption( 'c', "config");
-            CmdLineParser.Option oUseUuid = parser.addStringOption( 'u', "uuid");
+            CmdLineParser.Option oUseUuid = parser.addStringOption( 'U', "uuid");
             
             try {
                 parser.parse(args);
@@ -286,10 +286,9 @@ public class VmBix {
         if (port   == null) {sport = "\u001B[5m"+ sport + "\u001B[0m";}
         
         System.err.print(
-            "VmBix version 1.1.1\n"
-            + "Usage:\nvmbix "
-            + sport + " " + ssurl + " " + sname + " " + spass + " [-f|--pid pidfile] [-i|--interval interval] [-u|--useuuid (true|false)]" + "\n"
-            + "or\nvmbix [-c|--config] config_file  [-f|--pid pidfile] [-i|--interval interval] [-u|--useuuid (true|false)]\n\n"
+            "Usage:\nvmbix "
+            + sport + " " + ssurl + " " + sname + " " + spass + " [-f|--pid pidfile] [-i|--interval interval] [-U|--useuuid (true|false)]" + "\n"
+            + "or\nvmbix [-c|--config] config_file  [-f|--pid pidfile] [-i|--interval interval] [-U|--useuuid (true|false)]\n\n"
             + ( str != null ? str + "\n" : "" )
             );
     };
@@ -967,7 +966,6 @@ public class VmBix {
                 HostListSummary hsum = h.getSummary();
                 HostHardwareSummary hd = hsum.getHardware();
                 JsonObject jObject = new JsonObject();
-                System.out.println("Host " + h.getName() + " - uuid : " + hd.getUuid()); 
                 jObject.addProperty("{#ESXHOST}", h.getName());
                 jObject.addProperty("{#UUID}", hd.getUuid());                
                 jArray.add(jObject);
