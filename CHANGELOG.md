@@ -1,3 +1,7 @@
+1.2.2
+* Improved the processing of performance counter values. Percents are now displayed as rounded percents (ie 28 for 28.33% instead of 2833).
+* Fixed remaining references to vmbixget.py in the templates.
+
 1.2.1
 * Removed debug.
 * Cosmetics.
