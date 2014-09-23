@@ -682,7 +682,9 @@ public class VmBix {
                 String perfCounter  = pcis[i].getGroupInfo().getKey() + "." + pcis[i].getNameInfo().getKey();
                 List<String> ctrProps = new ArrayList<String>();
                 ctrProps.add(String.valueOf(pcis[i].getKey()));
-                ctrProps.add(pcis[i].getStatsType().toString());                
+                ctrProps.add(pcis[i].getUnitInfo().getKey().toString());                
+                ctrProps.add(pcis[i].getStatsType().toString());
+                ctrProps.add(pcis[i].getRollupType().toString());                
                 if (perfCounter.equals(name)) {
                     counter = ctrProps;
                     counterCache.put(perfCounter, ctrProps);
@@ -1501,7 +1503,7 @@ public class VmBix {
               newInterval = Integer.parseInt(params[3]);
             }
             VirtualMachine vm = (VirtualMachine)getManagedEntity(vmName,"VirtualMachine");
-            Long intValue = 0L;
+            int value = 0;
             if (vm == null) {
                 System.out.println("No vm named '" + vmName + "' found");
             } else {
@@ -1515,7 +1517,9 @@ public class VmBix {
                 } else {
                   // The counter exists                
                   Integer perfCounterId = Integer.valueOf((String)counter.get(0));
-                  String perfCounterType = (String)counter.get(1);
+                  String perfCounterUnitInfo = (String)counter.get(1);
+                  String perfCounterStatsType = (String)counter.get(2);
+                  String perfCounterRollupType = (String)counter.get(3);
                   
                   ArrayList<PerfMetricId> perfMetricIds = new ArrayList<PerfMetricId>();
 
@@ -1544,24 +1548,8 @@ public class VmBix {
                       {
                         PerfEntityMetric pem = (PerfEntityMetric)pValues[i];
                         PerfMetricSeries[] vals = pem.getValue();
-                        for(int j=0; vals!=null && j<vals.length; ++j)
-                        {
-                          PerfMetricIntSeries val = (PerfMetricIntSeries) vals[j];
-                          long[] longs = val.getValue();
-                          long sum = 0;
-                          //String instance = val.getId().getInstance();
-                          for(int k=0; k<longs.length; k++)
-                          {
-                            sum = sum + longs[k];
-                          }
-                          if (perfCounterType.equals("delta")) {
-                            intValue = sum;
-                          } else {
-                            // calculate average
-                            intValue = sum / longs.length;
-                          }
-                          out.print(intValue);
-                        }
+                        value = getPerfCounterValue(vals, perfCounterName, perfCounterUnitInfo, perfCounterStatsType, perfCounterRollupType);
+                        out.print(value);
                       } 
                     }
                   }
@@ -1571,6 +1559,47 @@ public class VmBix {
               }
             }
             out.flush();
+        }
+
+       /**
+        * Processes performance values and calculates sum, avg, max, min, percent. 
+        */
+        private int getPerfCounterValue (PerfMetricSeries[] vals, String perfCounterName, String perfCounterUnitInfo, String perfCounterStatsType, String perfCounterRollupType) throws IOException {
+            float value = 0;
+            Pattern pattern;
+            Matcher matcher;
+            for(int j=0; vals!=null && j<vals.length; ++j)
+            {
+              PerfMetricIntSeries val = (PerfMetricIntSeries) vals[j];
+              long[] serie = val.getValue();
+              pattern = Pattern.compile("max", Pattern.CASE_INSENSITIVE);
+              matcher = pattern.matcher(perfCounterName);
+              if (matcher.find() || perfCounterRollupType.equals("maximum")) { // this is a maximum
+                for(int k=0; k<serie.length; k++)
+                {
+                  value = Math.max(value, serie[k]);
+                }
+              } else if (perfCounterRollupType.equals("minimum")) { // this is a minimum
+                value = serie[0];
+                for(int k=0; k<serie.length; k++)
+                {
+                  value = Math.min(value, serie[k]);
+                }               
+              } else {
+                for(int k=0; k<serie.length; k++)
+                {
+                  value = value + serie[k];
+                }
+                if (!perfCounterStatsType.equals("delta")) {
+                  value = value / serie.length;
+                }
+              }
+              if (perfCounterUnitInfo.equals("percent")) {
+                // convert to percent
+                value = value / 100;
+              }
+            }
+            return (int)value;
         }
 
        /**
@@ -1611,7 +1640,7 @@ public class VmBix {
                       JsonObject jObject = new JsonObject();
                       jObject.addProperty("{#METRICINSTANCE}", pMetricId.getInstance());
                       jArray.add(jObject);
-                      }
+                    }
                   }
                 }
               } else {
@@ -1648,7 +1677,7 @@ public class VmBix {
               newInterval = Integer.parseInt(params[3]);
             }
             HostSystem host = (HostSystem)getManagedEntity(hostName,"HostSystem");
-            Long intValue = 0L;;
+            int value = 0;
             if (host == null) {
                 System.out.println("No host named '" + hostName + "' found\n");
             } else {
@@ -1662,7 +1691,9 @@ public class VmBix {
                 } else {
                   // The counter exists
                   Integer perfCounterId = Integer.valueOf((String)counter.get(0));
-                  String perfCounterType = (String)counter.get(1);
+                  String perfCounterUnitInfo = (String)counter.get(1);
+                  String perfCounterStatsType = (String)counter.get(2);
+                  String perfCounterRollupType = (String)counter.get(3);
                   
                   ArrayList<PerfMetricId> perfMetricIds = new ArrayList<PerfMetricId>();
                   PerfMetricId metricId = new PerfMetricId();
@@ -1691,24 +1722,8 @@ public class VmBix {
                       {
                         PerfEntityMetric pem = (PerfEntityMetric)pValues[i];
                         PerfMetricSeries[] vals = pem.getValue();
-                        for(int j=0; vals!=null && j<vals.length; ++j)
-                        {
-                          PerfMetricIntSeries val = (PerfMetricIntSeries) vals[j];
-                          long[] longs = val.getValue();
-                          long sum = 0;
-                          //String instance = val.getId().getInstance();
-                          for(int k=0; k<longs.length; k++)
-                          {
-                            sum = sum + longs[k];
-                          }
-                          if (perfCounterType.equals("delta")) {
-                            intValue = sum;
-                          } else {
-                            // calculate average
-                            intValue = sum / longs.length;
-                          }
-                          out.print(intValue);
-                        }
+                        value = getPerfCounterValue(vals, perfCounterName, perfCounterUnitInfo, perfCounterStatsType, perfCounterRollupType);
+                        out.print(value);
                       } 
                     }
                   } 

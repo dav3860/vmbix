@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>2.0</version>
-    <date>2014-05-09T09:21:09Z</date>
+    <date>2014-09-23T11:54:33Z</date>
     <groups>
         <group>
             <name>Hypervisors</name>
@@ -17,6 +17,7 @@
         <template>
             <template>Template VmBix vCenter</template>
             <name>Template VmBix vCenter</name>
+            <description/>
             <groups>
                 <group>
                     <name>Templates</name>
@@ -90,6 +91,7 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>Latest event</name>
@@ -132,6 +134,7 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
                 <item>
                     <name>VMBIX Ping</name>
@@ -174,6 +177,7 @@
                         </application>
                     </applications>
                     <valuemap/>
+                    <logtimefmt/>
                 </item>
             </items>
             <discovery_rules>
@@ -202,17 +206,21 @@
                     <publickey/>
                     <privatekey/>
                     <port/>
-                    <filter>:</filter>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
                     <lifetime>30</lifetime>
                     <description/>
                     <item_prototypes>
                         <item_prototype>
                             <name>Datastore {#DATASTORE} free space</name>
-                            <type>10</type>
+                            <type>0</type>
                             <snmp_community/>
                             <multiplier>0</multiplier>
                             <snmp_oid/>
-                            <key>vmbixget.py[&quot;datastore.size[{#DATASTORE},free]&quot;]</key>
+                            <key>datastore.size[{#DATASTORE},free]</key>
                             <delay>900</delay>
                             <history>90</history>
                             <trends>365</trends>
@@ -247,14 +255,15 @@
                                 </application>
                             </applications>
                             <valuemap/>
+                            <logtimefmt/>
                         </item_prototype>
                         <item_prototype>
                             <name>Datastore {#DATASTORE} total size</name>
-                            <type>10</type>
+                            <type>0</type>
                             <snmp_community/>
                             <multiplier>0</multiplier>
                             <snmp_oid/>
-                            <key>vmbixget.py[&quot;datastore.size[{#DATASTORE},total]&quot;]</key>
+                            <key>datastore.size[{#DATASTORE},total]</key>
                             <delay>900</delay>
                             <history>90</history>
                             <trends>365</trends>
@@ -289,6 +298,7 @@
                                 </application>
                             </applications>
                             <valuemap/>
+                            <logtimefmt/>
                         </item_prototype>
                     </item_prototypes>
                     <trigger_prototypes/>
@@ -320,7 +330,7 @@
                                     <type>2</type>
                                     <item>
                                         <host>Template VmBix vCenter</host>
-                                        <key>vmbixget.py[&quot;datastore.size[{#DATASTORE},total]&quot;]</key>
+                                        <key>datastore.size[{#DATASTORE},total]</key>
                                     </item>
                                 </graph_item>
                                 <graph_item>
@@ -332,7 +342,7 @@
                                     <type>0</type>
                                     <item>
                                         <host>Template VmBix vCenter</host>
-                                        <key>vmbixget.py[&quot;datastore.size[{#DATASTORE},free]&quot;]</key>
+                                        <key>datastore.size[{#DATASTORE},free]</key>
                                     </item>
                                 </graph_item>
                             </graph_items>
@@ -365,7 +375,11 @@
                     <publickey/>
                     <privatekey/>
                     <port/>
-                    <filter>:</filter>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
                     <lifetime>30</lifetime>
                     <description/>
                     <item_prototypes/>
@@ -417,7 +431,11 @@
                     <publickey/>
                     <privatekey/>
                     <port/>
-                    <filter>:</filter>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
                     <lifetime>30</lifetime>
                     <description/>
                     <item_prototypes/>
@@ -436,11 +454,7 @@
                                 </group_link>
                             </group_links>
                             <group_prototypes/>
-                            <templates>
-                                <template>
-                                    <name>Template VmBix VM</name>
-                                </template>
-                            </templates>
+                            <templates/>
                         </host_prototype>
                     </host_prototypes>
                 </discovery_rule>
