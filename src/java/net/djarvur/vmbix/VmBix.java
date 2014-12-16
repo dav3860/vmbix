@@ -56,6 +56,7 @@ public class VmBix {
     static InventoryNavigator inventoryNavigator;
     static PerformanceManager performanceManager;
     static long CACHE_TTL = 5; // in minutes
+    static long CACHE_TTL2 = 300; // in minutes
     static Cache<String, ManagedEntity> vmCache = CacheBuilder.newBuilder()
     .maximumSize(10000)
     .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
@@ -67,7 +68,11 @@ public class VmBix {
     static Cache<String, List> counterCache = CacheBuilder.newBuilder()
     .maximumSize(1000)
     .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
-    .build();    
+    .build();
+    static Cache<String, ManagedEntity> dsCache = CacheBuilder.newBuilder()
+    .maximumSize(1000)
+    .expireAfterWrite(CACHE_TTL2, TimeUnit.MINUTES)
+    .build();        
     static String  sdkUrl;
     static String  uname;
     static String  passwd;
@@ -498,6 +503,7 @@ public class VmBix {
             Pattern pDatastoreProvisioned   = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),provisioned\\]"      );        // 
             Pattern pDatastoreUncommitted   = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),uncommitted\\]"      );        //            
 
+            System.out.println("String: '" + string + "");
             String found;
             String[] founds;
             found = checkPattern(pPing                  ,string); if (found != null) { getPing                  (out);        return; }
@@ -595,22 +601,15 @@ public class VmBix {
         
         private ManagedEntity getManagedEntity (String id, String meType ) throws IOException {
             ManagedEntity me = null;
-            if (meType.equals("Datastore")) {
+            if (useUuid) {
+                me = getManagedEntityByUuid (id, meType);
+                if (reconnectRequred(me)){
+                    me = getManagedEntityByUuid (id, meType);
+                }
+            } else {
                 me = getManagedEntityByName (id, meType);
                 if (reconnectRequred(me)){
                     me = getManagedEntityByName (id, meType);
-                }
-            } else {
-                if (useUuid) {
-                    me = getManagedEntityByUuid (id, meType);
-                    if (reconnectRequred(me)){
-                        me = getManagedEntityByUuid (id, meType);
-                    }
-                } else {
-                    me = getManagedEntityByName (id, meType);
-                    if (reconnectRequred(me)){
-                        me = getManagedEntityByName (id, meType);
-                    }
                 }
             }
             return me;
@@ -627,6 +626,8 @@ public class VmBix {
               me = hvCache.getIfPresent(uuid);
             } else if (meType.equals("VirtualMachine")) {
               me = vmCache.getIfPresent(uuid);
+            } else if (meType.equals("Datastore")) {
+              me = dsCache.getIfPresent(uuid); 
             }
             if (me != null) {
                return me;
@@ -647,6 +648,10 @@ public class VmBix {
                   VirtualMachine vm = (VirtualMachine) ent;
                   VirtualMachineConfigInfo vmcfg = vm.getConfig();
                   meUuid = vmcfg.getUuid();
+               } else if (meType.equals("Datastore")) {
+                  Datastore ds = (Datastore) ent;
+                  DatastoreInfo dinfo = ds.getInfo();
+                  meUuid = dinfo.url.substring(19, dinfo.url.length()-1);              
                }
                if (meUuid == null) {
                   continue;
@@ -657,7 +662,9 @@ public class VmBix {
                     hvCache.put(meUuid, ent);
                   } else if (meType.equals("VirtualMachine")) {
                     vmCache.put(meUuid, ent);
-                  }                   
+                  } else if (meType.equals("Datastore")) {
+                    dsCache.put(meUuid, ent);
+                  }                  
                   break;
                }
            }
@@ -969,7 +976,8 @@ public class VmBix {
                 HostHardwareSummary hd = hsum.getHardware();
                 JsonObject jObject = new JsonObject();
                 jObject.addProperty("{#ESXHOST}", h.getName());
-                jObject.addProperty("{#UUID}", hd.getUuid());                
+                jObject.addProperty("{#UUID}", hd.getUuid());
+                jObject.addProperty("{#CLUSTER}", h.getParent().getName());
                 jArray.add(jObject);
             }
             JsonObject jOutput = new JsonObject();
@@ -988,8 +996,12 @@ public class VmBix {
             for(int j=0; j<ds.length; j++)
             {
                 Datastore d = (Datastore) ds[j];
+                String url = d.getSummary().url;
+                String uuid = url.substring(19, url.length()-1);              
                 JsonObject jObject = new JsonObject();
                 jObject.addProperty("{#DATASTORE}", d.getName());
+                jObject.addProperty("{#UUID}", uuid);
+                jObject.addProperty("{#CLUSTER}", d.getParent().getName());
                 jArray.add(jObject);
             }
             JsonObject jOutput = new JsonObject();
@@ -1639,6 +1651,10 @@ public class VmBix {
                     if (perfCounterId == pMetricId.getCounterId()) {
                       JsonObject jObject = new JsonObject();
                       jObject.addProperty("{#METRICINSTANCE}", pMetricId.getInstance());
+                      Datastore ds = (Datastore) getManagedEntityByUuid(pMetricId.getInstance(),"Datastore");
+                      if ( ds != null ) {
+                           jObject.addProperty("{#METRICNAME}", ds.getName());
+                      }
                       jArray.add(jObject);
                     }
                   }
