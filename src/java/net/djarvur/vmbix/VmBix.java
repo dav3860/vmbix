@@ -49,13 +49,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.Cache;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class VmBix {
     static ArrayList<Socket> sockets;
     static ServiceInstance serviceInstance;
     static InventoryNavigator inventoryNavigator;
     static PerformanceManager performanceManager;
-    static long CACHE_TTL = 5; // in minutes
+    static long CACHE_TTL = 300; // in minutes
     static long CACHE_TTL2 = 300; // in minutes
     static Cache<String, ManagedEntity> vmCache = CacheBuilder.newBuilder()
     .maximumSize(10000)
@@ -67,12 +69,17 @@ public class VmBix {
     .build();
     static Cache<String, List> counterCache = CacheBuilder.newBuilder()
     .maximumSize(1000)
-    .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
+    .expireAfterWrite(CACHE_TTL2, TimeUnit.MINUTES)
     .build();
     static Cache<String, ManagedEntity> dsCache = CacheBuilder.newBuilder()
     .maximumSize(1000)
     .expireAfterWrite(CACHE_TTL2, TimeUnit.MINUTES)
-    .build();        
+    .build();
+    static Cache<String, PerfMetricId[]> hostPerfCache = CacheBuilder.newBuilder()
+    .maximumSize(1000)
+    .expireAfterWrite(CACHE_TTL2, TimeUnit.MINUTES)
+    .build();    
+    //PerfMetricId[]
     static String  sdkUrl;
     static String  uname;
     static String  passwd;
@@ -616,7 +623,30 @@ public class VmBix {
         }
         
         private ManagedEntity getManagedEntityByName (String name, String meType    ) throws IOException {
-            ManagedEntity me = inventoryNavigator.searchManagedEntity(meType, name);
+            //* extra cache for getManagedEntityByName
+            ManagedEntity me = null;
+            if (meType.equals("HostSystem")) {
+              me = hvCache.getIfPresent(name);
+            } else if (meType.equals("VirtualMachine")) {
+              me = vmCache.getIfPresent(name);
+            } else if (meType.equals("Datastore")) {
+              me = dsCache.getIfPresent(name); 
+            }
+            if (me != null) {
+               System.out.println("getManagedEntityByName-->CACHE: " + meType + " name: " + name); 
+               return me;
+            }
+            me = inventoryNavigator.searchManagedEntity(meType, name);
+            if (me != null) {
+                if (meType.equals("HostSystem")) {
+                    hvCache.put(name, me);
+                } else if (meType.equals("VirtualMachine")) {
+                vmCache.put(name, me);
+                } else if (meType.equals("Datastore")) {
+                dsCache.put(name, me);
+                }
+                System.out.println("getManagedEntityByName-->ADDcache: " + meType + " name: " + name);
+            }
             return me;
         }
         
@@ -682,25 +712,42 @@ public class VmBix {
         private List getCounterByName (String name    ) throws IOException {
            List counter = counterCache.getIfPresent(name);
            if (counter != null) {
+               System.out.println("CACHE ma " + name);
                return counter;
            }           
            PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
             for(int i = 0; i < pcis.length; i++) {
                 String perfCounter  = pcis[i].getGroupInfo().getKey() + "." + pcis[i].getNameInfo().getKey();
+                //System.out.println("NOcahce: " + perfCounter + " pytalem: " + name);
                 List<String> ctrProps = new ArrayList<String>();
                 ctrProps.add(String.valueOf(pcis[i].getKey()));
                 ctrProps.add(pcis[i].getUnitInfo().getKey().toString());                
                 ctrProps.add(pcis[i].getStatsType().toString());
                 ctrProps.add(pcis[i].getRollupType().toString());                
-                if (perfCounter.equals(name)) {
+                //if (perfCounter.equals(name)) {
+                //chce dawać wszystko do cache
+                    System.out.println("ADDcache: " + perfCounter);
                     counter = ctrProps;
                     counterCache.put(perfCounter, ctrProps);
-                    break;
-                }    
+                //    break;
+                //}    
             }
             return counter;
         }
         
+        private PerfMetricId[] getHostPerformanceManager(HostSystem host, int interval) throws RemoteException {
+            PerfMetricId[] queryAvailablePerfMetric = null;
+            String name = host.getName();
+            queryAvailablePerfMetric = hostPerfCache.getIfPresent(name);
+            if (queryAvailablePerfMetric != null) {
+               System.out.println("PERFY: CACHE ma " + name);
+               return queryAvailablePerfMetric;
+            }     
+            queryAvailablePerfMetric = performanceManager.queryAvailablePerfMetric(host, null, null, interval);
+            System.out.println("PERFY: ADDcache: " + name);
+            hostPerfCache.put(name, queryAvailablePerfMetric);
+            return queryAvailablePerfMetric;
+        }
        /**
         * Always return "1"
         */
@@ -1644,8 +1691,9 @@ public class VmBix {
                 } else {
                   // The counter exists
                   Integer perfCounterId = Integer.valueOf((String)counter.get(0));
-                  
-                  PerfMetricId[] queryAvailablePerfMetric = performanceManager.queryAvailablePerfMetric(host, null, null, 20);
+//                  performanceManager.queryAvailablePerfMetric(host, null, null, interval);
+                  //PerfMetricId[] queryAvailablePerfMetric = performanceManager.queryAvailablePerfMetric(host, null, null, 20);
+                  PerfMetricId[] queryAvailablePerfMetric = getHostPerformanceManager(host, 20);                          
                   for (int i2 = 0; i2 < queryAvailablePerfMetric.length; i2++) {
                     PerfMetricId pMetricId = queryAvailablePerfMetric[i2];
                     if (perfCounterId == pMetricId.getCounterId()) {
@@ -1730,7 +1778,7 @@ public class VmBix {
                   qSpec.setEndTime(current);
                   qSpec.setMetricId(pmi);
                   qSpec.setIntervalId(20); // real-time values
-   
+                  
                   PerfEntityMetricBase[] pValues = performanceManager.queryPerf(new PerfQuerySpec[] {qSpec});
                   if(pValues != null) {
                     for(int i=0; i<pValues.length; ++i) {
