@@ -57,37 +57,29 @@ public class VmBix {
     static ServiceInstance serviceInstance;
     static InventoryNavigator inventoryNavigator;
     static PerformanceManager performanceManager;
-    static long CACHE_TTL = 300; // in minutes
-    static long CACHE_TTL2 = 300; // in minutes
-    static Cache<String, ManagedEntity> vmCache = CacheBuilder.newBuilder()
-    .maximumSize(10000)
-    .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
-    .build();
-    static Cache<String, ManagedEntity> hvCache = CacheBuilder.newBuilder()
-    .maximumSize(1000)
-    .expireAfterWrite(CACHE_TTL, TimeUnit.MINUTES)
-    .build();
-    static Cache<String, List> counterCache = CacheBuilder.newBuilder()
-    .maximumSize(1000)
-    .expireAfterWrite(CACHE_TTL2, TimeUnit.MINUTES)
-    .build();
-    static Cache<String, ManagedEntity> dsCache = CacheBuilder.newBuilder()
-    .maximumSize(1000)
-    .expireAfterWrite(CACHE_TTL2, TimeUnit.MINUTES)
-    .build();
-    static Cache<String, PerfMetricId[]> hostPerfCache = CacheBuilder.newBuilder()
-    .maximumSize(1000)
-    .expireAfterWrite(CACHE_TTL2, TimeUnit.MINUTES)
-    .build();    
-    //PerfMetricId[]
+    
+    static Cache<String, ManagedEntity> vmCache;
+    static Cache<String, ManagedEntity> esxiCache;
+    static Cache<String, ManagedEntity> dsCache;
+    static Cache<String, List> counterCache;
+    static Cache<String, PerfMetricId[]> hostPerfCache;
+    static Cache<String, HostRuntimeInfo> hriCache;
+
     static String  sdkUrl;
     static String  uname;
     static String  passwd;
     static Integer port;
     static String  pidFile;
-    static Integer interval = 300; // Default interval of 300s for performance metrics queries
-    static Boolean useUuid = false; // Use object name by default
+    static Integer interval; // Default interval of 300s for performance metrics queries
+    static Boolean useUuid; // Use object name by default
+    static Integer vmCacheTtl;        // in minutes
+    static Integer esxiCacheTtl;      // in minutes
+    static Integer dsCacheTtl;        // in minutes
+    static Integer perfIdCacheTtl;    // in minutes
+    static Integer counterCacheTtl;   // in minutes
+    static Integer hriCacheTtl;       // in minutes
     
+       
     public static void main(String[] args) {
         try {
             sockets = new ArrayList<Socket> ();
@@ -99,10 +91,17 @@ public class VmBix {
             CmdLineParser.Option oSurl   = parser.addStringOption( 's', "serviceurl");
             CmdLineParser.Option oPort   = parser.addIntegerOption('P', "port");
             CmdLineParser.Option oPid    = parser.addStringOption( 'f', "pid");
-            CmdLineParser.Option oInterval = parser.addStringOption( 'i', "interval"); // Default interval for performance manager
+            CmdLineParser.Option oInterval = parser.addIntegerOption( 'i', "interval"); // Default interval for performance manager
             CmdLineParser.Option oConfig = parser.addStringOption( 'c', "config");
             CmdLineParser.Option oUseUuid = parser.addStringOption( 'U', "uuid");
-            
+            CmdLineParser.Option oVmCacheTtl = parser.addIntegerOption( 'V', "vmcachettl");
+            CmdLineParser.Option oEsxiCacheTtl = parser.addIntegerOption( 'E', "esxicachettl");
+            CmdLineParser.Option oDsCacheTtl = parser.addIntegerOption( 'D', "dscachettl");
+            CmdLineParser.Option oPerfIdCacheTtl = parser.addIntegerOption( 'I', "perfidcachettl");
+            CmdLineParser.Option oCounterCacheTtl = parser.addIntegerOption( 'O', "countercachettl");
+            CmdLineParser.Option ohriCacheTtl = parser.addIntegerOption( 'H', "hricachettl");
+            //TODO: cache size settings
+            //TODO: cache hit info
             try {
                 parser.parse(args);
             }
@@ -118,8 +117,14 @@ public class VmBix {
             port    = (Integer)parser.getOptionValue(oPort   );
             pidFile = (String )parser.getOptionValue(oPid    );
             useUuid = (Boolean)parser.getOptionValue(oUseUuid);
-            if ( interval == null ) interval = (Integer)parser.getOptionValue(oInterval   );
-        
+            interval        = (Integer)parser.getOptionValue(oInterval       );
+            vmCacheTtl      = (Integer)parser.getOptionValue(oVmCacheTtl     );
+            esxiCacheTtl    = (Integer)parser.getOptionValue(oEsxiCacheTtl   );
+            dsCacheTtl      = (Integer)parser.getOptionValue(oDsCacheTtl     );
+            perfIdCacheTtl  = (Integer)parser.getOptionValue(oPerfIdCacheTtl );
+            counterCacheTtl = (Integer)parser.getOptionValue(oCounterCacheTtl);
+            hriCacheTtl     = (Integer)parser.getOptionValue(ohriCacheTtl    );
+            
             String config = (String )parser.getOptionValue(oConfig);
             if (config != null) {
                 Properties prop = new Properties();
@@ -127,13 +132,20 @@ public class VmBix {
                     InputStream is = new FileInputStream(config);
                     prop.load(is);
                     
-                    if ( uname   == null ) uname   =                  prop.getProperty("username"   );
-                    if ( passwd  == null ) passwd  =                  prop.getProperty("password"   );
-                    if ( sdkUrl  == null ) sdkUrl  =                  prop.getProperty("serviceurl" );
-                    if ( port    == null ) port    = Integer.parseInt(prop.getProperty("listenport"));
-                    if ( pidFile == null ) pidFile =                  prop.getProperty("pidfile"    );
-                    if ( interval == null ) interval = Integer.parseInt(prop.getProperty("interval"));
-                    if ( useUuid == null ) useUuid = Boolean.parseBoolean(prop.getProperty("useuuid"));
+                    if ( uname   == null ) { uname   =                  prop.getProperty("username"   ); }
+                    if ( passwd  == null ) { passwd  =                  prop.getProperty("password"   ); }
+                    if ( sdkUrl  == null ) { sdkUrl  =                  prop.getProperty("serviceurl" ); }
+                    if ( port    == null ) { port    = Integer.parseInt(prop.getProperty("listenport")); }
+                    if ( pidFile == null ) { pidFile =                  prop.getProperty("pidfile"    ); }
+                    if ( interval == null ){ interval = Integer.parseInt(prop.getProperty("interval"));  }
+                    if ( useUuid == null ) { useUuid = Boolean.parseBoolean(prop.getProperty("useuuid")); }
+                    if ( vmCacheTtl == null ) { vmCacheTtl = Integer.parseInt(prop.getProperty("vmCacheTtl")); }
+                    if ( esxiCacheTtl == null ) { esxiCacheTtl = Integer.parseInt(prop.getProperty("esxiCacheTtl")); }
+                    if ( dsCacheTtl == null ) { dsCacheTtl = Integer.parseInt(prop.getProperty("dsCacheTtl")); }
+                    if ( perfIdCacheTtl == null ) { perfIdCacheTtl = Integer.parseInt(prop.getProperty("perfIdCacheTtl")); }
+                    if ( counterCacheTtl == null ) { counterCacheTtl = Integer.parseInt(prop.getProperty("counterCacheTtl")); }
+                    if ( hriCacheTtl == null ) { hriCacheTtl = Integer.parseInt(prop.getProperty("hriCacheTtl")); }
+                    
                 }
                 catch (IOException e) {
                     usage(e.toString());
@@ -154,7 +166,13 @@ public class VmBix {
             
             Shutdown sh = new Shutdown();
             Runtime.getRuntime().addShutdownHook(sh);
-
+            //TODO: cache size settings
+            vmCache       = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(vmCacheTtl     , TimeUnit.MINUTES).build();
+            esxiCache     = CacheBuilder.newBuilder().maximumSize(100 ).expireAfterWrite(esxiCacheTtl   , TimeUnit.MINUTES).build();
+            dsCache       = CacheBuilder.newBuilder().maximumSize(500 ).expireAfterWrite(dsCacheTtl     , TimeUnit.MINUTES).build();
+            hostPerfCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(perfIdCacheTtl , TimeUnit.MINUTES).build();
+            counterCache  = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(counterCacheTtl, TimeUnit.MINUTES).build();
+            hriCache      = CacheBuilder.newBuilder().maximumSize(100 ).expireAfterWrite(hriCacheTtl    , TimeUnit.MINUTES).build();
             while (true){
                 try {
                     server ();
@@ -301,6 +319,9 @@ public class VmBix {
             "Usage:\nvmbix "
             + sport + " " + ssurl + " " + sname + " " + spass + " [-f|--pid pidfile] [-i|--interval interval] [-U|--useuuid (true|false)]" + "\n"
             + "or\nvmbix [-c|--config] config_file  [-f|--pid pidfile] [-i|--interval interval] [-U|--useuuid (true|false)]\n\n"
+            + "Cache options:\n[-V|--vmcachettl ttl] [-E|--esxicachettl ttl] [-D|--dscachettl ttl] [-I|--perfidcachettl ttl]\n"
+            + "[-O|--countercachettl ttl] [-H|--hricachettl ttl]\n"                
+            + "All ttls are in minutes.\n\n"
             + ( str != null ? str + "\n" : "" )
             );
     };
@@ -509,8 +530,7 @@ public class VmBix {
             Pattern pDatastoreTotal         = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),total\\]"            );        // 
             Pattern pDatastoreProvisioned   = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),provisioned\\]"      );        // 
             Pattern pDatastoreUncommitted   = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),uncommitted\\]"      );        //            
-
-            System.out.println("String: '" + string + "");
+            
             String found;
             String[] founds;
             found = checkPattern(pPing                  ,string); if (found != null) { getPing                  (out);        return; }
@@ -595,7 +615,7 @@ public class VmBix {
             if (me == null) {
                 ManagedEntity[] mes = inventoryNavigator.searchManagedEntities("HostSystem");
                 if(mes==null || mes.length == 0){
-                    System.out.println("No hosts found, connection seems to be brken, attempting reconnect");
+                    System.out.println("No hosts found, connection seems to be broken, attempting reconnect");
                     Request request = VmBix.updateConnectionSafe();
                     serviceInstance    = request.serviceInstance;
                     inventoryNavigator = request.inventoryNavigator;
@@ -626,26 +646,26 @@ public class VmBix {
             //* extra cache for getManagedEntityByName
             ManagedEntity me = null;
             if (meType.equals("HostSystem")) {
-              me = hvCache.getIfPresent(name);
+              me = esxiCache.getIfPresent(name);
             } else if (meType.equals("VirtualMachine")) {
               me = vmCache.getIfPresent(name);
             } else if (meType.equals("Datastore")) {
               me = dsCache.getIfPresent(name); 
             }
             if (me != null) {
-               System.out.println("getManagedEntityByName-->CACHE: " + meType + " name: " + name); 
+               System.out.println("CacheHIT: " + meType + " name: " + name); 
                return me;
             }
             me = inventoryNavigator.searchManagedEntity(meType, name);
             if (me != null) {
                 if (meType.equals("HostSystem")) {
-                    hvCache.put(name, me);
+                    esxiCache.put(name, me);
                 } else if (meType.equals("VirtualMachine")) {
                 vmCache.put(name, me);
                 } else if (meType.equals("Datastore")) {
                 dsCache.put(name, me);
                 }
-                System.out.println("getManagedEntityByName-->ADDcache: " + meType + " name: " + name);
+                System.out.println("CacheMISS: " + meType + " name: " + name);
             }
             return me;
         }
@@ -653,7 +673,7 @@ public class VmBix {
         private ManagedEntity getManagedEntityByUuid (String uuid, String meType    ) throws IOException {
             ManagedEntity me = null;
             if (meType.equals("HostSystem")) {
-              me = hvCache.getIfPresent(uuid);
+              me = esxiCache.getIfPresent(uuid);
             } else if (meType.equals("VirtualMachine")) {
               me = vmCache.getIfPresent(uuid);
             } else if (meType.equals("Datastore")) {
@@ -689,7 +709,7 @@ public class VmBix {
                if (uuid.equals(meUuid)) {
                   me = ent;
                   if (meType.equals("HostSystem")) {
-                    hvCache.put(meUuid, ent);
+                    esxiCache.put(meUuid, ent);
                   } else if (meType.equals("VirtualMachine")) {
                     vmCache.put(meUuid, ent);
                   } else if (meType.equals("Datastore")) {
@@ -708,44 +728,52 @@ public class VmBix {
             //}
             return mes;
         }
-        
+        //System.out.println("CacheHIT: " + meType + " name: " + name); 
         private List getCounterByName (String name    ) throws IOException {
            List counter = counterCache.getIfPresent(name);
            if (counter != null) {
-               System.out.println("CACHE ma " + name);
+               System.out.println("CacheHIT: PerfCounter name: " + name);
                return counter;
            }           
            PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
-            for(int i = 0; i < pcis.length; i++) {
+           for(int i = 0; i < pcis.length; i++) {
                 String perfCounter  = pcis[i].getGroupInfo().getKey() + "." + pcis[i].getNameInfo().getKey();
-                //System.out.println("NOcahce: " + perfCounter + " pytalem: " + name);
                 List<String> ctrProps = new ArrayList<String>();
                 ctrProps.add(String.valueOf(pcis[i].getKey()));
                 ctrProps.add(pcis[i].getUnitInfo().getKey().toString());                
                 ctrProps.add(pcis[i].getStatsType().toString());
                 ctrProps.add(pcis[i].getRollupType().toString());                
-                //if (perfCounter.equals(name)) {
-                //chce dawać wszystko do cache
-                    System.out.println("ADDcache: " + perfCounter);
-                    counter = ctrProps;
-                    counterCache.put(perfCounter, ctrProps);
-                //    break;
-                //}    
+                counter = ctrProps;
+                counterCache.put(perfCounter, ctrProps);
+                System.out.println("CacheMISS: PerfCounter name: " + perfCounter);
             }
             return counter;
         }
-        
+        /** 
+         * Retruns cached HostRuntimeInfo or get new from vCenter
+         */
+        private HostRuntimeInfo getHostRuntimeInfo(String name, HostSystem host) {
+            HostRuntimeInfo hri = hriCache.getIfPresent(name);
+            if (hri != null) {
+                System.out.println("CacheHIT: HostRuntimeInfo name: " + name);
+                return hri;
+            }
+            hri = host.getRuntime();
+            hriCache.put(name, hri);
+            System.out.println("CacheMISS: HostRuntimeInfo name: " + name);
+            return hri;
+        }
         private PerfMetricId[] getHostPerformanceManager(HostSystem host, int interval) throws RemoteException {
             PerfMetricId[] queryAvailablePerfMetric = null;
             String name = host.getName();
             queryAvailablePerfMetric = hostPerfCache.getIfPresent(name);
             if (queryAvailablePerfMetric != null) {
-               System.out.println("PERFY: CACHE ma " + name);
+               System.out.println("CacheHIT: PerfID name: " + name);
                return queryAvailablePerfMetric;
             }     
             queryAvailablePerfMetric = performanceManager.queryAvailablePerfMetric(host, null, null, interval);
-            System.out.println("PERFY: ADDcache: " + name);
             hostPerfCache.put(name, queryAvailablePerfMetric);
+            System.out.println("CacheMISS: PerfID name: " + name);
             return queryAvailablePerfMetric;
         }
        /**
@@ -872,6 +900,7 @@ public class VmBix {
             if (host == null) {
                 System.out.println("No host named '" + hostName + "' found");
             } else {
+                //TODO: cache for all HostConfigInfo
                 HostConfigInfo hc = host.getConfig();
                 HostMultipathStateInfoPath[] mp = hc.getMultipathState().getPath();
                 for(int m=0; m<mp.length; m++) {
@@ -1745,7 +1774,7 @@ public class VmBix {
             if (host == null) {
                 System.out.println("No host named '" + hostName + "' found\n");
             } else {
-              HostRuntimeInfo hostrti = host.getRuntime();
+              HostRuntimeInfo hostrti = getHostRuntimeInfo(hostName, host);
               String pState = hostrti.getPowerState().toString();
               if (pState.equals("poweredOn")) {
                 // Check if counter exists
@@ -2577,7 +2606,7 @@ public class VmBix {
                 }
             }
         }
-        
+       
     }
 
     static class Shutdown extends Thread {
