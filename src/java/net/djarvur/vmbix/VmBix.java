@@ -28,7 +28,7 @@
 # All rights reserved.
 #
 # Initial releases by Roman Belyakovsky (ihryamzik@gmail.com).
-# 
+# Release 1.2.3 by tomasz@pawelczak.eu 
 */
 
 package net.djarvur.vmbix;
@@ -70,14 +70,21 @@ public class VmBix {
     static String  passwd;
     static Integer port;
     static String  pidFile;
-    static Integer interval; // Default interval of 300s for performance metrics queries
-    static Boolean useUuid; // Use object name by default
+    static Integer interval = 300; // Default interval of 300s for performance metrics queries
+    static Boolean useUuid = false; // Use object name by default
+    static Boolean verbose = false;
     static Integer vmCacheTtl;        // in minutes
+    static Integer vmCacheSize;       // in items (1 vm = 1 item)
     static Integer esxiCacheTtl;      // in minutes
+    static Integer esxiCacheSize;     // in items (1 esxi = 1 item)
     static Integer dsCacheTtl;        // in minutes
+    static Integer dsCacheSize;       // in items
     static Integer perfIdCacheTtl;    // in minutes
+    static Integer perfIdCacheSize;   // in items 
     static Integer counterCacheTtl;   // in minutes
+    static Integer counterCacheSize;  // in items 
     static Integer hriCacheTtl;       // in minutes
+    static Integer hriCacheSize;      // in items (1 esxi = 1 item)
     
        
     public static void main(String[] args) {
@@ -94,14 +101,13 @@ public class VmBix {
             CmdLineParser.Option oInterval = parser.addIntegerOption( 'i', "interval"); // Default interval for performance manager
             CmdLineParser.Option oConfig = parser.addStringOption( 'c', "config");
             CmdLineParser.Option oUseUuid = parser.addStringOption( 'U', "uuid");
-            CmdLineParser.Option oVmCacheTtl = parser.addIntegerOption( 'V', "vmcachettl");
-            CmdLineParser.Option oEsxiCacheTtl = parser.addIntegerOption( 'E', "esxicachettl");
+            CmdLineParser.Option oVerbose = parser.addStringOption( 'V', "verbose");
+            /*CmdLineParser.Option oEsxiCacheTtl = parser.addIntegerOption( 'E', "esxicachettl");
             CmdLineParser.Option oDsCacheTtl = parser.addIntegerOption( 'D', "dscachettl");
             CmdLineParser.Option oPerfIdCacheTtl = parser.addIntegerOption( 'I', "perfidcachettl");
             CmdLineParser.Option oCounterCacheTtl = parser.addIntegerOption( 'O', "countercachettl");
             CmdLineParser.Option ohriCacheTtl = parser.addIntegerOption( 'H', "hricachettl");
-            //TODO: cache size settings
-            //TODO: cache hit info
+            * */
             try {
                 parser.parse(args);
             }
@@ -117,21 +123,21 @@ public class VmBix {
             port    = (Integer)parser.getOptionValue(oPort   );
             pidFile = (String )parser.getOptionValue(oPid    );
             useUuid = (Boolean)parser.getOptionValue(oUseUuid);
-            interval        = (Integer)parser.getOptionValue(oInterval       );
-            vmCacheTtl      = (Integer)parser.getOptionValue(oVmCacheTtl     );
-            esxiCacheTtl    = (Integer)parser.getOptionValue(oEsxiCacheTtl   );
+            interval = (Integer)parser.getOptionValue(oInterval    );
+            verbose  = (Boolean)parser.getOptionValue(oVerbose     );
+            /*esxiCacheTtl    = (Integer)parser.getOptionValue(oEsxiCacheTtl   );
             dsCacheTtl      = (Integer)parser.getOptionValue(oDsCacheTtl     );
             perfIdCacheTtl  = (Integer)parser.getOptionValue(oPerfIdCacheTtl );
             counterCacheTtl = (Integer)parser.getOptionValue(oCounterCacheTtl);
             hriCacheTtl     = (Integer)parser.getOptionValue(ohriCacheTtl    );
-            
+            */
             String config = (String )parser.getOptionValue(oConfig);
             if (config != null) {
                 Properties prop = new Properties();
                 try {
                     InputStream is = new FileInputStream(config);
                     prop.load(is);
-                    
+                    //TODO: fix parameters to have default values
                     if ( uname   == null ) { uname   =                  prop.getProperty("username"   ); }
                     if ( passwd  == null ) { passwd  =                  prop.getProperty("password"   ); }
                     if ( sdkUrl  == null ) { sdkUrl  =                  prop.getProperty("serviceurl" ); }
@@ -139,12 +145,21 @@ public class VmBix {
                     if ( pidFile == null ) { pidFile =                  prop.getProperty("pidfile"    ); }
                     if ( interval == null ){ interval = Integer.parseInt(prop.getProperty("interval"));  }
                     if ( useUuid == null ) { useUuid = Boolean.parseBoolean(prop.getProperty("useuuid")); }
+                    if ( verbose == null ) { verbose = Boolean.parseBoolean(prop.getProperty("verbose")); }
+                    
                     if ( vmCacheTtl == null ) { vmCacheTtl = Integer.parseInt(prop.getProperty("vmCacheTtl")); }
                     if ( esxiCacheTtl == null ) { esxiCacheTtl = Integer.parseInt(prop.getProperty("esxiCacheTtl")); }
                     if ( dsCacheTtl == null ) { dsCacheTtl = Integer.parseInt(prop.getProperty("dsCacheTtl")); }
                     if ( perfIdCacheTtl == null ) { perfIdCacheTtl = Integer.parseInt(prop.getProperty("perfIdCacheTtl")); }
                     if ( counterCacheTtl == null ) { counterCacheTtl = Integer.parseInt(prop.getProperty("counterCacheTtl")); }
                     if ( hriCacheTtl == null ) { hriCacheTtl = Integer.parseInt(prop.getProperty("hriCacheTtl")); }
+
+                    if ( vmCacheSize == null ) { vmCacheSize = Integer.parseInt(prop.getProperty("vmCacheSize")); }
+                    if ( esxiCacheSize ==   null ) { esxiCacheSize = Integer.parseInt(prop.getProperty("esxiCacheSize")); }
+                    if ( dsCacheSize == null ) { dsCacheSize = Integer.parseInt(prop.getProperty("dsCacheSize")); }
+                    if ( perfIdCacheSize == null ) { perfIdCacheSize = Integer.parseInt(prop.getProperty("perfIdCacheSize")); }
+                    if ( counterCacheSize == null ) { counterCacheSize = Integer.parseInt(prop.getProperty("counterCacheSize")); }
+                    if ( hriCacheSize == null ) { hriCacheSize = Integer.parseInt(prop.getProperty("hriCacheSize")); }                    
                     
                 }
                 catch (IOException e) {
@@ -166,13 +181,13 @@ public class VmBix {
             
             Shutdown sh = new Shutdown();
             Runtime.getRuntime().addShutdownHook(sh);
-            //TODO: cache size settings
-            vmCache       = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(vmCacheTtl     , TimeUnit.MINUTES).build();
-            esxiCache     = CacheBuilder.newBuilder().maximumSize(100 ).expireAfterWrite(esxiCacheTtl   , TimeUnit.MINUTES).build();
-            dsCache       = CacheBuilder.newBuilder().maximumSize(500 ).expireAfterWrite(dsCacheTtl     , TimeUnit.MINUTES).build();
-            hostPerfCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(perfIdCacheTtl , TimeUnit.MINUTES).build();
-            counterCache  = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(counterCacheTtl, TimeUnit.MINUTES).build();
-            hriCache      = CacheBuilder.newBuilder().maximumSize(100 ).expireAfterWrite(hriCacheTtl    , TimeUnit.MINUTES).build();
+
+            vmCache       = CacheBuilder.newBuilder().maximumSize(vmCacheSize     ).expireAfterWrite(vmCacheTtl     , TimeUnit.MINUTES).build();
+            esxiCache     = CacheBuilder.newBuilder().maximumSize(esxiCacheSize   ).expireAfterWrite(esxiCacheTtl   , TimeUnit.MINUTES).build();
+            dsCache       = CacheBuilder.newBuilder().maximumSize(dsCacheSize     ).expireAfterWrite(dsCacheTtl     , TimeUnit.MINUTES).build();
+            hostPerfCache = CacheBuilder.newBuilder().maximumSize(perfIdCacheSize ).expireAfterWrite(perfIdCacheTtl , TimeUnit.MINUTES).build();
+            counterCache  = CacheBuilder.newBuilder().maximumSize(counterCacheSize).expireAfterWrite(counterCacheTtl, TimeUnit.MINUTES).build();
+            hriCache      = CacheBuilder.newBuilder().maximumSize(hriCacheSize    ).expireAfterWrite(hriCacheTtl    , TimeUnit.MINUTES).build();
             while (true){
                 try {
                     server ();
@@ -319,9 +334,7 @@ public class VmBix {
             "Usage:\nvmbix "
             + sport + " " + ssurl + " " + sname + " " + spass + " [-f|--pid pidfile] [-i|--interval interval] [-U|--useuuid (true|false)]" + "\n"
             + "or\nvmbix [-c|--config] config_file  [-f|--pid pidfile] [-i|--interval interval] [-U|--useuuid (true|false)]\n\n"
-            + "Cache options:\n[-V|--vmcachettl ttl] [-E|--esxicachettl ttl] [-D|--dscachettl ttl] [-I|--perfidcachettl ttl]\n"
-            + "[-O|--countercachettl ttl] [-H|--hricachettl ttl]\n"                
-            + "All ttls are in minutes.\n\n"
+            + "[-V|--verbose (true|false)]"
             + ( str != null ? str + "\n" : "" )
             );
     };
@@ -653,7 +666,7 @@ public class VmBix {
               me = dsCache.getIfPresent(name); 
             }
             if (me != null) {
-               System.out.println("CacheHIT: " + meType + " name: " + name); 
+               if  (verbose == true) { System.out.println("CacheHIT: " + meType + " name: " + name); }
                return me;
             }
             me = inventoryNavigator.searchManagedEntity(meType, name);
@@ -665,7 +678,7 @@ public class VmBix {
                 } else if (meType.equals("Datastore")) {
                 dsCache.put(name, me);
                 }
-                System.out.println("CacheMISS: " + meType + " name: " + name);
+                if  (verbose == true) { System.out.println("CacheMISS: " + meType + " name: " + name); }
             }
             return me;
         }
@@ -728,26 +741,29 @@ public class VmBix {
             //}
             return mes;
         }
-        //System.out.println("CacheHIT: " + meType + " name: " + name); 
+       
         private List getCounterByName (String name    ) throws IOException {
-           List counter = counterCache.getIfPresent(name);
-           if (counter != null) {
-               System.out.println("CacheHIT: PerfCounter name: " + name);
-               return counter;
+           List<String> ctrProps = counterCache.getIfPresent(name);
+           if (ctrProps != null) {
+               if  (verbose == true) { System.out.println("CacheHIT: PerfCounter name: " + name); }
+               return ctrProps;
            }           
            PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
+           String perfCounter = "";
            for(int i = 0; i < pcis.length; i++) {
-                String perfCounter  = pcis[i].getGroupInfo().getKey() + "." + pcis[i].getNameInfo().getKey();
-                List<String> ctrProps = new ArrayList<String>();
+                perfCounter  = pcis[i].getGroupInfo().getKey() + "." + pcis[i].getNameInfo().getKey();
+                ctrProps = new ArrayList<String>();
                 ctrProps.add(String.valueOf(pcis[i].getKey()));
-                ctrProps.add(pcis[i].getUnitInfo().getKey().toString());                
+                ctrProps.add(pcis[i].getUnitInfo().getKey().toString());
                 ctrProps.add(pcis[i].getStatsType().toString());
-                ctrProps.add(pcis[i].getRollupType().toString());                
-                counter = ctrProps;
+                ctrProps.add(pcis[i].getRollupType().toString());
                 counterCache.put(perfCounter, ctrProps);
-                System.out.println("CacheMISS: PerfCounter name: " + perfCounter);
+                if (perfCounter.equals(name)) {
+                    if  (verbose == true) { System.out.println("CacheMISS: PerfCounter name: " + name); }
+                    return ctrProps;
+                }
             }
-            return counter;
+            return counterCache.getIfPresent(name);
         }
         /** 
          * Retruns cached HostRuntimeInfo or get new from vCenter
@@ -755,12 +771,12 @@ public class VmBix {
         private HostRuntimeInfo getHostRuntimeInfo(String name, HostSystem host) {
             HostRuntimeInfo hri = hriCache.getIfPresent(name);
             if (hri != null) {
-                System.out.println("CacheHIT: HostRuntimeInfo name: " + name);
+                if  (verbose == true) { System.out.println("CacheHIT: HostRuntimeInfo name: " + name); }
                 return hri;
             }
             hri = host.getRuntime();
             hriCache.put(name, hri);
-            System.out.println("CacheMISS: HostRuntimeInfo name: " + name);
+            if  (verbose == true) { System.out.println("CacheMISS: HostRuntimeInfo name: " + name); }
             return hri;
         }
         private PerfMetricId[] getHostPerformanceManager(HostSystem host, int interval) throws RemoteException {
@@ -768,12 +784,12 @@ public class VmBix {
             String name = host.getName();
             queryAvailablePerfMetric = hostPerfCache.getIfPresent(name);
             if (queryAvailablePerfMetric != null) {
-               System.out.println("CacheHIT: PerfID name: " + name);
+               if  (verbose == true) { System.out.println("CacheHIT: PerfID name: " + name); }
                return queryAvailablePerfMetric;
             }     
             queryAvailablePerfMetric = performanceManager.queryAvailablePerfMetric(host, null, null, interval);
             hostPerfCache.put(name, queryAvailablePerfMetric);
-            System.out.println("CacheMISS: PerfID name: " + name);
+            if  (verbose == true) { System.out.println("CacheMISS: PerfID name: " + name); }
             return queryAvailablePerfMetric;
         }
        /**
@@ -1782,12 +1798,11 @@ public class VmBix {
                 if (counter == null) {
                   System.out.println("Metric " + perfCounterName + " doesn't exist for host " + hostName);
                 } else {
-                  // The counter exists
+                  // The counter exists                   
                   Integer perfCounterId = Integer.valueOf((String)counter.get(0));
                   String perfCounterUnitInfo = (String)counter.get(1);
                   String perfCounterStatsType = (String)counter.get(2);
                   String perfCounterRollupType = (String)counter.get(3);
-                  
                   ArrayList<PerfMetricId> perfMetricIds = new ArrayList<PerfMetricId>();
                   PerfMetricId metricId = new PerfMetricId();
                   metricId.setCounterId(perfCounterId);
@@ -1819,7 +1834,7 @@ public class VmBix {
                         out.print(value);
                       } 
                     }
-                  } 
+                  }
                 }
               } else {
                 System.out.println("Host '" + hostName + "' is not powered on. Performance counters unavailable.");
