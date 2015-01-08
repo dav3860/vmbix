@@ -1088,12 +1088,22 @@ public class VmBix {
             for(int j=0; j<ds.length; j++)
             {
                 Datastore d = (Datastore) ds[j];
-                String url = d.getSummary().url;
-                String uuid = url.substring(19, url.length()-1);              
+          /*    String url = d.getSummary().url;
+                String uuid = url.substring(19, url.length()-1);
+                HostVmfsVolume hvv = dsInfo.getVmfs();
+                String gci = gvf.getUuid();
+                System.out.println(gci);
+          */                
+                //unsafe operation
+                VmfsDatastoreInfo dsInfo = (VmfsDatastoreInfo) d.getInfo();               
+                HostScsiDiskPartition[] naaName = dsInfo.getVmfs().extent;
                 JsonObject jObject = new JsonObject();
                 jObject.addProperty("{#DATASTORE}", d.getName());
-                jObject.addProperty("{#UUID}", uuid);
+                //jObject.addProperty("{#UUID}", uuid);
+                jObject.addProperty("{#UUID}", dsInfo.getVmfs().getUuid());
                 jObject.addProperty("{#CLUSTER}", d.getParent().getName());
+                jObject.addProperty("{#LOCAL}", !d.getSummary().multipleHostAccess);
+                jObject.addProperty("{#NAA}", naaName[0].getDiskName());
                 jArray.add(jObject);
             }
             JsonObject jOutput = new JsonObject();
