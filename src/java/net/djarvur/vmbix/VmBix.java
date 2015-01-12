@@ -248,11 +248,13 @@ public class VmBix {
         System.err.print(
             "Available methods :                                           \n"
             + "about                                                       \n"                                                                                    
+            + "cluster.discovery                                           \n"
+            + "datacenter.discovery                                        \n"
             + "datastore.discovery                                         \n"                                                                                    
             + "datastore.size[(uuid|name),free]                            \n"                                                                                    
             + "datastore.size[(uuid|name),total]                           \n"
             + "datastore.size[(uuid|name),provisioned]                     \n"                                                                                    
-            + "datastore.size[(uuid|name),uncommitted]                     \n"               
+            + "datastore.size[(uuid|name),uncommitted]                     \n"
             + "esx.connection[(uuid|name)]                                 \n"                                                                                    
             + "esx.cpu.load[(uuid|name),cores]                             \n"                                                                                    
             + "esx.cpu.load[(uuid|name),total]                             \n"                                                                                    
@@ -474,6 +476,8 @@ public class VmBix {
         private void checkAllPatterns                (String string, PrintWriter out  ) throws IOException {
             Pattern pPing                   = Pattern.compile("^(?:\\s*ZBXD.)?.*(ping)"                                      );        //        
             Pattern pAbout                  = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)"                                     );        //
+            Pattern pClusters               = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.(discovery)"                       );        //
+            Pattern pDatacenters            = Pattern.compile("^(?:\\s*ZBXD.)?.*datacenter\\.(discovery)"                    );        //
             Pattern pLatestEvent            = Pattern.compile("^(?:\\s*ZBXD.)?.*(event\\.latest)"                            );        //            
             Pattern pVMs                    = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.(discovery)"                            );        //
             Pattern pHosts                  = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.(discovery)"                           );        // 
@@ -548,6 +552,8 @@ public class VmBix {
             String[] founds;
             found = checkPattern(pPing                  ,string); if (found != null) { getPing                  (out);        return; }
             found = checkPattern(pAbout                 ,string); if (found != null) { getAbout                 (out);        return; }
+            found = checkPattern(pClusters              ,string); if (found != null) { getClusters              (out);        return; }
+            found = checkPattern(pDatacenters           ,string); if (found != null) { getDatacenters           (out);        return; }            
             found = checkPattern(pLatestEvent           ,string); if (found != null) { getLatestEvent           (out);        return; }            
             found = checkPattern(pVMs                   ,string); if (found != null) { getVMs                   (out);        return; }
             found = checkPattern(pHosts                 ,string); if (found != null) { getHosts                 (out);        return; }
@@ -1077,7 +1083,64 @@ public class VmBix {
             out.print(jOutput );
             out.flush();
         }
-
+       /**
+        * Returns a JSON-formatted array with the clusters list
+        * for use with Zabbix low-level discovery
+        */ 
+        private void getClusters(PrintWriter out)  throws IOException {
+            //throw new UnsupportedOperationException("Not yet implemented");
+            ManagedEntity[] cl = getManagedEntities("ClusterComputeResource");
+            ManagedEntity[] dt = getManagedEntities("Datacenter");
+            Datacenter t = (Datacenter) dt[0];
+            ManagedEntityStatus tt = t.getOverallStatus();          
+            JsonArray jArray = new JsonArray();
+            for(int j=0; j<cl.length; j++)
+            {
+                ClusterComputeResource c = (ClusterComputeResource) cl[j];
+                String name = c.getName();
+                ComputeResourceSummary s = c.getSummary();
+                System.out.println(""
+                        + "Name " + c.getName()
+                        + " Eff CPU " + s.getEffectiveCpu()
+                        + " Tot CPU " + s.getTotalCpu()
+                        + " Eff HOST " + s.getNumEffectiveHosts()
+                        + " Num HOST " + s.getNumHosts()
+                        );
+                JsonObject jObject = new JsonObject();
+                jObject.addProperty("{#CLUSTER}", name);
+                jArray.add(jObject);
+            }
+            JsonObject jOutput = new JsonObject();
+            jOutput.add("data", jArray);
+            out.print(jOutput );                
+            out.flush();
+        }        
+       /**
+        * Returns a JSON-formatted array with the datacenter list
+        * for use with Zabbix low-level discovery
+        */       
+        private void getDatacenters(PrintWriter out)  throws IOException {
+            //throw new UnsupportedOperationException("Not yet implemented");            
+            ManagedEntity[] dc = getManagedEntities("Datacenter");           
+            JsonArray jArray = new JsonArray();
+            for(int j=0; j<dc.length; j++)
+            {
+                Datacenter d = (Datacenter) dc[j];
+                ManagedEntityStatus status = d.getOverallStatus();          
+                String name = d.getName();
+                System.out.println(""
+                        + "Name " + name
+                        + " status " + status
+                        );
+                JsonObject jObject = new JsonObject();
+                jObject.addProperty("{#DATACENTER}", name);
+                jArray.add(jObject);
+            }
+            JsonObject jOutput = new JsonObject();
+            jOutput.add("data", jArray);
+            out.print(jOutput );                
+            out.flush();
+        }
        /**
         * Returns a JSON-formatted array with the datastores list
         * for use with Zabbix low-level discovery
