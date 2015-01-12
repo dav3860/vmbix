@@ -61,6 +61,7 @@ public class VmBix {
     static Cache<String, ManagedEntity> vmCache;
     static Cache<String, ManagedEntity> esxiCache;
     static Cache<String, ManagedEntity> dsCache;
+    static Cache<String, ManagedEntity> clCache;
     static Cache<String, List> counterCache;
     static Cache<String, PerfMetricId[]> hostPerfCache;
     static Cache<String, HostRuntimeInfo> hriCache;
@@ -85,6 +86,8 @@ public class VmBix {
     static Integer counterCacheSize;  // in items 
     static Integer hriCacheTtl;       // in minutes
     static Integer hriCacheSize;      // in items (1 esxi = 1 item)
+    static Integer clCacheTtl;       // in minutes
+    static Integer clCacheSize;      // in items (1 esxi = 1 item)
     
        
     public static void main(String[] args) {
@@ -153,13 +156,15 @@ public class VmBix {
                     if ( perfIdCacheTtl == null ) { perfIdCacheTtl = Integer.parseInt(prop.getProperty("perfIdCacheTtl")); }
                     if ( counterCacheTtl == null ) { counterCacheTtl = Integer.parseInt(prop.getProperty("counterCacheTtl")); }
                     if ( hriCacheTtl == null ) { hriCacheTtl = Integer.parseInt(prop.getProperty("hriCacheTtl")); }
+                    if ( clCacheTtl == null ) { clCacheTtl = Integer.parseInt(prop.getProperty("clCacheTtl")); }
 
                     if ( vmCacheSize == null ) { vmCacheSize = Integer.parseInt(prop.getProperty("vmCacheSize")); }
                     if ( esxiCacheSize ==   null ) { esxiCacheSize = Integer.parseInt(prop.getProperty("esxiCacheSize")); }
                     if ( dsCacheSize == null ) { dsCacheSize = Integer.parseInt(prop.getProperty("dsCacheSize")); }
                     if ( perfIdCacheSize == null ) { perfIdCacheSize = Integer.parseInt(prop.getProperty("perfIdCacheSize")); }
                     if ( counterCacheSize == null ) { counterCacheSize = Integer.parseInt(prop.getProperty("counterCacheSize")); }
-                    if ( hriCacheSize == null ) { hriCacheSize = Integer.parseInt(prop.getProperty("hriCacheSize")); }                    
+                    if ( hriCacheSize == null ) { hriCacheSize = Integer.parseInt(prop.getProperty("hriCacheSize")); }
+                    if ( clCacheSize == null ) { clCacheSize = Integer.parseInt(prop.getProperty("clCacheSize")); }
                     
                 }
                 catch (IOException e) {
@@ -188,6 +193,7 @@ public class VmBix {
             hostPerfCache = CacheBuilder.newBuilder().maximumSize(perfIdCacheSize ).expireAfterWrite(perfIdCacheTtl , TimeUnit.MINUTES).build();
             counterCache  = CacheBuilder.newBuilder().maximumSize(counterCacheSize).expireAfterWrite(counterCacheTtl, TimeUnit.MINUTES).build();
             hriCache      = CacheBuilder.newBuilder().maximumSize(hriCacheSize    ).expireAfterWrite(hriCacheTtl    , TimeUnit.MINUTES).build();
+            clCache       = CacheBuilder.newBuilder().maximumSize(clCacheSize     ).expireAfterWrite(clCacheTtl     , TimeUnit.MINUTES).build();
             while (true){
                 try {
                     server ();
@@ -249,7 +255,19 @@ public class VmBix {
             "Available methods :                                           \n"
             + "about                                                       \n"                                                                                    
             + "cluster.discovery                                           \n"
+            + "cluster.cpu[name,free]                                      \n"                
+            + "cluster.cpu[name,total]                                     \n"
+            + "cluster.cpu[name,usage]                                     \n"                
+            + "cluster.cpu.num[name,threads]                               \n"
+            + "cluster.cpu.num[nane,cores]                                 \n"
+            + "cluster.mem[name,free]                                      \n"
+            + "cluster.mem[name,total]                                     \n"
+            + "cluster.mem[name,usage]                                     \n"
+            + "cluster.hosts[name,online]                                  \n"
+            + "cluster.hosts[name,maint]                                   \n"
+            + "cluster.hosts[name,total]                                   \n"
             + "datacenter.discovery                                        \n"
+            + "datacenter.status[name,(overall|config)]                    \n"
             + "datastore.discovery                                         \n"                                                                                    
             + "datastore.size[(uuid|name),free]                            \n"                                                                                    
             + "datastore.size[(uuid|name),total]                           \n"
@@ -477,7 +495,20 @@ public class VmBix {
             Pattern pPing                   = Pattern.compile("^(?:\\s*ZBXD.)?.*(ping)"                                      );        //        
             Pattern pAbout                  = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)"                                     );        //
             Pattern pClusters               = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.(discovery)"                       );        //
+            Pattern pClusterCpuFree         = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),free\\]"                );        //
+            Pattern pClusterCpuTotal        = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),total\\]"               );        //
+            Pattern pClusterCpuUsage        = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),usage\\]"               );        //
+            Pattern pClusterCpuThreads      = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu.num\\[(.+),threads\\]"         );        //
+            Pattern pClusterCpuCores        = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu.num\\[(.+),cores\\]"           );        //
+            Pattern pClusterMemFree         = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.mem\\[(.+),free\\]"                );        //
+            Pattern pClusterMemTotal        = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.mem\\[(.+),total\\]"               );        //
+            Pattern pClusterMemUsage        = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.mem\\[(.+),usage\\]"               );        //
+            Pattern pClusterHostsOnline     = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.hosts\\[(.+),online\\]"            );        //
+            Pattern pClusterHostsMaint      = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.hosts\\[(.+),maint\\]"             );        //
+            Pattern pClusterHostsTotal      = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.hosts\\[(.+),total\\]"             );        //
             Pattern pDatacenters            = Pattern.compile("^(?:\\s*ZBXD.)?.*datacenter\\.(discovery)"                    );        //
+            //TODO: split into two metods 
+            Pattern pDatacenterStatus       = Pattern.compile("^(?:\\s*ZBXD.)?.*datacenter\\.status\\[(.+),(overall|config)\\]");      //            
             Pattern pLatestEvent            = Pattern.compile("^(?:\\s*ZBXD.)?.*(event\\.latest)"                            );        //            
             Pattern pVMs                    = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.(discovery)"                            );        //
             Pattern pHosts                  = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.(discovery)"                           );        // 
@@ -553,7 +584,20 @@ public class VmBix {
             found = checkPattern(pPing                  ,string); if (found != null) { getPing                  (out);        return; }
             found = checkPattern(pAbout                 ,string); if (found != null) { getAbout                 (out);        return; }
             found = checkPattern(pClusters              ,string); if (found != null) { getClusters              (out);        return; }
-            found = checkPattern(pDatacenters           ,string); if (found != null) { getDatacenters           (out);        return; }            
+            found = checkPattern(pClusterCpuFree        ,string); if (found != null) { getClusterCpuFree        (found, out); return; }
+            found = checkPattern(pClusterCpuTotal       ,string); if (found != null) { getClusterCpuTotal       (found, out); return; }
+            found = checkPattern(pClusterCpuUsage       ,string); if (found != null) { getClusterCpuUsage       (found, out); return; }
+            found = checkPattern(pClusterCpuThreads     ,string); if (found != null) { getClusterCpuThreads     (found, out); return; }
+            found = checkPattern(pClusterCpuCores       ,string); if (found != null) { getClusterCpuCores       (found, out); return; }
+            found = checkPattern(pClusterMemFree        ,string); if (found != null) { getClusterMemFree        (found, out); return; }
+            found = checkPattern(pClusterMemTotal       ,string); if (found != null) { getClusterMemTotal       (found, out); return; }
+            found = checkPattern(pClusterMemUsage       ,string); if (found != null) { getClusterMemUsage       (found, out); return; }
+            found = checkPattern(pClusterHostsOnline    ,string); if (found != null) { getClusterHostsOnline    (found, out); return; }
+            found = checkPattern(pClusterHostsMaint     ,string); if (found != null) { getClusterHostsMaint     (found, out); return; }
+            found = checkPattern(pClusterHostsTotal     ,string); if (found != null) { getClusterHostsTotal     (found, out); return; }
+            found = checkPattern(pDatacenters           ,string); if (found != null) { getDatacenters           (out);        return; }
+            //TODO: split in 
+            founds = checkMultiplePattern(pDatacenterStatus      ,string); if (founds != null) { getDatacenterStatus      (founds[0], founds[1], out); return; }            
             found = checkPattern(pLatestEvent           ,string); if (found != null) { getLatestEvent           (out);        return; }            
             found = checkPattern(pVMs                   ,string); if (found != null) { getVMs                   (out);        return; }
             found = checkPattern(pHosts                 ,string); if (found != null) { getHosts                 (out);        return; }
@@ -670,7 +714,10 @@ public class VmBix {
               me = vmCache.getIfPresent(name);
             } else if (meType.equals("Datastore")) {
               me = dsCache.getIfPresent(name); 
+            } else if (meType.equals("ClusterComputeResource")) {
+              me = clCache.getIfPresent(name); 
             }
+            //add cache for Datacenters
             if (me != null) {
                if  (verbose == true) { System.out.println("CacheHIT: " + meType + " name: " + name); }
                return me;
@@ -680,15 +727,17 @@ public class VmBix {
                 if (meType.equals("HostSystem")) {
                     esxiCache.put(name, me);
                 } else if (meType.equals("VirtualMachine")) {
-                vmCache.put(name, me);
+                    vmCache.put(name, me);
                 } else if (meType.equals("Datastore")) {
-                dsCache.put(name, me);
+                    dsCache.put(name, me);
+                } else if (meType.equals("ClusterComputeResource")) {
+                    clCache.put(name, me);
                 }
                 if  (verbose == true) { System.out.println("CacheMISS: " + meType + " name: " + name); }
             }
             return me;
         }
-        
+        //ClusterComputeResource
         private ManagedEntity getManagedEntityByUuid (String uuid, String meType    ) throws IOException {
             ManagedEntity me = null;
             if (meType.equals("HostSystem")) {
@@ -1090,21 +1139,23 @@ public class VmBix {
         private void getClusters(PrintWriter out)  throws IOException {
             //throw new UnsupportedOperationException("Not yet implemented");
             ManagedEntity[] cl = getManagedEntities("ClusterComputeResource");
-            ManagedEntity[] dt = getManagedEntities("Datacenter");
-            Datacenter t = (Datacenter) dt[0];
-            ManagedEntityStatus tt = t.getOverallStatus();          
             JsonArray jArray = new JsonArray();
             for(int j=0; j<cl.length; j++)
             {
                 ClusterComputeResource c = (ClusterComputeResource) cl[j];
                 String name = c.getName();
+             //   c.
                 ComputeResourceSummary s = c.getSummary();
+                //http://pubs.vmware.com/vsphere-51/index.jsp?topic=%2Fcom.vmware.wssdk.apiref.doc%2Fvim.ClusterComputeResource.html
+                //http://pubs.vmware.com/vsphere-51/index.jsp?topic=%2Fcom.vmware.wssdk.apiref.doc%2Fvim.ComputeResource.html
+                //http://pubs.vmware.com/vsphere-51/index.jsp#com.vmware.wssdk.apiref.doc/vim.ComputeResource.Summary.html
                 System.out.println(""
                         + "Name " + c.getName()
                         + " Eff CPU " + s.getEffectiveCpu()
                         + " Tot CPU " + s.getTotalCpu()
                         + " Eff HOST " + s.getNumEffectiveHosts()
                         + " Num HOST " + s.getNumHosts()
+                        //+ " aaa " + a[0]
                         );
                 JsonObject jObject = new JsonObject();
                 jObject.addProperty("{#CLUSTER}", name);
@@ -1127,13 +1178,13 @@ public class VmBix {
             {
                 Datacenter d = (Datacenter) dc[j];
                 ManagedEntityStatus status = d.getOverallStatus();          
-                String name = d.getName();
+                /*String name = d.getName();
                 System.out.println(""
                         + "Name " + name
                         + " status " + status
-                        );
+                        );*/
                 JsonObject jObject = new JsonObject();
-                jObject.addProperty("{#DATACENTER}", name);
+                jObject.addProperty("{#DATACENTER}", d.getName());
                 jArray.add(jObject);
             }
             JsonObject jOutput = new JsonObject();
@@ -1141,6 +1192,34 @@ public class VmBix {
             out.print(jOutput );                
             out.flush();
         }
+        
+        private void getDatacenterStatus(String dcName, String type, PrintWriter out) throws IOException {
+            //throw new UnsupportedOperationException("Not yet implemented");
+            ManagedEntity dc = getManagedEntityByName(dcName, "Datacenter");
+            int intStatus = 4;
+            String status = null;
+            if (dc != null) {
+                // overall vs conifig, chyba obydwa trzeba zrobic
+                //https://www.vmware.com/support/developer/converter-sdk/conv51_apireference/vim.ManagedEntity.html
+                if ( type.equals("overall") ) { status = dc.getOverallStatus().toString(); }
+                else if ( type.equals("config") ) { status = dc.getConfigStatus().toString(); }
+
+                if (status.equals("gray")){
+                        intStatus = 0;
+                } else if (status.equals("green")){
+                        intStatus = 1;
+                } else if (status.equals("yellow")){
+                        intStatus = 2;
+                } else if (status.equals("red")){
+                        intStatus = 3;                    
+                } else {
+                        intStatus = 4;
+                }
+            }
+            System.out.println("nazwa "+ dcName + " status " + status+" "+ type);
+            out.print(intStatus);
+            out.flush();
+        }        
        /**
         * Returns a JSON-formatted array with the datastores list
         * for use with Zabbix low-level discovery
@@ -2694,7 +2773,78 @@ public class VmBix {
                 }
             }
         }
-       
+
+        private void getClusterCpuFree(String name, PrintWriter out) throws IOException {
+            ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
+            out.print(cl.getSummary().effectiveCpu );
+            out.flush();            
+            //JsonArray jArray = new JsonArray();
+            //for(int j=0; j<cl.length; j++)
+            //{
+                //ClusterComputeResource c = (ClusterComputeResource) cl[j];
+//                String name2 = cl.getName();
+             //   c.
+  //              ComputeResourceSummary s = cl.getSummary();
+                //http://pubs.vmware.com/vsphere-51/index.jsp?topic=%2Fcom.vmware.wssdk.apiref.doc%2Fvim.ClusterComputeResource.html
+                //http://pubs.vmware.com/vsphere-51/index.jsp?topic=%2Fcom.vmware.wssdk.apiref.doc%2Fvim.ComputeResource.html
+                //http://pubs.vmware.com/vsphere-51/index.jsp#com.vmware.wssdk.apiref.doc/vim.ComputeResource.Summary.html
+                /*System.out.println(""
+                        + "Name " + cl.getName()
+                        + " Eff CPU " + s.getEffectiveCpu()
+                        + " Tot CPU " + s.getTotalCpu()
+                        + " Eff HOST " + s.getNumEffectiveHosts()
+                        + " Num HOST " + s.getNumHosts()
+                        //+ " aaa " + a[0]
+                        );
+                        */
+              /*  JsonObject jObject = new JsonObject();
+                jObject.addProperty("{#CLUSTER}", name);
+                jArray.add(jObject);
+                * */
+            //}
+            //JsonObject jOutput = new JsonObject();
+            //jOutput.add();            
+        }
+
+        private void getClusterCpuTotal(String name, PrintWriter out) throws IOException {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        private void getClusterCpuUsage(String name, PrintWriter out) throws IOException {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        private void getClusterCpuThreads(String name, PrintWriter out) throws IOException {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        private void getClusterCpuCores(String name, PrintWriter out) throws IOException {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        private void getClusterMemFree(String name, PrintWriter out) throws IOException {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        private void getClusterMemTotal(String name, PrintWriter out) throws IOException {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+        
+        private void getClusterMemUsage(String name, PrintWriter out) throws IOException {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+      
+        private void getClusterHostsOnline(String name, PrintWriter out) throws IOException {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        private void getClusterHostsMaint(String name, PrintWriter out) throws IOException {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+        private void getClusterHostsTotal(String name, PrintWriter out) throws IOException {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
     }
 
     static class Shutdown extends Thread {
