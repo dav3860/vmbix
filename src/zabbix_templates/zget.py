@@ -4,7 +4,7 @@ import struct
 import sys
 
 HOST="127.0.0.1"
-PORT=10050
+PORT=12050
 
 class ZGet:
   def __init__(self, host=HOST, port=PORT):
