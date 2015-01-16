@@ -2648,7 +2648,7 @@ public class VmBix {
         * Returns the free space of a datastore
         */                  
         private void getDatastoreSizeFree            (String dsName,   PrintWriter out) throws IOException {
-            Datastore ds = (Datastore)getManagedEntity(dsName,"Datastore");
+            Datastore ds = (Datastore)getManagedEntityByName(dsName,"Datastore");
             Long freeSpace = new Long(0);
             if (ds == null) {
                 System.out.println("No datastore named '" + dsName + "' found");
@@ -2667,7 +2667,7 @@ public class VmBix {
         * Returns the size of a datastore
         */                  
         private void getDatastoreSizeTotal           (String dsName,   PrintWriter out) throws IOException {
-            Datastore ds = (Datastore)getManagedEntity(dsName,"Datastore");
+            Datastore ds = (Datastore)getManagedEntityByName(dsName,"Datastore");
             Long capacity = new Long(0);
             if (ds == null) {
                 System.out.println("No datastore named '" + dsName + "' found");
@@ -2686,7 +2686,7 @@ public class VmBix {
         * Returns the provisioned size of a datastore
         */          
         private void getDatastoreSizeProvisioned            (String dsName,   PrintWriter out) throws IOException { 
-            Datastore ds = (Datastore)getManagedEntity(dsName,"Datastore"); 
+            Datastore ds = (Datastore)getManagedEntityByName(dsName,"Datastore"); 
             Long provSpace = new Long(0); 
             if (ds == null) { 
                 System.out.println("No datastore named '" + dsName + "' found"); 
@@ -2709,7 +2709,7 @@ public class VmBix {
         * Returns the uncommitted size of a datastore
         */  
         private void getDatastoreSizeUncommitted            (String dsName,   PrintWriter out) throws IOException { 
-            Datastore ds = (Datastore)getManagedEntity(dsName,"Datastore"); 
+            Datastore ds = (Datastore)getManagedEntityByName(dsName,"Datastore"); 
             Long freeSpace = new Long(0);  
             if (ds == null) { 
                 System.out.println("No datastore named '" + dsName + "' found"); 
