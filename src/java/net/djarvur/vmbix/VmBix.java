@@ -2776,74 +2776,136 @@ public class VmBix {
 
         private void getClusterCpuFree(String name, PrintWriter out) throws IOException {
             ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
-            out.print(cl.getSummary().effectiveCpu );
-            out.flush();            
-            //JsonArray jArray = new JsonArray();
-            //for(int j=0; j<cl.length; j++)
-            //{
-                //ClusterComputeResource c = (ClusterComputeResource) cl[j];
-//                String name2 = cl.getName();
-             //   c.
-  //              ComputeResourceSummary s = cl.getSummary();
-                //http://pubs.vmware.com/vsphere-51/index.jsp?topic=%2Fcom.vmware.wssdk.apiref.doc%2Fvim.ClusterComputeResource.html
-                //http://pubs.vmware.com/vsphere-51/index.jsp?topic=%2Fcom.vmware.wssdk.apiref.doc%2Fvim.ComputeResource.html
-                //http://pubs.vmware.com/vsphere-51/index.jsp#com.vmware.wssdk.apiref.doc/vim.ComputeResource.Summary.html
-                /*System.out.println(""
-                        + "Name " + cl.getName()
-                        + " Eff CPU " + s.getEffectiveCpu()
-                        + " Tot CPU " + s.getTotalCpu()
-                        + " Eff HOST " + s.getNumEffectiveHosts()
-                        + " Num HOST " + s.getNumHosts()
-                        //+ " aaa " + a[0]
-                        );
-                        */
-              /*  JsonObject jObject = new JsonObject();
-                jObject.addProperty("{#CLUSTER}", name);
-                jArray.add(jObject);
-                * */
-            //}
-            //JsonObject jOutput = new JsonObject();
-            //jOutput.add();            
+            long cpuFree = 0;
+            if ( cl != null ) {
+                cpuFree = cl.getSummary().effectiveCpu;
+            } else {
+                System.out.println("No cluster named '"+name+"' found");
+            }
+            out.print(cpuFree);
+            out.flush();
         }
 
-        private void getClusterCpuTotal(String name, PrintWriter out) throws IOException {
-            throw new UnsupportedOperationException("Not yet implemented");
+        private void getClusterCpuTotal(String name, PrintWriter out) throws IOException {            
+            ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
+            long cpuTotal = 0;
+            if ( cl != null ) {
+                cpuTotal = cl.getSummary().totalCpu;
+            } else {
+                System.out.println("No cluster named '"+name+"' found");
+            }
+            out.print(cpuTotal);
+            out.flush();
         }
 
         private void getClusterCpuUsage(String name, PrintWriter out) throws IOException {
-            throw new UnsupportedOperationException("Not yet implemented");
+            ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
+            long cpuUsage = 0;
+            if ( cl != null ) {
+                 cpuUsage = cl.getSummary().totalCpu - cl.getSummary().effectiveCpu;
+            } else {
+                System.out.println("No cluster named '"+name+"' found");
+            }
+            out.print(cpuUsage);
+            out.flush();
         }
 
         private void getClusterCpuThreads(String name, PrintWriter out) throws IOException {
-            throw new UnsupportedOperationException("Not yet implemented");
+            ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
+            short numCpuThreads = 0;
+            if ( cl != null ) {
+                 numCpuThreads = cl.getSummary().numCpuThreads;
+            } else {
+                System.out.println("No cluster named '"+name+"' found");
+            }
+            out.print(numCpuThreads);
+            out.flush();
         }
 
         private void getClusterCpuCores(String name, PrintWriter out) throws IOException {
-            throw new UnsupportedOperationException("Not yet implemented");
+            ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
+            short numCpuCores = 0;
+            if ( cl != null ) {
+                 numCpuCores = cl.getSummary().numCpuCores;
+            } else {
+                System.out.println("No cluster named '"+name+"' found");
+            }
+            out.print(numCpuCores);
+            out.flush();
         }
 
         private void getClusterMemFree(String name, PrintWriter out) throws IOException {
-            throw new UnsupportedOperationException("Not yet implemented");
+            //effectiveMemory returned in MB
+            ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
+            long memFree = 0;
+            if (cl != null ) {
+                memFree = cl.getSummary().effectiveMemory*1024*1024;
+            } else {
+                System.out.println("No cluster named '"+name+"' found");
+            }
+            out.print(memFree);
+            out.flush();
         }
 
         private void getClusterMemTotal(String name, PrintWriter out) throws IOException {
-            throw new UnsupportedOperationException("Not yet implemented");
+            ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
+            long memTotal = 0;
+            if (cl != null ) {
+                memTotal = cl.getSummary().totalMemory;
+            } else {
+                System.out.println("No cluster named '"+name+"' found");
+            }
+            out.print(memTotal);
+            out.flush();
         }
         
         private void getClusterMemUsage(String name, PrintWriter out) throws IOException {
-            throw new UnsupportedOperationException("Not yet implemented");
+            //effectiveMemory returned in MB
+            ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
+            long memUsage = 0;
+            if (cl != null ) {
+                memUsage = cl.getSummary().totalMemory - (cl.getSummary().effectiveMemory*1024*1024);
+            } else {
+                System.out.println("No cluster named '"+name+"' found");
+            }
+            out.print(memUsage);
+            out.flush();
         }
       
         private void getClusterHostsOnline(String name, PrintWriter out) throws IOException {
-            throw new UnsupportedOperationException("Not yet implemented");
+            ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
+            int hostOnline = 0;
+            if (cl != null ) {
+                hostOnline = cl.getSummary().numEffectiveHosts;
+            } else {
+                System.out.println("No cluster named '"+name+"' found");
+            }
+            out.print(hostOnline);
+            out.flush();
         }
 
         private void getClusterHostsMaint(String name, PrintWriter out) throws IOException {
-            throw new UnsupportedOperationException("Not yet implemented");
+            ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
+            int hostMaint = 0;
+            if (cl != null ) {
+                hostMaint = cl.getSummary().numHosts - cl.getSummary().numEffectiveHosts;
+            } else {
+                System.out.println("No cluster named '"+name+"' found");
+            }
+            out.print(hostMaint);
+            out.flush();
         }
 
         private void getClusterHostsTotal(String name, PrintWriter out) throws IOException {
-            throw new UnsupportedOperationException("Not yet implemented");
+            ClusterComputeResource cl = (ClusterComputeResource)getManagedEntityByName(name, "ClusterComputeResource");
+            int hostTotal = 0;
+            if (cl != null ) {
+                hostTotal = cl.getSummary().numHosts;
+            } else {
+                System.out.println("No cluster named '"+name+"' found");
+            }
+            out.print(hostTotal);
+            out.flush();
         }
     }
 
