@@ -171,6 +171,18 @@ CentOS 4/5/6 (64 bits)
 ## Supported zabbix checks
 ```
 about
+cluster.discovery
+cluster.cpu[name,free]
+cluster.cpu[name,total]
+cluster.cpu[name,usage]
+cluster.cpu.num[name,threads]
+cluster.cpu.num[nane,cores]
+cluster.mem[name,free]
+cluster.mem[name,total]
+cluster.mem[name,usage]
+cluster.hosts[name,online]
+cluster.hosts[name,maint]
+cluster.hosts[name,total]
 datastore.discovery
 datastore.size[(uuid|name),free]
 datastore.size[(uuid|name),total]
@@ -240,6 +252,11 @@ vm.storage.committed[(uuid|name)]
 vm.storage.uncommitted[(uuid|name)]
 vm.storage.unshared[(uuid|name)]
 ```
+
+## Cache info
+Version 1.2.3 need config file with cache settings.
+To disable cache set *CacheTtl variables to 0.
+
 
 ## How to implement your own checks
 1. Find a function called

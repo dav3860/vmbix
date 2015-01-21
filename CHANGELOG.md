@@ -1,3 +1,8 @@
+1.2.3
+* Impoved caching
+* Added cache confing options in config file
+* Added cluster checks
+
 1.2.2
 * Improved the processing of performance counter values. Percents are now displayed as rounded percents (ie 28 for 28.33% instead of 2833).
 * Fixed remaining references to vmbixget.py in the templates.
