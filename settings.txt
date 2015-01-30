@@ -11,9 +11,3 @@ store.prefix=VmBix-
 store.dir=${store.prefix}${ver}
 java.src=src/java
 rpmbased.src=src/rpm-based
-
-downloaded=downloaded
-jargsurl=http://sourceforge.net/projects/jargs/files/latest/download?source=files
-vijavaurl=http://sourceforge.net/projects/vijava/files/latest/download?source=files
-gsonurl=https://google-gson.googlecode.com/files/google-gson-2.2.4-release.zip
-guavaurl=http://search.maven.org/remotecontent?filepath=com/google/guava/guava/18.0/guava-18.0.jar

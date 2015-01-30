@@ -1,10 +1,15 @@
 <!-- http://eqlbin.blogspot.com/2011/09/apache-ant.html -->
-<project name = "vmbix" default="all">
+<project name = "vmbix" default="all" xmlns:ivy="antlib:org.apache.ivy.ant">
 	<property file="settings.txt" />
 	<!-- <echo>main-class = ${main-class}</echo> -->
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
+
+        <target name="retrieve" description="Resolve and Retrieve with ivy">
+                <ivy:resolve />
+                <ivy:retrieve sync="true" type="jar,bundle" />
+        </target>
 	
 	<target name="compile">
 		<echo>Compiling...</echo>
@@ -33,87 +38,6 @@
 			</classpath>
 		</java>
 	</target>
-	
-	<target name="download.jargs">
-		<mkdir dir="${downloaded}"/>
-		<get src="${jargsurl}" dest="${downloaded}/jargs.zip" verbose="true" usetimestamp="true"/>
-	</target>
-	
-	<target name="download.vijava">
-		<mkdir dir="${downloaded}"/>
-		<get src="${vijavaurl}" dest="${downloaded}/vijava.zip" verbose="true" usetimestamp="true"/>
-	</target>
-
-        <target name="download.gson">
-                <mkdir dir="${downloaded}"/>
-                <get src="${gsonurl}" dest="${downloaded}/gson.zip" verbose="true" usetimestamp="true"/>
-        </target>
-
-        <target name="download.guava">
-                <mkdir dir="${downloaded}/guava"/>
-                <get src="${guavaurl}" dest="${downloaded}/guava/guava.jar" verbose="true" usetimestamp="true"/>
-        </target>
-	
-	<target name="unzip.jargs">
-		<unzip src="${downloaded}/jargs.zip" dest="${downloaded}/jargs">
-			<patternset>
-				<include name="**/*.jar"/>
-				<exclude name="**/*test*.jar"/>
-			</patternset>
-		</unzip>
-	</target>
-
-        <target name="unzip.gson">
-                <unzip src="${downloaded}/gson.zip" dest="${downloaded}/gson">
-                        <patternset>
-                                <include name="**/*.jar"/>
-                                <exclude name="**/*test*.jar"/>
-                        </patternset>
-                </unzip>
-        </target>
-	
-	<target name="copy.vijava">
-		<mkdir dir="${lib.dir}"/>
-		<unzip src="${downloaded}/vijava.zip" dest="${downloaded}/vijava"/>
-		<copy todir="${lib.dir}" flatten="true">
-			<fileset dir="${downloaded}/vijava">
-				<include name="**/*.jar"/>
-			</fileset>
-		</copy>
-	</target>
-	
-	<target name="copy.jargs" depends="unzip.jargs">
-		<mkdir dir="${lib.dir}"/>
-		<copy todir="${lib.dir}" flatten="true">
-			<fileset dir="${downloaded}/jargs">
-				<include name="**/*.jar"/>
-			</fileset>
-		</copy>
-	</target>
-
-        <target name="copy.gson" depends="unzip.gson">
-                <mkdir dir="${lib.dir}"/>
-                <copy todir="${lib.dir}" flatten="true">
-                        <fileset dir="${downloaded}/gson">
-                                <include name="**/*.jar"/>
-                        </fileset>
-                </copy>
-        </target>
-
-        <target name="copy.guava">
-                <mkdir dir="${lib.dir}"/>
-                <copy todir="${lib.dir}" flatten="true">
-                        <fileset dir="${downloaded}/guava">
-                                <include name="**/*.jar"/>
-                        </fileset>
-                </copy>
-        </target>
-
-	<target name="get.jargs" depends="download.jargs, copy.jargs"/>
-	<target name="get.vijava" depends="download.vijava, copy.vijava"/>
-        <target name="get.gson" depends="download.gson, copy.gson"/>
-        <target name="get.guava" depends="download.guava, copy.guava"/>
-	<target name="get.libs" depends="get.vijava, get.jargs, get.gson, get.guava"/>
 	
 	<target name="store">
 		<delete dir="${store.dir}"/>
@@ -162,7 +86,7 @@
 	
 	<target name="make" depends="compile, jar, store, zip"/>
 	
-	<target name="all" depends="get.libs, compile, jar, store"/>
+	<target name="all" depends="retrieve, compile, jar, store"/>
 	<target name="checks">
 		<echo>${cheks.cmd}</echo>
 		<exec executable="/bin/sh">

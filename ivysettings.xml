@@ -1,0 +1,10 @@
+<ivysettings>
+    <settings defaultResolver="central"/>
+    <resolvers>
+        <ibiblio name="central" m2compatible="true"/>
+        <ibiblio name="jboss" m2compatible="true" root="https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/"/>
+    </resolvers>
+    <modules>
+        <module organisation="net.sf" name="jargs" resolver="jboss"/>
+    </modules>
+</ivysettings>

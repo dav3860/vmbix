@@ -51,6 +51,16 @@ Check the [Releases](https://github.com/dav3860/vmbix/releases) section for the 
 ## Or build from source
 Note: you'll need to install JDK and Apache Ant to follow this article. Sources could also be compiled manually, without ant.
 
+### Install Ant and Ivy
+First, you need to install Apache Ant and Ivy.
+```
+tar -C /opt/ant/ -xzvf apache-ant-1.8.2-bin.tar.gz
+tar -xzvf apache-ivy-2.2.0-bin-with-deps.tar.gz
+cp apache-ivy-2.2.0/ivy-2.2.0.jar /opt/ant/apache-ant-1.8.2/lib
+export ANT_HOME=/opt/ant/apache-ant-1.8.2
+export PATH=$PATH:$ANT_HOME/bin
+```
+
 ### Download source code
 ```
 git clone https://github.com/dav3860/vmbix.git
@@ -61,7 +71,7 @@ git clone https://github.com/dav3860/vmbix.git
 cd vmbix
 ant
 ```
-Ant should download required jargs, gson and vijava libraries, compile the sources and place compiled code to VmBix folder.
+Ant should download the required libraries, compile the sources and place compiled code to VmBix folder.
 
 ## Installation
 ### Copy files
