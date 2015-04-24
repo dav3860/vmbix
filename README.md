@@ -43,7 +43,7 @@ TEST# vm.counter[VM01,virtualDisk.totalReadLatency,scsi2:4,300]
 2
 ```
 
-This project is a fork of the original VmBix by ihryamzik (https://code.google.com/p/vmbix/) 
+This project is a fork of the original VmBix by @hryamzik
 
 ## Get the latest release binaries
 Check the [Releases](https://github.com/dav3860/vmbix/releases) section for the latest ZIP archive of VmBix. Extract the archive and install the files (see below).
