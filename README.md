@@ -82,7 +82,7 @@ vmbix/zabbix_templates/new/template_vmbix_esx.xml      # Host zabbix template
 vmbix/zabbix_templates/new/template_vmbix_vm.xml       # Virtual Machine zabbix template
 [...]
 ```
-Copy files from the vmbix/ folder to you system accordingly to these path, except the JAR file with dependencies which should be placed in /usr/local/vmbix by default. Make shell scripts executable:
+Copy files from the vmbix/ folder to you system accordingly to these path, except the JAR file with dependencies which should be renamed vmbix.jar and placed in /usr/local/vmbix by default. Make shell scripts executable:
 
 ```
 chmod +x /etc/init.d/vmbixd
