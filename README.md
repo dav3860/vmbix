@@ -168,7 +168,7 @@ CentOS 4/5/6 (64 bits)
 ```
 If useuuid is set to true in the configuration file, objects are identified using their UUID :
 ```
-# zabbix_get -s 127.x.y.z -p 12050 -k vm.guest.os[[421448c4-8970-28f0-05a5-90a20724bd08]
+# zabbix_get -s 127.x.y.z -p 12050 -k vm.guest.os[421448c4-8970-28f0-05a5-90a20724bd08]
 CentOS 4/5/6 (64 bits)
 ```
 
