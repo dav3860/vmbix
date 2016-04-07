@@ -3,8 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.dav3860</groupId>
     <artifactId>vmbix</artifactId>
-    <version>2.0</version>
+    <version>2.1-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <name>vmbix</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
@@ -67,13 +68,19 @@
             <manifest>
                 <addClasspath>true</addClasspath>
                 <mainClass>net.dav3860.VmBix</mainClass>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
             </archive> 
+            <!--               
             <descriptorRefs>
               <descriptorRef>jar-with-dependencies</descriptorRef>
             </descriptorRefs>
+            -->
+            <descriptors>
+                <descriptor>assembly.xml</descriptor>
+            </descriptors>
           </configuration>
-        </plugin>
+        </plugin>        
       </plugins>
     </build>
 </project>

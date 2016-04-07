@@ -267,7 +267,9 @@ public class VmBix {
     static void methods() {
         System.out.println(
                 "Available methods :                                           \n"
-                + "about                                                       \n"
+                + "vmbix.about                                                 \n"
+                + "vmbix.ping                                                  \n"
+                + "vmbix.version                                               \n"                             
                 + "cluster.discovery                                           \n"
                 + "cluster.cpu[name,free]                                      \n"
                 + "cluster.cpu[name,total]                                     \n"
@@ -288,6 +290,7 @@ public class VmBix {
                 + "datastore.size[(uuid|name),provisioned]                     \n"
                 + "datastore.size[(uuid|name),uncommitted]                     \n"
                 + "esx.connection[(uuid|name)]                                 \n"
+                + "esx.uptime[(uuid|name)]                                     \n"                        
                 + "esx.cpu.load[(uuid|name),cores]                             \n"
                 + "esx.cpu.load[(uuid|name),total]                             \n"
                 + "esx.cpu.load[(uuid|name),used]                              \n"
@@ -312,14 +315,14 @@ public class VmBix {
                 + "esx.counter[(uuid|name),counter,[instance,interval]]        \n"
                 + "esx.counter.discovery[(uuid|name),counter,[interval]]       \n"
                 + "esx.counter.list[(uuid|name)]                               \n"
-                + "event.latest[*]                                             \n"
-                + "ping                                                        \n"
+                + "event.latest[*]                                             \n"                  
                 + "vm.consolidation[(uuid|name),needed]                        \n"
                 + "vm.cpu.load[(uuid|name),cores]                              \n"
                 + "vm.cpu.load[(uuid|name),total]                              \n"
                 + "vm.cpu.load[(uuid|name),used]                               \n"
                 + "vm.discovery[*]                                             \n"
                 + "vm.folder[(uuid|name)]                                      \n"
+                + "vm.uptime[(uuid|name)]                                      \n"                      
                 + "vm.name[(uuid|name)]                                        \n"
                 + "vm.annotation[(uuid|name)]                                  \n"
                 + "vm.guest.disk.discovery[(uuid|name)]                        \n"
@@ -527,7 +530,8 @@ public class VmBix {
 
         private void checkAllPatterns(String string, PrintWriter out) throws IOException {
             Pattern pPing = Pattern.compile("^(?:\\s*ZBXD.)?.*(ping)");        //        
-            Pattern pAbout = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)");        //
+            Pattern pAbout = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)");        //            
+            Pattern pVersion = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.version)");        //            
             Pattern pClusters = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.(discovery)");        //
             Pattern pClusterCpuFree = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),free\\]");        //
             Pattern pClusterCpuTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),total\\]");        //
@@ -548,6 +552,7 @@ public class VmBix {
             Pattern pHosts = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.(discovery)");        // 
             Pattern pDatastores = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.(discovery)");        //             
             Pattern pHostConnection = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.connection\\[(.+)\\]");        // 
+            Pattern pHostUptime = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.uptime\\[(.+)\\]");        //             
             Pattern pHostStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.status\\[(.+)\\]");        // 
             Pattern pHostName = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.name\\[(.+)\\]");        //             
             Pattern pVmStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.status\\[(.+)\\]");        // 
@@ -589,6 +594,7 @@ public class VmBix {
             Pattern pVmHost = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.host\\[(.+)\\]");        // 
             Pattern pVmPowerState = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.powerstate\\[(.+)\\]");        // 
             Pattern pVmFolder = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.folder\\[(.+)\\]");        // 
+            Pattern pVmUptime = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.uptime\\[(.+)\\]");        //             
             Pattern pVmAnnotation = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.annotation\\[(.+)\\]");        //
             Pattern pVmStorageCommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.committed\\[(.+)\\]");        // 
             Pattern pVmStorageUncommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.uncommitted\\[(.+)\\]");        // 
@@ -611,7 +617,7 @@ public class VmBix {
             Pattern pDatastoreFree = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),free\\]");        // 
             Pattern pDatastoreTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),total\\]");        // 
             Pattern pDatastoreProvisioned = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),provisioned\\]");        // 
-            Pattern pDatastoreUncommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),uncommitted\\]");        //            
+            Pattern pDatastoreUncommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),uncommitted\\]");        //       
 
             String found;
             String[] founds;
@@ -625,6 +631,11 @@ public class VmBix {
                 getAbout(out);
                 return;
             }
+            found = checkPattern(pVersion, string);
+            if (found != null) {
+                getVersion(out);
+                return;
+            }            
             found = checkPattern(pClusters, string);
             if (found != null) {
                 getClusters(out);
@@ -721,6 +732,11 @@ public class VmBix {
                 getHostConnection(found, out);
                 return;
             }
+            found = checkPattern(pHostUptime, string);
+            if (found != null) {
+                getHostUptime(found, out);
+                return;
+            }            
             found = checkPattern(pHostStatus, string);
             if (found != null) {
                 getHostStatus(found, out);
@@ -921,6 +937,11 @@ public class VmBix {
                 getVmFolder(found, out);
                 return;
             }
+            found = checkPattern(pVmUptime, string);
+            if (found != null) {
+                getVmUptime(found, out);
+                return;
+            }
             found = checkPattern(pVmAnnotation, string);
             if (found != null) {
                 getVmAnnotation(found, out);
@@ -1040,7 +1061,7 @@ public class VmBix {
             if (found != null) {
                 getDatastoreSizeUncommitted(found, out);
                 return;
-            }
+            }       
 
             LOG.info("String '" + string + "' not supported");
             out.print("ZBX_NOTSUPPORTED\n");
@@ -1137,6 +1158,7 @@ public class VmBix {
                     break;
             }
             if (me != null) {
+                LOG.debug("CacheHIT: " + meType + " uuid: " + uuid);
                 return me;
             }
             ManagedEntity[] mes = getManagedEntities(meType);
@@ -1180,6 +1202,7 @@ public class VmBix {
                             dsCache.put(meUuid, ent);
                             break;
                     }
+                    LOG.debug("CacheMISS: " + meType + " uuid: " + uuid);
                     break;
                 }
             }
@@ -1245,7 +1268,7 @@ public class VmBix {
             hostPerfCache.put(name, queryAvailablePerfMetric);
             LOG.debug("CacheMISS: PerfID name: " + name);
             return queryAvailablePerfMetric;
-        }
+        }     
 
         /**
          * Always return "1"
@@ -1255,6 +1278,29 @@ public class VmBix {
             out.flush();
 
         }
+        
+        /**
+         * Returns VmBix version
+        */
+        private void getVersion(PrintWriter out) throws IOException {
+            String version = null;
+
+            if (version == null) {
+                Package aPackage = getClass().getPackage();
+                if (aPackage != null) {
+                    version = aPackage.getImplementationVersion();
+                    if (version == null) {
+                        version = aPackage.getSpecificationVersion();
+                    }
+                }
+            }
+
+            if (version == null) {
+                // we could not compute the version so use a blank
+            }      
+            out.print(version);
+            out.flush();        
+        }  
 
         /**
          * Returns the CPU power of a host in MHz
@@ -1608,7 +1654,7 @@ public class VmBix {
 
         private void getDatacenterStatus(String dcName, String type, PrintWriter out) throws IOException {
             //throw new UnsupportedOperationException("Not yet implemented");
-            ManagedEntity dc = getManagedEntityByName(dcName, "Datacenter");
+            ManagedEntity dc = getManagedEntity(dcName, "Datacenter");
             int intStatus = 4;
             String status = null;
             if (dc != null) {
@@ -1692,6 +1738,27 @@ public class VmBix {
         }
 
         /**
+         * Returns the uptime of a host in seconds
+         */        
+        private void getHostUptime(String hostName, PrintWriter out) throws IOException {
+            HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+            Integer uptime = 0;
+            if (host == null) {
+                LOG.warn("No host named '" + hostName + "' found");
+            } else {
+                HostListSummary hostSummary = host.getSummary();
+                HostListSummaryQuickStats hostQuickStats = hostSummary.getQuickStats();
+
+                uptime = hostQuickStats.getUptime();
+                if (uptime == null) {
+                    uptime = 0;
+                }
+            }
+            out.print(uptime);
+            out.flush();
+        }        
+
+        /**
          * Returns the CPU usage of a host
          */
         private void getHostCpuUsed(String hostName, PrintWriter out) throws IOException {
@@ -1735,7 +1802,7 @@ public class VmBix {
             HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
             Short cores = 0;
             if (host == null) {
-                LOG.warn("No host named '" + hostName + "' found\n");
+                LOG.warn("No host named '" + hostName + "' found");
             } else {
                 HostListSummary hls = host.getSummary();
                 HostHardwareSummary hosthwi = hls.getHardware();
@@ -1755,7 +1822,7 @@ public class VmBix {
             HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
             Integer usedMB = 0;
             if (host == null) {
-                System.out.print("No host named '" + hostName + "' found\n");
+                LOG.warn("No host named '" + hostName + "' found");
             } else {
                 HostListSummary hostSummary = host.getSummary();
                 HostListSummaryQuickStats hostQuickStats = hostSummary.getQuickStats();
@@ -2315,7 +2382,7 @@ public class VmBix {
             JsonArray jArray = new JsonArray();
             HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
             if (host == null) {
-                LOG.warn("No host named '" + hostName + "' found\n");
+                LOG.warn("No host named '" + hostName + "' found");
             } else {
                 HostRuntimeInfo hostrti = host.getRuntime();
                 String pState = hostrti.getPowerState().toString();
@@ -2378,7 +2445,7 @@ public class VmBix {
             HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
             int value = 0;
             if (host == null) {
-                LOG.warn("No host named '" + hostName + "' found\n");
+                LOG.warn("No host named '" + hostName + "' found");
             } else {
                 HostRuntimeInfo hostrti = getHostRuntimeInfo(hostName, host);
                 String pState = hostrti.getPowerState().toString();
@@ -2546,6 +2613,27 @@ public class VmBix {
                 }
             }
             out.print(vmFolder);
+            out.flush();
+        }
+        
+        /**
+         * Returns the uptime in seconds of a virtual machine
+         */
+        private void getVmUptime(String vmName, PrintWriter out) throws IOException {
+            VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+            Integer uptime = 0;
+            if (vm == null) {
+                LOG.warn("No vm named '" + vmName + "' found");
+            } else {
+                VirtualMachineSummary vmSummary = vm.getSummary();
+                VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
+
+                uptime = vmQuickStats.getUptimeSeconds();
+                if (uptime == null) {
+                    uptime = 0;
+                }
+            }
+            out.print(uptime);
             out.flush();
         }
 
@@ -2827,7 +2915,7 @@ public class VmBix {
                 VirtualMachineSummary vmSummary = vm.getSummary();
                 VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
                 if (vmGuest == null) {
-                    System.out.print("Cannot query guest OS for VM '" + vmName);
+                    LOG.info("Cannot query guest OS for VM '" + vmName);
                     guestHostName = "";
                 } else {
                     guestHostName = vmGuest.getHostName();
@@ -2938,7 +3026,7 @@ public class VmBix {
                 VirtualMachineSummary vmSummary = vm.getSummary();
                 VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
                 if (vmGuest == null) {
-                    System.out.print("Cannot query guest OS for VM '" + vmName);
+                    LOG.info("Cannot query guest OS for VM '" + vmName);
                 } else {
                     guestIpAddress = vmGuest.getIpAddress();
                 }
@@ -3119,7 +3207,7 @@ public class VmBix {
          * Returns the free space of a datastore
          */
         private void getDatastoreSizeFree(String dsName, PrintWriter out) throws IOException {
-            Datastore ds = (Datastore) getManagedEntityByName(dsName, "Datastore");
+            Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
             Long freeSpace = new Long(0);
             if (ds == null) {
                 LOG.warn("No datastore named '" + dsName + "' found");
@@ -3138,7 +3226,7 @@ public class VmBix {
          * Returns the size of a datastore
          */
         private void getDatastoreSizeTotal(String dsName, PrintWriter out) throws IOException {
-            Datastore ds = (Datastore) getManagedEntityByName(dsName, "Datastore");
+            Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
             Long capacity = new Long(0);
             if (ds == null) {
                 LOG.warn("No datastore named '" + dsName + "' found");
@@ -3157,7 +3245,7 @@ public class VmBix {
          * Returns the provisioned size of a datastore
          */
         private void getDatastoreSizeProvisioned(String dsName, PrintWriter out) throws IOException {
-            Datastore ds = (Datastore) getManagedEntityByName(dsName, "Datastore");
+            Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
             Long provSpace = new Long(0);
             if (ds == null) {
                 LOG.warn("No datastore named '" + dsName + "' found");
@@ -3180,7 +3268,7 @@ public class VmBix {
          * Returns the uncommitted size of a datastore
          */
         private void getDatastoreSizeUncommitted(String dsName, PrintWriter out) throws IOException {
-            Datastore ds = (Datastore) getManagedEntityByName(dsName, "Datastore");
+            Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
             Long freeSpace = new Long(0);
             if (ds == null) {
                 LOG.warn("No datastore named '" + dsName + "' found");
@@ -3225,7 +3313,7 @@ public class VmBix {
                         connected.close();
                     } catch (IOException e) {
                         LOG.info("thread I/O error: "
-                                + e.toString() + "\n closing socket"
+                                + e.toString() + ". closing socket"
                         );
                         try {
                             connected.close();
@@ -3268,7 +3356,7 @@ public class VmBix {
         }
 
         private void getClusterCpuUsage(String name, PrintWriter out) throws IOException {
-            ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+            ClusterComputeResource cl = (ClusterComputeResource) getManagedEntity(name, "ClusterComputeResource");
             long cpuUsage = 0;
             if (cl != null) {
                 cpuUsage = cl.getSummary().totalCpu - cl.getSummary().effectiveCpu;
@@ -3305,7 +3393,7 @@ public class VmBix {
 
         private void getClusterMemFree(String name, PrintWriter out) throws IOException {
             //effectiveMemory returned in MB
-            ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+            ClusterComputeResource cl = (ClusterComputeResource) getManagedEntity(name, "ClusterComputeResource");
             long memFree = 0;
             if (cl != null) {
                 memFree = cl.getSummary().effectiveMemory * 1024 * 1024;
