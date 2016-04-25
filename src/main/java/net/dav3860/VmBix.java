@@ -156,7 +156,7 @@ public class VmBix {
                         sdkUrl = prop.getProperty("serviceurl");
                     }
                     if (ipaddr == null) {
-                        ipaddr = prop.getProperty("binaddress");
+                        ipaddr = prop.getProperty("bindaddress");
                     }
                     if (port == null) {
                         port = Integer.parseInt(prop.getProperty("listenport"));
@@ -529,6 +529,8 @@ public class VmBix {
         }
 
         private void checkAllPatterns(String string, PrintWriter out) throws IOException {
+            LOG.debug("Parsing this request : " + string);
+            
             Pattern pPing = Pattern.compile("^(?:\\s*ZBXD.)?.*(ping)");        //        
             Pattern pAbout = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)");        //            
             Pattern pVersion = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.version)");        //            
@@ -1748,10 +1750,12 @@ public class VmBix {
             } else {
                 HostListSummary hostSummary = host.getSummary();
                 HostListSummaryQuickStats hostQuickStats = hostSummary.getQuickStats();
-
-                uptime = hostQuickStats.getUptime();
-                if (uptime == null) {
-                    uptime = 0;
+                
+                if (hostQuickStats != null) {
+                    uptime = hostQuickStats.getUptime();
+                    if (uptime == null) {
+                        uptime = 0;
+                    }
                 }
             }
             out.print(uptime);
@@ -2627,10 +2631,12 @@ public class VmBix {
             } else {
                 VirtualMachineSummary vmSummary = vm.getSummary();
                 VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
-
-                uptime = vmQuickStats.getUptimeSeconds();
-                if (uptime == null) {
-                    uptime = 0;
+                
+                if (vmQuickStats != null) {
+                    uptime = vmQuickStats.getUptimeSeconds();
+                    if (uptime == null) {
+                        uptime = 0;
+                    }
                 }
             }
             out.print(uptime);
@@ -3303,8 +3309,10 @@ public class VmBix {
                         int continues = 1;
                         while (continues == 1) {
                             String message = in.readLine();
-
-                            checkAllPatterns(message, out);
+                            
+                            if (message != null) {
+                                checkAllPatterns(message, out);
+                            }
                             continues = 0;
 
                         }
