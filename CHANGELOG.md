@@ -1,3 +1,8 @@
+2.1
+* Added the esx.uptime and vm.uptime methods (not always relevant)
+* Added the version method to query for VmBix version
+* Fixes
+
 2.0
 * Switched VMWare Java API to YAViJava 6.0.3 instead of ViJava 5.1. This adds support for VMWare API 5.5 and 6.0.
 * Switched from ant/ivy to Maven.
