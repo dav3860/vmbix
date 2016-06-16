@@ -1,43 +1,47 @@
 sudo: false
 language: java
 os:
-  - linux  
+- linux
 env:
   global:
-    - PROJECT_NAME=vmbix
-    - VERSION=2.1
-    - DEPLOY_ROOT=$TRAVIS_BUILD_DIR/deploy-root
-    - secure: "pE660u65qVgDijr5lRPSYlogkboLdJw1oSrP8tYLJ9PeHwo6P4vW8UyMCL6PVCrXtPssMpqBlbLR3C57FnRKnD64xWTvjLUbBf7rh/fKqjLYkKVfUIUlDts1HEoHLLo8UzyXNwZp7734eP2dHmyvEgO9MnFRAAD+Ix4ByQwFABfgjvYQI+hk8+eeaJnd5kDQmlfgtT0FTz1P8KwpGVFDWM1Q3HcVLoSDgJNy4CSiofOoMP8TUFhGMaocIroHZMssRsR2SmZ3WG+ob6SLXnzYQZ3T8bt/qZop7uoKF5IXS49RM9a7qk0ARnAPeFmLl0c+qXe35QudWfAh9LHt3c6rDKKHhFcIHQTqLJ5OhhK0zplAtA5LAKckFZ23qw1sxlR1qWaI57GxeZxhZPB1V6iW63WQXS0bV0/c0b25agbGEfqKtmayAMefnonKlwC5kd/AmY+VUow1oEcOru8BmaE2xBPIwBH0v+ojg45gLTB97FcbsUZ7zEnUw82tfKkPENv/NTfjbqMBq21/XIX5uBlr3bSNujhNGZaAsHOWLCZsPgtxlvE118L2UNQlTsa8hYT6LixYJJr+Hai/TEGGS9UbWqSOVjUzXQd+AdMiZqOne9oG5mGgiFgQ2FnYeHI8UY+WWD/ZxJI0vdj2HlB3BOYhGsX6xkY9FJ/+Dxp7T8Gs27I="
-  matrix:    
-    - TARGET_PLATFORM=deb
-    - TARGET_PLATFORM=rpm
+  - PROJECT_NAME=vmbix
+  - VERSION=2.1
+  - DEPLOY_ROOT=$TRAVIS_BUILD_DIR/deploy-root
+  - secure: J81lB53G9Mb7I2cn+djtqSZus4SNKE/4Ldn9hwSl3rCHiyT/l3+mdBzTWYmxS6WCh1JvzEa4FhPyAl1rp3lFP3UQael4JrokCbouzOBRTfiqrK1RfRKSz+FqwY4krt4b5Q57EZGz9UWPRDZ5D1Kw0qun2p9BfDWs61isOG6Bcq9lZB4ZkwlJeRbiLJ7t4ZLaTToDDqN5IvPu2mqf5zQDPhkWZAvOujs0mPYe55uaICTK3+/SuSZUgNM/XNgnx5iFIAwCI52pHB71GXlJFo+zblQQZn5FkUwrnYtX7ImKrdiiTNbtN6FBFsg3WbWgLRv4lt3roVVuvI0k/KCtmYs+K3IblCnk0O4sNWlgVu6L0QsY8jvAQ9uV4uDUhSMMg1nIaWwgTLKZNe/s6W0cOADUTDSLL/IfJaRNbbSJ2j6INhw1k5iiuJrY/3nIcfWQPyI2mVNg6AFs7NiypqPIkm4BAGPFZCXJ5S2+ms5WO3RfOsxS6B6sz+fcswM2R1NSfFcaqrbh+wS1BIty+MawBXrW1mo+ktep87udJqBAuFXB2ruEWVhKPlJz+ZOjU+OTBbDw90SZzmFnOg+8jAJf8MxpsQGCUbzU5lixxmTTvDv6Fiy83UchcsZ7iH3XNp7CQ44ljtzS+Ps7ta91LxhMNReFb7VWOYS6yfudBnpPkPGM6mg=
+  - secure: bxzbGcl/uXeblzCk6mF0mQlCagLQVJT392ymd5yn7J/flCWpnZdrBaLiiK9iqq0gOevPZGTRbOXFGxZNC/1YCtuYusZD6O+rUyroC/qWRJTIqfEgt/XFSZyYZluqgHFk6PpoWZkrSQa61+vi3YBAGhwyeDZkBzH/k4DglgAIv+nmjP5ZVA2YkjK92/rBNQO0rkj9hc34jyynB27Dps7PwB0x3YdYUshL1PusxFNBJU2PpL3zCYJHNm7vbneirhUQhuWwiouUFX4Hnb9GzJW3PFUhAqlD6tL1YaKKwMUUepxt9s9EohEOtww6zTStlzl7/thxJCz57YmqeJ+LrPX5oMTctIIEa+eveenlY0RI7OuI3t5lYelmU2QvBJgbIDBpWp1DSyKq1j76L8z7iQ/2E7D9GfEQ9nLyDdTwWz4iy7CMumPtshON2pqIUiEg69Ix07SrPlwIX0O+6hkOKlwcyGlMYrPpiaXBwr8HWp5HxuIuSPAGbDNB9oC9MQ8U1Rm3ISDjnsmak6FGb3FNcs5KHTb7OP6x0EdnTofy/folaU/cQryV+FifTCCbfFuwG2gLX3dn/aImwTiehOvy89HIA5OcTr8ueDVV7EvWTzWuoMECchA4BEdiMHgJrCRpgT/f3XYcltK/sdY0bKx33L2L4caUtDXiqjT1+6WaO5L9tC8=
+  matrix:
+  - TARGET_PLATFORM=deb
+  - TARGET_PLATFORM=rpm
 addons:
   apt:
     packages:
-      - rpm
+    - rpm
     sources:
-      - ubuntu-toolchain-r-test
-install:  
-  - mkdir -p ${DEPLOY_ROOT}/usr/local/sbin/
-  - mkdir -p ${DEPLOY_ROOT}/usr/local/vmbix/
-  - mkdir -p ${DEPLOY_ROOT}/etc
-  - gem install fpm
-  - export TAR_FILE_NAME=${PROJECT_NAME}-${VERSION}.tar.gz
-  - if [ "$TARGET_PLATFORM" == "deb" ]; then export FILE_NAME="${PROJECT_NAME}_${VERSION}-1_amd64"; export JAVA_PACKAGE="default-jre-headless"; fi
-  - if [ "$TARGET_PLATFORM" == "rpm" ]; then export FILE_NAME="${PROJECT_NAME}-${VERSION}-1.x86_64"; export JAVA_PACKAGE="java-1.7.0-openjdk-devel"; fi
-
+    - ubuntu-toolchain-r-test
+install:
+- mkdir -p ${DEPLOY_ROOT}/usr/local/sbin/
+- mkdir -p ${DEPLOY_ROOT}/usr/local/vmbix/
+- mkdir -p ${DEPLOY_ROOT}/etc
+- gem install fpm
+- export TAR_FILE_NAME=${PROJECT_NAME}-${VERSION}.tar.gz
+- if [ "$TARGET_PLATFORM" == "deb" ]; then export FILE_NAME="${PROJECT_NAME}_${VERSION}-1_amd64";
+  export JAVA_PACKAGE="default-jre-headless"; fi
+- if [ "$TARGET_PLATFORM" == "rpm" ]; then export FILE_NAME="${PROJECT_NAME}-${VERSION}-1.x86_64";
+  export JAVA_PACKAGE="java-1.7.0-openjdk-devel"; fi
 script:
-  - mvn package  
-  - cp -dR ${TRAVIS_BUILD_DIR}/target/vmbix-${VERSION}-jar-with-dependencies.jar ${DEPLOY_ROOT}/usr/local/vmbix/vmbix.jar
-  - cp -dR ${TRAVIS_BUILD_DIR}/etc-${TARGET_PLATFORM}/* ${DEPLOY_ROOT}/etc/
-  - cp -dR ${TRAVIS_BUILD_DIR}/usr/ ${DEPLOY_ROOT}/
-  - chmod +x ${DEPLOY_ROOT}/etc/init.d/vmbixd
-  - chmod +x ${DEPLOY_ROOT}/usr/local/sbin/vmbix
-  - chmod +x ${DEPLOY_ROOT}/usr/local/sbin/vmbixd
-  - cd ${DEPLOY_ROOT}/
-  - tar -zcf $TRAVIS_BUILD_DIR/$TAR_FILE_NAME .
-  - fpm -p $TRAVIS_BUILD_DIR/${FILE_NAME}.${TARGET_PLATFORM} -s dir -t ${TARGET_PLATFORM} -n ${PROJECT_NAME} -v ${VERSION} --iteration 1 -C ${DEPLOY_ROOT} --description "${PROJECT_NAME} ${VERSION}" -d "${JAVA_PACKAGE}" usr etc
-
+- mvn package
+- cp -dR ${TRAVIS_BUILD_DIR}/target/vmbix-${VERSION}-jar-with-dependencies.jar ${DEPLOY_ROOT}/usr/local/vmbix/vmbix.jar
+- cp -dR ${TRAVIS_BUILD_DIR}/etc-${TARGET_PLATFORM}/* ${DEPLOY_ROOT}/etc/
+- cp -dR ${TRAVIS_BUILD_DIR}/usr/ ${DEPLOY_ROOT}/
+- chmod +x ${DEPLOY_ROOT}/etc/init.d/vmbixd
+- chmod +x ${DEPLOY_ROOT}/usr/local/sbin/vmbix
+- chmod +x ${DEPLOY_ROOT}/usr/local/sbin/vmbixd
+- cd ${DEPLOY_ROOT}/
+- tar -zcf $TRAVIS_BUILD_DIR/$TAR_FILE_NAME .
+- fpm -p $TRAVIS_BUILD_DIR/${FILE_NAME}.${TARGET_PLATFORM} -s dir -t ${TARGET_PLATFORM}
+  -n ${PROJECT_NAME} -v ${VERSION} --iteration 1 -C ${DEPLOY_ROOT} --description "${PROJECT_NAME}
+  ${VERSION}" -d "${JAVA_PACKAGE}" usr etc
 after_success:
-  - curl -T $TRAVIS_BUILD_DIR/${TAR_FILE_NAME} -ukireevco:${BINTRAY_KEY} https://api.bintray.com/content/kireevco/generic/${PROJECT_NAME}/${VERSION}/${TAR_FILE_NAME}
-  - curl -T $TRAVIS_BUILD_DIR/${FILE_NAME}.${TARGET_PLATFORM} -ukireevco:${BINTRAY_KEY} https://api.bintray.com/content/kireevco/${TARGET_PLATFORM}/${PROJECT_NAME}/${VERSION}/${FILE_NAME}.${TARGET_PLATFORM}
+- curl -T $TRAVIS_BUILD_DIR/${TAR_FILE_NAME} -udav3860:${BINTRAY_KEY} https://api.bintray.com/content/dav3860/generic/${PROJECT_NAME}/${VERSION}/${TAR_FILE_NAME}
+- curl -T $TRAVIS_BUILD_DIR/${FILE_NAME}.${TARGET_PLATFORM} -udav3860:${BINTRAY_KEY}
+  https://api.bintray.com/content/dav3860/${TARGET_PLATFORM}/${PROJECT_NAME}/${VERSION}/${FILE_NAME}.${TARGET_PLATFORM}
