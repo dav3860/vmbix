@@ -1,4 +1,4 @@
-# VmBix [![Build Status](https://travis-ci.org/dav3860/vmbix.svg?branch=master)](https://travis-ci.org/dav3860/vmbix)
+# VmBix ![alt text](https://travis-ci.org/dav3860/vmbix.svg?branch=master "Build Status")
 
 VmBix is a multi-thread TCP server written in java, it accepts connections from a Zabbix server/proxy/agent or zabbix_get and translates them to VMWare API calls.
 
