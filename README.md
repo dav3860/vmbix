@@ -105,7 +105,7 @@ tail -f /var/log/vmbix.log
 
 All the ESX servers, datastores and virtual machines will automatically be discovered and created in Zabbix. Here is how to configure Zabbix :
 
-1. Import the templates from zabbix_templates (import the vCenter templates after the others). There are two template flavours : with or without the Zabbix loadable module. The Zabbix loadable module method is useful if you want to monitor your virtual machines with a Zabbix agent in addition to VmBix.
+1. Import the templates from [zabbix_templates](https://github.com/dav3860/vmbix/tree/master/zabbix_templates) (import the vCenter templates after the others). There are two template flavours : with or without the Zabbix loadable module. The Zabbix loadable module method is useful if you want to monitor your virtual machines with a Zabbix agent in addition to VmBix.
   * Without the module, the VmBix items in Zabbix are configured with the "Zabbix agent" type. So Zabbix directly talks to VmBix using the Zabbix agent protocol on port 12050 by default. This is good, but it means that the hosts cannot also be monitored using the Zabbix agent as all the created hosts will have an IP of 127.0.0.1 and a port of 12050 by default for their "agent" interface. This is a limitation for virtual machines for example.
   * With the loadable module, the VmBix items in Zabbix are configured with an "Simple Check" type. Zabbix uses a loadable module to talk to VmBix. So it is still possible to use a Zabbix agent to monitor the hosts. The vmbix.so [loadable module](https://github.com/dav3860/vmbix_zabbix_module) must be installed on your server/proxy.
 
