@@ -320,7 +320,8 @@ public class VmBix {
                 + "vm.cpu.load[(uuid|name),cores]                              \n"
                 + "vm.cpu.load[(uuid|name),total]                              \n"
                 + "vm.cpu.load[(uuid|name),used]                               \n"
-                + "vm.discovery[*]                                             \n"
+                + "vm.discovery[*]                                             \n"                        
+                + "vm.discovery.full[*]                                        \n"
                 + "vm.folder[(uuid|name)]                                      \n"
                 + "vm.uptime[(uuid|name)]                                      \n"                      
                 + "vm.name[(uuid|name)]                                        \n"
@@ -550,6 +551,7 @@ public class VmBix {
             //TODO: split into two metods 
             Pattern pDatacenterStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*datacenter\\.status\\[(.+),(overall|config)\\]");      //            
             Pattern pLatestEvent = Pattern.compile("^(?:\\s*ZBXD.)?.*(event\\.latest)");        //            
+            Pattern pVMsFullDiscovery = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.(discovery)\\.(full)");       //            
             Pattern pVMs = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.(discovery)");        //
             Pattern pHosts = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.(discovery)");        // 
             Pattern pDatastores = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.(discovery)");        //             
@@ -714,11 +716,16 @@ public class VmBix {
                 getLatestEvent(out);
                 return;
             }
+            found = checkPattern(pVMsFullDiscovery, string);
+            if (found != null) {
+                getVMsFullDiscovery(out);
+                return;
+            }             
             found = checkPattern(pVMs, string);
             if (found != null) {
                 getVMs(out);
                 return;
-            }
+            }           
             found = checkPattern(pHosts, string);
             if (found != null) {
                 getHosts(out);
@@ -1228,7 +1235,7 @@ public class VmBix {
             PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
             String perfCounter = "";
             for (int i = 0; i < pcis.length; i++) {
-                perfCounter = pcis[i].getGroupInfo().getKey() + "." + pcis[i].getNameInfo().getKey();
+                perfCounter = pcis[i].getGroupInfo().getKey() + "." + pcis[i].getNameInfo().getKey() + "." + pcis[i].getRollupType().toString();
                 ctrProps = new ArrayList<String>();
                 ctrProps.add(String.valueOf(pcis[i].getKey()));
                 ctrProps.add(pcis[i].getUnitInfo().getKey().toString());
@@ -1579,6 +1586,51 @@ public class VmBix {
             out.print(jOutput);
             out.flush();
         }
+        
+        /**
+         * Returns a JSON-formatted array with the virtual machines list for use
+         * with Zabbix low-level discovery
+         */
+        private void getVMsFullDiscovery(PrintWriter out) throws IOException {
+            ManagedEntity[] vms = getManagedEntities("VirtualMachine");
+            JsonArray jArray = new JsonArray();
+            for (int j = 0; j < vms.length; j++) {
+                VirtualMachine vm = (VirtualMachine) vms[j];
+                VirtualMachineConfigInfo vmcfg = vm.getConfig();
+                if (vm != null && vmcfg != null) {
+                    Integer intStatus = 3;
+                    JsonObject jObject = new JsonObject();
+                    String vmName = vm.getName();
+                    String vmUuid = vmcfg.getUuid();
+                    jObject.addProperty("{#VIRTUALMACHINE}", vmName);
+                    jObject.addProperty("{#UUID}", vmUuid);
+                    VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
+                    String pState = vmrti.getPowerState().toString();
+                    if (null != pState) {
+                        switch (pState) {
+                            case "poweredOff":
+                                intStatus = 0;
+                                break;
+                            case "poweredOn":
+                                intStatus = 1;
+                                break;
+                            case "suspended":
+                                intStatus = 2;
+                                break;
+                            default:
+                                intStatus = 3;
+                                break;
+                        }
+                    }
+                    jObject.addProperty("{#POWERSTATE}", intStatus);
+                    jArray.add(jObject);
+                }
+            }
+            JsonObject jOutput = new JsonObject();
+            jOutput.add("data", jArray);
+            out.print(jOutput);
+            out.flush();
+        }        
 
         /**
          * Returns a JSON-formatted array with the hosts list for use with
@@ -2342,9 +2394,11 @@ public class VmBix {
             for (int j = 0; vals != null && j < vals.length; ++j) {
                 PerfMetricIntSeries val = (PerfMetricIntSeries) vals[j];
                 long[] serie = val.getValue();
-                pattern = Pattern.compile("max", Pattern.CASE_INSENSITIVE);
-                matcher = pattern.matcher(perfCounterName);
-                if (matcher.find() || perfCounterRollupType.equals("maximum")) { // this is a maximum
+                if (perfCounterRollupType.equals("average") || perfCounterRollupType.equals("latest") || perfCounterRollupType.equals("summation")) {
+                    for (int k = 0; k < serie.length; k++) {
+                        value = value + serie[k];
+                    }
+                } else if (perfCounterRollupType.equals("maximum")) { // this is a maximum
                     for (int k = 0; k < serie.length; k++) {
                         value = Math.max(value, serie[k]);
                     }
@@ -2354,13 +2408,13 @@ public class VmBix {
                         value = Math.min(value, serie[k]);
                     }
                 } else {
-                    for (int k = 0; k < serie.length; k++) {
-                        value = value + serie[k];
-                    }
-                    if (!perfCounterStatsType.equals("delta")) {
-                        value = value / serie.length;
-                    }
+                    LOG.error("Cannot handle metric " + perfCounterName + " rollup type");
                 }
+                
+                if (!perfCounterStatsType.equals("delta")) {
+                        value = value / serie.length;
+                }
+            
                 if (perfCounterUnitInfo.equals("percent")) {
                     // convert to percent
                     value = value / 100;
@@ -2533,7 +2587,7 @@ public class VmBix {
 
                     for (int i = 0; i < ciList.length; i++) {
                         PerfCounterInfo perfCounterInfo = ciList[i];
-                        String perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + "," + perfCounterInfo.getRollupType().toString() + ")";
+                        String perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + "." + perfCounterInfo.getRollupType().toString() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + ")";
                         out.print(perfCounterString + "\n");
                     }
                     out.flush();
@@ -2573,7 +2627,7 @@ public class VmBix {
 
                     for (int i = 0; i < ciList.length; i++) {
                         PerfCounterInfo perfCounterInfo = ciList[i];
-                        String perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + "," + perfCounterInfo.getRollupType().toString() + ")";
+                        String perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + "." + perfCounterInfo.getRollupType().toString() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + ")";
                         out.print(perfCounterString + "\n");
                     }
                     out.flush();
@@ -3364,7 +3418,7 @@ public class VmBix {
         }
 
         private void getClusterCpuUsage(String name, PrintWriter out) throws IOException {
-            ClusterComputeResource cl = (ClusterComputeResource) getManagedEntity(name, "ClusterComputeResource");
+            ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
             long cpuUsage = 0;
             if (cl != null) {
                 cpuUsage = cl.getSummary().totalCpu - cl.getSummary().effectiveCpu;
@@ -3401,7 +3455,7 @@ public class VmBix {
 
         private void getClusterMemFree(String name, PrintWriter out) throws IOException {
             //effectiveMemory returned in MB
-            ClusterComputeResource cl = (ClusterComputeResource) getManagedEntity(name, "ClusterComputeResource");
+            ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
             long memFree = 0;
             if (cl != null) {
                 memFree = cl.getSummary().effectiveMemory * 1024 * 1024;
