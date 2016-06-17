@@ -1,4 +1,4 @@
-# VmBix [![Build Status](https://travis-ci.org/dav3860/vmbix.svg?branch=travis)](https://travis-ci.org/dav3860/vmbix)
+# VmBix [![Build Status](https://travis-ci.org/dav3860/vmbix.svg?branch=master)](https://travis-ci.org/dav3860/vmbix)
 VmBix is a multi-thread TCP server written in java, it accepts connections from a Zabbix server/proxy/agent or zabbix_get and translates them to VMWare API calls.
 
 Starting from version 2.2, Zabbix can natively monitor a VMWare environment. But there are a few drawbacks :
@@ -46,13 +46,7 @@ TEST# vm.counter[VM01,virtualDisk.totalReadLatency.average,scsi2:4,300]
 ```
 
 ## Installation
-Get the latest version :
-
-| Package |  |
-| --- | --- |
-| Sources | [tar](https://dl.bintray.com/dav3860/generic/) |
-| Debian/Ubuntu | [deb](https://dl.bintray.com/dav3860/deb/) |
-| RedHat/Centos | [rpm](https://dl.bintray.com/dav3860/rpm/) |
+Get the latest version [here](https://bintray.com/dav3860/generic/vmbix/view/files).
 
 ## Or build from source
 Note: you'll need to install JDK and Maven to follow this article. Sources could also be compiled manually.
