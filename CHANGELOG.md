@@ -1,5 +1,5 @@
 2.2
-* BREAKING CHANGE : Refactored the performance counter methods to include the rollup type in the counter name. Instead of querying a performance
+* **BREAKING CHANGE** : Refactored the performance counter methods to include the rollup type in the counter name. Instead of querying a performance
   counter like this for example :
 
 ```
@@ -12,7 +12,9 @@ zabbix_get -s localhost -p 12050 -k vm.counter[VM01,cpu.usagemhz]
 zabbix_get -s localhost -p 12050 -k vm.counter[VM01,cpu.usagemhz.average]
 ```
 
-  The *.counter.list and *.counter.discovery have been updated in the same way
+  The \*.counter.list and \*.counter.discovery methods have been updated in the same way.
+* The project now uses Travis-CI and Bintray to automate the building and distribute the packages.
+* *Packages* for Debian/Ubuntu and RedHat/Centos are automatically created. You can get them [here](https://bintray.com/dav3860/generic/vmbix/view/files).
 
 2.1
 * Added the esx.uptime and vm.uptime methods (not always relevant)
@@ -43,7 +45,7 @@ zabbix_get -s localhost -p 12050 -k vm.counter[VM01,cpu.usagemhz.average]
 * Replaced the python script method by a [Zabbix loadable module](https://github.com/dav3860/vmbix_zabbix_module).
 
 1.2
-* Added the UUID to the JSON formatted output for the esx.discovery method. 
+* Added the UUID to the JSON formatted output for the esx.discovery method.
 * Added the UUID to the JSON formatted output for the vm.discovery method.
 * VMs and ESX hosts can now be queried by UUID instead of the name. The useuuid parameter must be set to "true" in the configuration file. Example :
 
@@ -144,7 +146,7 @@ vmbix now displays a version number when called without arguments.
 ```
   The method outputs an aggregated sum or average of real-time values, ex:
 ```
-  # zabbix_get -s localhost -p 12050 -k vm.counter[VMNAME,cpu.ready,,200] 
+  # zabbix_get -s localhost -p 12050 -k vm.counter[VMNAME,cpu.ready,,200]
   491
 ```
   An additional interval parameter was added to the configuration file to specify the default interval for the performance counter queries.
@@ -160,7 +162,7 @@ vmbix now displays a version number when called without arguments.
  0 -> poweredOff
  1 -> poweredOn
  2 -> suspended
- 3 -> unknown 
+ 3 -> unknown
 
  Status:
  0 -> grey
@@ -185,5 +187,3 @@ vmbix now displays a version number when called without arguments.
 
 1.0.0
 First release
-
-
