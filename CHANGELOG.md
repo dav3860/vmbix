@@ -1,3 +1,19 @@
+2.2
+* BREAKING CHANGE : Refactored the performance counter methods to include the rollup type in the counter name. Instead of querying a performance
+  counter like this for example :
+
+```
+zabbix_get -s localhost -p 12050 -k vm.counter[VM01,cpu.usagemhz]
+```
+
+  It now has be be queried like this :
+
+```
+zabbix_get -s localhost -p 12050 -k vm.counter[VM01,cpu.usagemhz.average]
+```
+
+  The *.counter.list and *.counter.discovery have been updated in the same way
+
 2.1
 * Added the esx.uptime and vm.uptime methods (not always relevant)
 * Added the version method to query for VmBix version
