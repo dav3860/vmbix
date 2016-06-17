@@ -37,7 +37,7 @@ script:
 - chmod +x ${DEPLOY_ROOT}/usr/local/sbin/vmbixd
 - cd ${DEPLOY_ROOT}/
 - tar -zcf $TRAVIS_BUILD_DIR/$TAR_FILE_NAME .
-- fpm -p $TRAVIS_BUILD_DIR/${FILE_NAME}.${TARGET_PLATFORM} -s dir -t ${TARGET_PLATFORM}
+- fpm -p $TRAVIS_BUILD_DIR/${FILE_NAME}.${TARGET_PLATFORM} -s dir -t ${TARGET_PLATFORM} --config-files ${DEPLOY_ROOT}/etc
   -n ${PROJECT_NAME} -v ${VERSION} --iteration 1 -C ${DEPLOY_ROOT} --description "${PROJECT_NAME}
   ${VERSION}" -d "${JAVA_PACKAGE}" usr etc
 after_success:
