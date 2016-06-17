@@ -50,9 +50,9 @@ Get the latest version :
 
 | Package |  |
 | --- | --- |
-| Sources | [tar](https://dl.bintray.com/dav3860/generic/:vmbix-2.1.tar.gz) |
-| Debian/Ubuntu | [deb]() |
-| RedHat/Centos | [rpm](https://dl.bintray.com/dav3860/rpm/:vmbix-2.1-1.x86_64.rpm) |
+| Sources | [tar](https://dl.bintray.com/dav3860/generic/) |
+| Debian/Ubuntu | [deb](https://dl.bintray.com/dav3860/deb/) |
+| RedHat/Centos | [rpm](https://dl.bintray.com/dav3860/rpm/) |
 
 ## Or build from source
 Note: you'll need to install JDK and Maven to follow this article. Sources could also be compiled manually.
