@@ -14,7 +14,7 @@ zabbix_get -s localhost -p 12050 -k vm.counter[VM01,cpu.usagemhz.average]
 
   The \*.counter.list and \*.counter.discovery methods have been updated in the same way.
 * The project now uses Travis-CI and Bintray to automate the building and distribute the packages.
-* *Packages* for Debian/Ubuntu and RedHat/Centos are automatically created. You can get them [here](https://bintray.com/dav3860/generic/vmbix/view/files).
+* *Packages* for Debian/Ubuntu and RedHat/Centos are automatically created. You can get them [here](https://bintray.com/dav3860/generic/vmbix/view/files) (thank you kireevco).
 * A new method vm.discovery.full[*] was added. It returns a JSON array of VMs including their power state, if you need to filter the LLD rule on the power state of the VMs.
 
 2.1
