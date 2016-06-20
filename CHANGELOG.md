@@ -16,6 +16,7 @@ zabbix_get -s localhost -p 12050 -k vm.counter[VM01,cpu.usagemhz.average]
 * The project now uses Travis-CI and Bintray to automate the building and distribute the packages.
 * *Packages* for Debian/Ubuntu and RedHat/Centos are automatically created. You can get them [here](https://bintray.com/dav3860/generic/vmbix/view/files) (thank you kireevco).
 * A new method vm.discovery.full[*] was added. It returns a JSON array of VMs including their power state, if you need to filter the LLD rule on the power state of the VMs.
+* The methods cluster.cpu[name,usage] and cluster.mem[name,free] had issues. They have been fixed.
 
 2.1
 * Added the esx.uptime and vm.uptime methods (not always relevant)
