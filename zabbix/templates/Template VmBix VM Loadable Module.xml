@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
-    <version>2.0</version>
-    <date>2014-09-23T11:53:36Z</date>
+    <version>3.0</version>
+    <date>2016-06-22T12:14:14Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -19,16 +19,10 @@
             </groups>
             <applications>
                 <application>
-                    <name>ESX</name>
-                </application>
-                <application>
                     <name>Virtual Machine</name>
                 </application>
                 <application>
                     <name>VM CPU</name>
-                </application>
-                <application>
-                    <name>VM Datastore</name>
                 </application>
                 <application>
                     <name>VM Memory</name>
@@ -37,278 +31,17 @@
                     <name>VM Network</name>
                 </application>
                 <application>
-                    <name>VM Performance</name>
-                </application>
-                <application>
                     <name>VM Storage</name>
                 </application>
             </applications>
             <items>
                 <item>
-                    <name>Active memory</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>1</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.memory,{HOST.NAME},active]</key>
-                    <delay>300</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units>B</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1048576</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM Memory</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>Ballooned memory</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>1</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.memory,{HOST.NAME},ballooned]</key>
-                    <delay>300</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units>B</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1048576</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM Memory</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>Compressed memory</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>1</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.memory,{HOST.NAME},compressed]</key>
-                    <delay>300</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units>B</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1048576</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM Memory</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>Consolidation Needed</name>
-                    <type>3</type>
+                    <name>CPU Total</name>
+                    <type>15</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[vm.consolidation,{HOST.NAME},needed]</key>
-                    <delay>3600</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units/>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>3</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM Storage</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>Consumed memory</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>1</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.memory,{HOST.NAME},consumed]</key>
-                    <delay>300</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units>B</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1048576</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM Memory</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>CPU Cores</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>0</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.cpu.load,{HOST.NAME},cores]</key>
-                    <delay>3600</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units/>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM CPU</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>CPU Freq</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>1</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.cpu.load,{HOST.NAME},total]</key>
+                    <key>vm.cpu.load[{HOST.HOST},all]</key>
                     <delay>3600</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -324,9 +57,9 @@
                     <snmpv3_authpassphrase/>
                     <snmpv3_privprotocol>0</snmpv3_privprotocol>
                     <snmpv3_privpassphrase/>
-                    <formula>1000000</formula>
+                    <formula>1</formula>
                     <delay_flex/>
-                    <params/>
+                    <params>last(&quot;vmbix[vm.cpu.load,{HOST.HOST},total]&quot;)*last(&quot;vmbix[vm.cpu.load,{HOST.HOST},cores]&quot;)</params>
                     <ipmi_sensor/>
                     <data_type>0</data_type>
                     <authtype>0</authtype>
@@ -369,50 +102,7 @@
                     <snmpv3_privpassphrase/>
                     <formula>1</formula>
                     <delay_flex/>
-                    <params>(last(&quot;vmbix[vm.cpu.load,{HOST.NAME},used]&quot;)/last(&quot;vm.cpu.load[{HOST.HOST},all]&quot;))*100</params>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM CPU</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>CPU Ready</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>1</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.counter,{HOST.NAME},cpu.ready]</key>
-                    <delay>300</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>0</value_type>
-                    <allowed_hosts/>
-                    <units>s</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>0.001</formula>
-                    <delay_flex/>
-                    <params/>
+                    <params>(last(&quot;vmbix[vm.cpu.load,{HOST.HOST},used]&quot;)/last(&quot;vm.cpu.load[{HOST.HOST},all]&quot;))*100</params>
                     <ipmi_sensor/>
                     <data_type>0</data_type>
                     <authtype>0</authtype>
@@ -455,7 +145,93 @@
                     <snmpv3_privpassphrase/>
                     <formula>1</formula>
                     <delay_flex/>
-                    <params>(last(&quot;vmbix[vm.counter,{HOST.NAME},cpu.ready]&quot;) / {$PERF_MGR_INTERVAL}) * 100</params>
+                    <params>(last(&quot;vmbix[vm.counter,{HOST.HOST},cpu.ready.summation]&quot;) / {$PERF_MGR_INTERVAL}) * 100</params>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM CPU</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Consolidation Needed</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>0</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.consolidation,{HOST.HOST},needed]</key>
+                    <delay>3600</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>3</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM Storage</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>CPU Ready</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.counter,{HOST.HOST},cpu.ready.summation]</key>
+                    <delay>300</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>0</value_type>
+                    <allowed_hosts/>
+                    <units>s</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>0.001</formula>
+                    <delay_flex/>
+                    <params/>
                     <ipmi_sensor/>
                     <data_type>0</data_type>
                     <authtype>0</authtype>
@@ -480,7 +256,7 @@
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[vm.counter,{HOST.NAME},cpu.swapwait]</key>
+                    <key>vmbix[vm.counter,{HOST.HOST},cpu.swapwait.summation]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -518,55 +294,12 @@
                     <logtimefmt/>
                 </item>
                 <item>
-                    <name>CPU Total</name>
-                    <type>15</type>
-                    <snmp_community/>
-                    <multiplier>0</multiplier>
-                    <snmp_oid/>
-                    <key>vm.cpu.load[{HOST.HOST},all]</key>
-                    <delay>3600</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units>Hz</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1</formula>
-                    <delay_flex/>
-                    <params>last(&quot;vmbix[vm.cpu.load,{HOST.NAME},total]&quot;)*last(&quot;vmbix[vm.cpu.load,{HOST.NAME},cores]&quot;)</params>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM CPU</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
                     <name>CPU Usage</name>
                     <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[vm.counter,{HOST.NAME},cpu.usage]</key>
+                    <key>vmbix[vm.counter,{HOST.HOST},cpu.usage.average]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -604,55 +337,12 @@
                     <logtimefmt/>
                 </item>
                 <item>
-                    <name>CPU Used</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>1</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.cpu.load,{HOST.NAME},used]</key>
-                    <delay>300</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units>Hz</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1000000</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM CPU</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
                     <name>Memory Latency</name>
                     <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[vm.counter,{HOST.NAME},mem.latency]</key>
+                    <key>vmbix[vm.counter,{HOST.HOST},mem.latency.average]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -695,7 +385,7 @@
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[vm.counter,{HOST.NAME},net.bytesRx]</key>
+                    <key>vmbix[vm.counter,{HOST.HOST},net.bytesRx.average]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -738,7 +428,7 @@
                     <snmp_community/>
                     <multiplier>1</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[vm.counter,{HOST.NAME},net.bytesTx]</key>
+                    <key>vmbix[vm.counter,{HOST.HOST},net.bytesTx.average]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -776,232 +466,17 @@
                     <logtimefmt/>
                 </item>
                 <item>
-                    <name>Overhead consumed memory</name>
+                    <name>CPU Cores</name>
                     <type>3</type>
                     <snmp_community/>
-                    <multiplier>1</multiplier>
+                    <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[vm.memory,{HOST.NAME},overheadConsumed]</key>
-                    <delay>300</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units>B</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1048576</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM Memory</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>Private memory</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>1</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.memory,{HOST.NAME},private]</key>
-                    <delay>300</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units>B</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1048576</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM Memory</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>Shared memory</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>1</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.memory,{HOST.NAME},shared]</key>
-                    <delay>300</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units>B</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1048576</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM Memory</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>Swapped memory</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>1</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.memory,{HOST.NAME},swapped]</key>
-                    <delay>300</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units>B</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1048576</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM Memory</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>Total memory</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>1</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.memory,{HOST.NAME},total]</key>
+                    <key>vmbix[vm.cpu.load,{HOST.HOST},cores]</key>
                     <delay>3600</delay>
                     <history>90</history>
                     <trends>365</trends>
                     <status>0</status>
                     <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units>B</units>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1048576</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>VM Memory</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>VM ESX Host</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>0</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.host,{HOST.NAME}]</key>
-                    <delay>900</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>1</value_type>
                     <allowed_hosts/>
                     <units/>
                     <delta>0</delta>
@@ -1027,7 +502,93 @@
                     <inventory_link>0</inventory_link>
                     <applications>
                         <application>
-                            <name>Virtual Machine</name>
+                            <name>VM CPU</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>CPU Freq</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.cpu.load,{HOST.HOST},total]</key>
+                    <delay>3600</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>Hz</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1000000</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM CPU</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>CPU Used</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.cpu.load,{HOST.HOST},used]</key>
+                    <delay>300</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>Hz</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1000000</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM CPU</name>
                         </application>
                     </applications>
                     <valuemap/>
@@ -1039,98 +600,12 @@
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[vm.folder,{HOST.NAME}]</key>
+                    <key>vmbix[vm.folder,{HOST.HOST}]</key>
                     <delay>7200</delay>
                     <history>90</history>
-                    <trends>365</trends>
+                    <trends>0</trends>
                     <status>0</status>
                     <value_type>1</value_type>
-                    <allowed_hosts/>
-                    <units/>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>Virtual Machine</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>VM Power State</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>0</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.powerstate,{HOST.NAME}]</key>
-                    <delay>120</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
-                    <allowed_hosts/>
-                    <units/>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>Virtual Machine</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>VM Status</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>0</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[vm.status,{HOST.NAME}]</key>
-                    <delay>120</delay>
-                    <history>90</history>
-                    <trends>365</trends>
-                    <status>0</status>
-                    <value_type>3</value_type>
                     <allowed_hosts/>
                     <units/>
                     <delta>0</delta>
@@ -1168,7 +643,7 @@
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[vm.guest.tools.mounted,{HOST.NAME}]</key>
+                    <key>vmbix[vm.guest.tools.mounted,{HOST.HOST}]</key>
                     <delay>7200</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -1211,7 +686,7 @@
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[vm.guest.tools.running,{HOST.NAME}]</key>
+                    <key>vmbix[vm.guest.tools.running,{HOST.HOST}]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
@@ -1245,7 +720,574 @@
                             <name>Virtual Machine</name>
                         </application>
                     </applications>
+                    <valuemap>
+                        <name>VMWare Tools Running Status</name>
+                    </valuemap>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>VM Tools status</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>0</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.guest.tools.status,{HOST.HOST}]</key>
+                    <delay>300</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>3</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Virtual Machine</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>VMWare Tools Version Status</name>
+                    </valuemap>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>VM ESX Host</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>0</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.host,{HOST.HOST}]</key>
+                    <delay>900</delay>
+                    <history>90</history>
+                    <trends>0</trends>
+                    <status>0</status>
+                    <value_type>1</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Virtual Machine</name>
+                        </application>
+                    </applications>
                     <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Active memory</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.memory,{HOST.HOST},active]</key>
+                    <delay>300</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>B</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1048576</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM Memory</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Ballooned memory</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.memory,{HOST.HOST},ballooned]</key>
+                    <delay>300</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>B</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1048576</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM Memory</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Compressed memory</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.memory,{HOST.HOST},compressed]</key>
+                    <delay>300</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>B</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1048576</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM Memory</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Consumed memory</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.memory,{HOST.HOST},consumed]</key>
+                    <delay>300</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>B</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1048576</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM Memory</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Overhead consumed memory</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.memory,{HOST.HOST},overheadConsumed]</key>
+                    <delay>300</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>B</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1048576</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM Memory</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Private memory</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.memory,{HOST.HOST},private]</key>
+                    <delay>300</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>B</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1048576</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM Memory</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Shared memory</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.memory,{HOST.HOST},shared]</key>
+                    <delay>300</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>B</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1048576</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM Memory</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Swapped memory</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.memory,{HOST.HOST},swapped]</key>
+                    <delay>300</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>B</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1048576</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM Memory</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Total memory</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>1</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.memory,{HOST.HOST},total]</key>
+                    <delay>3600</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>B</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1048576</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>VM Memory</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>VM Power State</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>0</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.powerstate,{HOST.HOST}]</key>
+                    <delay>120</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Virtual Machine</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>VMWare VM Power State</name>
+                    </valuemap>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>VM Status</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>0</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[vm.status,{HOST.HOST}]</key>
+                    <delay>120</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Virtual Machine</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>VMware status</name>
+                    </valuemap>
                     <logtimefmt/>
                 </item>
             </items>
@@ -1255,8 +1297,8 @@
                     <type>3</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>vmbix[vm.counter.discovery,{HOST.NAME},cpu.used]</key>
-                    <delay>3600</delay>
+                    <key>vmbix[vm.counter.discovery,{HOST.HOST},cpu.used.summation]</key>
+                    <delay>900</delay>
                     <status>0</status>
                     <allowed_hosts/>
                     <snmpv3_contextname/>
@@ -1289,7 +1331,7 @@
                             <snmp_community/>
                             <multiplier>1</multiplier>
                             <snmp_oid/>
-                            <key>vmbix[vm.counter,{HOST.NAME},cpu.usagemhz,{#METRICINSTANCE},300]</key>
+                            <key>vmbix[vm.counter,{HOST.HOST},cpu.usagemhz.average,{#METRICINSTANCE},300]</key>
                             <delay>300</delay>
                             <history>90</history>
                             <trends>365</trends>
@@ -1325,6 +1367,7 @@
                             </applications>
                             <valuemap/>
                             <logtimefmt/>
+                            <application_prototypes/>
                         </item_prototype>
                     </item_prototypes>
                     <trigger_prototypes/>
@@ -1356,7 +1399,7 @@
                                     <type>0</type>
                                     <item>
                                         <host>Template VmBix VM Loadable Module</host>
-                                        <key>vmbix[vm.counter,{HOST.NAME},cpu.usagemhz,{#METRICINSTANCE},300]</key>
+                                        <key>vmbix[vm.counter,{HOST.HOST},cpu.usagemhz.average,{#METRICINSTANCE},300]</key>
                                     </item>
                                 </graph_item>
                             </graph_items>
@@ -1365,12 +1408,12 @@
                     <host_prototypes/>
                 </discovery_rule>
                 <discovery_rule>
-                    <name>Mounted disks</name>
+                    <name>vDisks</name>
                     <type>3</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>vmbix[vm.guest.disk.discovery,{HOST.NAME}]</key>
-                    <delay>3600</delay>
+                    <key>vmbix[vm.counter.discovery,{HOST.HOST},virtualDisk.totalReadLatency.average]</key>
+                    <delay>900</delay>
                     <status>0</status>
                     <allowed_hosts/>
                     <snmpv3_contextname/>
@@ -1398,12 +1441,339 @@
                     <description/>
                     <item_prototypes>
                         <item_prototype>
+                            <name>vDisk {#METRICINSTANCE} Read Rate</name>
+                            <type>3</type>
+                            <snmp_community/>
+                            <multiplier>1</multiplier>
+                            <snmp_oid/>
+                            <key>vmbix[vm.counter,{HOST.HOST},virtualDisk.read.average,{#METRICINSTANCE},300]</key>
+                            <delay>300</delay>
+                            <history>90</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units>Bps</units>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1000</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>VM Storage</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>vDisk {#METRICINSTANCE} Read Latency</name>
+                            <type>3</type>
+                            <snmp_community/>
+                            <multiplier>0</multiplier>
+                            <snmp_oid/>
+                            <key>vmbix[vm.counter,{HOST.HOST},virtualDisk.totalReadLatency.average,{#METRICINSTANCE},300]</key>
+                            <delay>300</delay>
+                            <history>90</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units>ms</units>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>VM Storage</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>vDisk {#METRICINSTANCE} Write Latency</name>
+                            <type>3</type>
+                            <snmp_community/>
+                            <multiplier>0</multiplier>
+                            <snmp_oid/>
+                            <key>vmbix[vm.counter,{HOST.HOST},virtualDisk.totalWriteLatency.average,{#METRICINSTANCE},300]</key>
+                            <delay>300</delay>
+                            <history>90</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units>ms</units>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>VM Storage</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>vDisk {#METRICINSTANCE} Write Rate</name>
+                            <type>3</type>
+                            <snmp_community/>
+                            <multiplier>1</multiplier>
+                            <snmp_oid/>
+                            <key>vmbix[vm.counter,{HOST.HOST},virtualDisk.write.average,{#METRICINSTANCE},300]</key>
+                            <delay>300</delay>
+                            <history>90</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>3</value_type>
+                            <allowed_hosts/>
+                            <units>Bps</units>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1000</formula>
+                            <delay_flex/>
+                            <params/>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>VM Storage</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                    </item_prototypes>
+                    <trigger_prototypes/>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <name>vDisk {#METRICINSTANCE} Perfomance</name>
+                            <width>900</width>
+                            <height>200</height>
+                            <yaxismin>0.0000</yaxismin>
+                            <yaxismax>100.0000</yaxismax>
+                            <show_work_period>1</show_work_period>
+                            <show_triggers>1</show_triggers>
+                            <type>0</type>
+                            <show_legend>1</show_legend>
+                            <show_3d>0</show_3d>
+                            <percent_left>0.0000</percent_left>
+                            <percent_right>0.0000</percent_right>
+                            <ymin_type_1>1</ymin_type_1>
+                            <ymax_type_1>0</ymax_type_1>
+                            <ymin_item_1>0</ymin_item_1>
+                            <ymax_item_1>0</ymax_item_1>
+                            <graph_items>
+                                <graph_item>
+                                    <sortorder>0</sortorder>
+                                    <drawtype>5</drawtype>
+                                    <color>00EE00</color>
+                                    <yaxisside>0</yaxisside>
+                                    <calc_fnc>2</calc_fnc>
+                                    <type>0</type>
+                                    <item>
+                                        <host>Template VmBix VM Loadable Module</host>
+                                        <key>vmbix[vm.counter,{HOST.HOST},virtualDisk.read.average,{#METRICINSTANCE},300]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <drawtype>2</drawtype>
+                                    <color>EE0000</color>
+                                    <yaxisside>0</yaxisside>
+                                    <calc_fnc>2</calc_fnc>
+                                    <type>0</type>
+                                    <item>
+                                        <host>Template VmBix VM Loadable Module</host>
+                                        <key>vmbix[vm.counter,{HOST.HOST},virtualDisk.write.average,{#METRICINSTANCE},300]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>2</sortorder>
+                                    <drawtype>0</drawtype>
+                                    <color>6666FF</color>
+                                    <yaxisside>1</yaxisside>
+                                    <calc_fnc>2</calc_fnc>
+                                    <type>0</type>
+                                    <item>
+                                        <host>Template VmBix VM Loadable Module</host>
+                                        <key>vmbix[vm.counter,{HOST.HOST},virtualDisk.totalReadLatency.average,{#METRICINSTANCE},300]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>3</sortorder>
+                                    <drawtype>0</drawtype>
+                                    <color>EEEE00</color>
+                                    <yaxisside>1</yaxisside>
+                                    <calc_fnc>2</calc_fnc>
+                                    <type>0</type>
+                                    <item>
+                                        <host>Template VmBix VM Loadable Module</host>
+                                        <key>vmbix[vm.counter,{HOST.HOST},virtualDisk.totalWriteLatency.average,{#METRICINSTANCE},300]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                    <host_prototypes/>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Mounted disks</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <snmp_oid/>
+                    <key>vmbix[vm.guest.disk.discovery,{HOST.HOST}]</key>
+                    <delay>900</delay>
+                    <status>0</status>
+                    <allowed_hosts/>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <filter>
+                        <evaltype>0</evaltype>
+                        <formula/>
+                        <conditions/>
+                    </filter>
+                    <lifetime>7</lifetime>
+                    <description/>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>VM Disk {#GUESTDISK} free space pct</name>
+                            <type>15</type>
+                            <snmp_community/>
+                            <multiplier>0</multiplier>
+                            <snmp_oid/>
+                            <key>vm.guest.disk.free.pct[{#GUESTDISK}]</key>
+                            <delay>900</delay>
+                            <history>90</history>
+                            <trends>365</trends>
+                            <status>0</status>
+                            <value_type>0</value_type>
+                            <allowed_hosts/>
+                            <units>%</units>
+                            <delta>0</delta>
+                            <snmpv3_contextname/>
+                            <snmpv3_securityname/>
+                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                            <snmpv3_authpassphrase/>
+                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                            <snmpv3_privpassphrase/>
+                            <formula>1</formula>
+                            <delay_flex/>
+                            <params>last(&quot;vmbix[vm.guest.disk.free,{HOST.HOST},{#GUESTDISK}]&quot;)/(last(&quot;vmbix[vm.guest.disk.capacity,{HOST.HOST},{#GUESTDISK}]&quot;)+0.001)*100</params>
+                            <ipmi_sensor/>
+                            <data_type>0</data_type>
+                            <authtype>0</authtype>
+                            <username/>
+                            <password/>
+                            <publickey/>
+                            <privatekey/>
+                            <port/>
+                            <description/>
+                            <inventory_link>0</inventory_link>
+                            <applications>
+                                <application>
+                                    <name>VM Storage</name>
+                                </application>
+                            </applications>
+                            <valuemap/>
+                            <logtimefmt/>
+                            <application_prototypes/>
+                        </item_prototype>
+                        <item_prototype>
                             <name>VM Disk {#GUESTDISK} capacity</name>
                             <type>3</type>
                             <snmp_community/>
                             <multiplier>0</multiplier>
                             <snmp_oid/>
-                            <key>vmbix[vm.guest.disk.capacity,{HOST.NAME},{#GUESTDISK}]</key>
+                            <key>vmbix[vm.guest.disk.capacity,{HOST.HOST},{#GUESTDISK}]</key>
                             <delay>3600</delay>
                             <history>90</history>
                             <trends>365</trends>
@@ -1439,6 +1809,7 @@
                             </applications>
                             <valuemap/>
                             <logtimefmt/>
+                            <application_prototypes/>
                         </item_prototype>
                         <item_prototype>
                             <name>VM Disk {#GUESTDISK} free space</name>
@@ -1446,7 +1817,7 @@
                             <snmp_community/>
                             <multiplier>0</multiplier>
                             <snmp_oid/>
-                            <key>vmbix[vm.guest.disk.free,{HOST.NAME},{#GUESTDISK}]</key>
+                            <key>vmbix[vm.guest.disk.free,{HOST.HOST},{#GUESTDISK}]</key>
                             <delay>900</delay>
                             <history>90</history>
                             <trends>365</trends>
@@ -1482,60 +1853,19 @@
                             </applications>
                             <valuemap/>
                             <logtimefmt/>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>VM Disk {#GUESTDISK} free space pct</name>
-                            <type>15</type>
-                            <snmp_community/>
-                            <multiplier>0</multiplier>
-                            <snmp_oid/>
-                            <key>vm.guest.disk.free.pct[{#GUESTDISK}]</key>
-                            <delay>900</delay>
-                            <history>90</history>
-                            <trends>365</trends>
-                            <status>0</status>
-                            <value_type>0</value_type>
-                            <allowed_hosts/>
-                            <units>%</units>
-                            <delta>0</delta>
-                            <snmpv3_contextname/>
-                            <snmpv3_securityname/>
-                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                            <snmpv3_authpassphrase/>
-                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                            <snmpv3_privpassphrase/>
-                            <formula>1</formula>
-                            <delay_flex/>
-                            <params>last(&quot;vmbix[vm.guest.disk.free,{HOST.NAME},{#GUESTDISK}]&quot;)/(last(&quot;vmbix[vm.guest.disk.capacity,{HOST.NAME},{#GUESTDISK}]&quot;)+0.001)*100</params>
-                            <ipmi_sensor/>
-                            <data_type>0</data_type>
-                            <authtype>0</authtype>
-                            <username/>
-                            <password/>
-                            <publickey/>
-                            <privatekey/>
-                            <port/>
-                            <description/>
-                            <inventory_link>0</inventory_link>
-                            <applications>
-                                <application>
-                                    <name>VM Storage</name>
-                                </application>
-                            </applications>
-                            <valuemap/>
-                            <logtimefmt/>
+                            <application_prototypes/>
                         </item_prototype>
                     </item_prototypes>
                     <trigger_prototypes>
                         <trigger_prototype>
-                            <expression>(({TRIGGER.VALUE}=0 and ({Template VmBix VM Loadable Module:vm.guest.disk.free.pct[{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_PCT_CRITICAL} and {Template VmBix VM Loadable Module:vmbix[vm.guest.disk.free,{HOST.NAME},{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_CRITICAL})) or ({TRIGGER.VALUE}=1 and ({Template VmBix VM Loadable Module:vm.guest.disk.free.pct[{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_PCT_WARNING} and {Template VmBix VM Loadable Module:vmbix[vm.guest.disk.free,{HOST.NAME},{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_WARNING}))) and {Template VmBix VM Loadable Module:vmbix[vm.guest.disk.capacity,{HOST.NAME},{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&gt;0</expression>
+                            <expression>(({TRIGGER.VALUE}=0 and ({Template VmBix VM Loadable Module:vm.guest.disk.free.pct[{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_PCT_CRITICAL} and {Template VmBix VM Loadable Module:vmbix[vm.guest.disk.free,{HOST.HOST},{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_CRITICAL})) or ({TRIGGER.VALUE}=1 and ({Template VmBix VM Loadable Module:vm.guest.disk.free.pct[{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_PCT_WARNING} and {Template VmBix VM Loadable Module:vmbix[vm.guest.disk.free,{HOST.HOST},{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&lt;{$DISK_WARNING}))) and {Template VmBix VM Loadable Module:vmbix[vm.guest.disk.capacity,{HOST.HOST},{#GUESTDISK}].last({$DISK_TRIGGER_PERIOD})}&gt;0</expression>
                             <name>Free space on {#GUESTDISK} ({ITEM.VALUE2}/{ITEM.VALUE}) - High</name>
                             <url/>
                             <status>0</status>
                             <priority>4</priority>
                             <description/>
                             <type>0</type>
+                            <dependencies/>
                         </trigger_prototype>
                     </trigger_prototypes>
                     <graph_prototypes>
@@ -1557,7 +1887,7 @@
                             <ymin_item_1>0</ymin_item_1>
                             <ymax_item_1>
                                 <host>Template VmBix VM Loadable Module</host>
-                                <key>vmbix[vm.guest.disk.capacity,{HOST.NAME},{#GUESTDISK}]</key>
+                                <key>vmbix[vm.guest.disk.capacity,{HOST.HOST},{#GUESTDISK}]</key>
                             </ymax_item_1>
                             <graph_items>
                                 <graph_item>
@@ -1569,7 +1899,7 @@
                                     <type>2</type>
                                     <item>
                                         <host>Template VmBix VM Loadable Module</host>
-                                        <key>vmbix[vm.guest.disk.capacity,{HOST.NAME},{#GUESTDISK}]</key>
+                                        <key>vmbix[vm.guest.disk.capacity,{HOST.HOST},{#GUESTDISK}]</key>
                                     </item>
                                 </graph_item>
                                 <graph_item>
@@ -1581,286 +1911,7 @@
                                     <type>0</type>
                                     <item>
                                         <host>Template VmBix VM Loadable Module</host>
-                                        <key>vmbix[vm.guest.disk.free,{HOST.NAME},{#GUESTDISK}]</key>
-                                    </item>
-                                </graph_item>
-                            </graph_items>
-                        </graph_prototype>
-                    </graph_prototypes>
-                    <host_prototypes/>
-                </discovery_rule>
-                <discovery_rule>
-                    <name>vDisks</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <snmp_oid/>
-                    <key>vmbix[vm.counter.discovery,{HOST.NAME},virtualDisk.totalReadLatency]</key>
-                    <delay>3600</delay>
-                    <status>0</status>
-                    <allowed_hosts/>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <filter>
-                        <evaltype>0</evaltype>
-                        <formula/>
-                        <conditions/>
-                    </filter>
-                    <lifetime>7</lifetime>
-                    <description/>
-                    <item_prototypes>
-                        <item_prototype>
-                            <name>vDisk {#METRICINSTANCE} Read Latency</name>
-                            <type>3</type>
-                            <snmp_community/>
-                            <multiplier>0</multiplier>
-                            <snmp_oid/>
-                            <key>vmbix[vm.counter,{HOST.NAME},virtualDisk.totalReadLatency,{#METRICINSTANCE},300]</key>
-                            <delay>300</delay>
-                            <history>90</history>
-                            <trends>365</trends>
-                            <status>0</status>
-                            <value_type>3</value_type>
-                            <allowed_hosts/>
-                            <units>ms</units>
-                            <delta>0</delta>
-                            <snmpv3_contextname/>
-                            <snmpv3_securityname/>
-                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                            <snmpv3_authpassphrase/>
-                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                            <snmpv3_privpassphrase/>
-                            <formula>1</formula>
-                            <delay_flex/>
-                            <params/>
-                            <ipmi_sensor/>
-                            <data_type>0</data_type>
-                            <authtype>0</authtype>
-                            <username/>
-                            <password/>
-                            <publickey/>
-                            <privatekey/>
-                            <port/>
-                            <description/>
-                            <inventory_link>0</inventory_link>
-                            <applications>
-                                <application>
-                                    <name>VM Storage</name>
-                                </application>
-                            </applications>
-                            <valuemap/>
-                            <logtimefmt/>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>vDisk {#METRICINSTANCE} Read Rate</name>
-                            <type>3</type>
-                            <snmp_community/>
-                            <multiplier>1</multiplier>
-                            <snmp_oid/>
-                            <key>vmbix[vm.counter,{HOST.NAME},virtualDisk.read,{#METRICINSTANCE},300]</key>
-                            <delay>300</delay>
-                            <history>90</history>
-                            <trends>365</trends>
-                            <status>0</status>
-                            <value_type>3</value_type>
-                            <allowed_hosts/>
-                            <units>Bps</units>
-                            <delta>0</delta>
-                            <snmpv3_contextname/>
-                            <snmpv3_securityname/>
-                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                            <snmpv3_authpassphrase/>
-                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                            <snmpv3_privpassphrase/>
-                            <formula>1000</formula>
-                            <delay_flex/>
-                            <params/>
-                            <ipmi_sensor/>
-                            <data_type>0</data_type>
-                            <authtype>0</authtype>
-                            <username/>
-                            <password/>
-                            <publickey/>
-                            <privatekey/>
-                            <port/>
-                            <description/>
-                            <inventory_link>0</inventory_link>
-                            <applications>
-                                <application>
-                                    <name>VM Storage</name>
-                                </application>
-                            </applications>
-                            <valuemap/>
-                            <logtimefmt/>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>vDisk {#METRICINSTANCE} Write Latency</name>
-                            <type>3</type>
-                            <snmp_community/>
-                            <multiplier>0</multiplier>
-                            <snmp_oid/>
-                            <key>vmbix[vm.counter,{HOST.NAME},virtualDisk.totalWriteLatency,{#METRICINSTANCE},300]</key>
-                            <delay>300</delay>
-                            <history>90</history>
-                            <trends>365</trends>
-                            <status>0</status>
-                            <value_type>3</value_type>
-                            <allowed_hosts/>
-                            <units>ms</units>
-                            <delta>0</delta>
-                            <snmpv3_contextname/>
-                            <snmpv3_securityname/>
-                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                            <snmpv3_authpassphrase/>
-                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                            <snmpv3_privpassphrase/>
-                            <formula>1</formula>
-                            <delay_flex/>
-                            <params/>
-                            <ipmi_sensor/>
-                            <data_type>0</data_type>
-                            <authtype>0</authtype>
-                            <username/>
-                            <password/>
-                            <publickey/>
-                            <privatekey/>
-                            <port/>
-                            <description/>
-                            <inventory_link>0</inventory_link>
-                            <applications>
-                                <application>
-                                    <name>VM Storage</name>
-                                </application>
-                            </applications>
-                            <valuemap/>
-                            <logtimefmt/>
-                        </item_prototype>
-                        <item_prototype>
-                            <name>vDisk {#METRICINSTANCE} Write Rate</name>
-                            <type>3</type>
-                            <snmp_community/>
-                            <multiplier>1</multiplier>
-                            <snmp_oid/>
-                            <key>vmbix[vm.counter,{HOST.NAME},virtualDisk.write,{#METRICINSTANCE},300]</key>
-                            <delay>300</delay>
-                            <history>90</history>
-                            <trends>365</trends>
-                            <status>0</status>
-                            <value_type>3</value_type>
-                            <allowed_hosts/>
-                            <units>Bps</units>
-                            <delta>0</delta>
-                            <snmpv3_contextname/>
-                            <snmpv3_securityname/>
-                            <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                            <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                            <snmpv3_authpassphrase/>
-                            <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                            <snmpv3_privpassphrase/>
-                            <formula>1000</formula>
-                            <delay_flex/>
-                            <params/>
-                            <ipmi_sensor/>
-                            <data_type>0</data_type>
-                            <authtype>0</authtype>
-                            <username/>
-                            <password/>
-                            <publickey/>
-                            <privatekey/>
-                            <port/>
-                            <description/>
-                            <inventory_link>0</inventory_link>
-                            <applications>
-                                <application>
-                                    <name>VM Storage</name>
-                                </application>
-                            </applications>
-                            <valuemap/>
-                            <logtimefmt/>
-                        </item_prototype>
-                    </item_prototypes>
-                    <trigger_prototypes/>
-                    <graph_prototypes>
-                        <graph_prototype>
-                            <name>vDisk {#METRICINSTANCE} Perfomance</name>
-                            <width>900</width>
-                            <height>200</height>
-                            <yaxismin>0.0000</yaxismin>
-                            <yaxismax>100.0000</yaxismax>
-                            <show_work_period>1</show_work_period>
-                            <show_triggers>1</show_triggers>
-                            <type>0</type>
-                            <show_legend>1</show_legend>
-                            <show_3d>0</show_3d>
-                            <percent_left>0.0000</percent_left>
-                            <percent_right>0.0000</percent_right>
-                            <ymin_type_1>1</ymin_type_1>
-                            <ymax_type_1>0</ymax_type_1>
-                            <ymin_item_1>0</ymin_item_1>
-                            <ymax_item_1>0</ymax_item_1>
-                            <graph_items>
-                                <graph_item>
-                                    <sortorder>2</sortorder>
-                                    <drawtype>0</drawtype>
-                                    <color>6666FF</color>
-                                    <yaxisside>1</yaxisside>
-                                    <calc_fnc>2</calc_fnc>
-                                    <type>0</type>
-                                    <item>
-                                        <host>Template VmBix VM Loadable Module</host>
-                                        <key>vmbix[vm.counter,{HOST.NAME},virtualDisk.totalReadLatency,{#METRICINSTANCE},300]</key>
-                                    </item>
-                                </graph_item>
-                                <graph_item>
-                                    <sortorder>3</sortorder>
-                                    <drawtype>0</drawtype>
-                                    <color>EEEE00</color>
-                                    <yaxisside>1</yaxisside>
-                                    <calc_fnc>2</calc_fnc>
-                                    <type>0</type>
-                                    <item>
-                                        <host>Template VmBix VM Loadable Module</host>
-                                        <key>vmbix[vm.counter,{HOST.NAME},virtualDisk.totalWriteLatency,{#METRICINSTANCE},300]</key>
-                                    </item>
-                                </graph_item>
-                                <graph_item>
-                                    <sortorder>0</sortorder>
-                                    <drawtype>5</drawtype>
-                                    <color>00EE00</color>
-                                    <yaxisside>0</yaxisside>
-                                    <calc_fnc>2</calc_fnc>
-                                    <type>0</type>
-                                    <item>
-                                        <host>Template VmBix VM Loadable Module</host>
-                                        <key>vmbix[vm.counter,{HOST.NAME},virtualDisk.read,{#METRICINSTANCE},300]</key>
-                                    </item>
-                                </graph_item>
-                                <graph_item>
-                                    <sortorder>1</sortorder>
-                                    <drawtype>2</drawtype>
-                                    <color>EE0000</color>
-                                    <yaxisside>0</yaxisside>
-                                    <calc_fnc>2</calc_fnc>
-                                    <type>0</type>
-                                    <item>
-                                        <host>Template VmBix VM Loadable Module</host>
-                                        <key>vmbix[vm.counter,{HOST.NAME},virtualDisk.write,{#METRICINSTANCE},300]</key>
+                                        <key>vmbix[vm.guest.disk.free,{HOST.HOST},{#GUESTDISK}]</key>
                                     </item>
                                 </graph_item>
                             </graph_items>
@@ -1901,7 +1952,7 @@
     </templates>
     <triggers>
         <trigger>
-            <expression>{Template VmBix VM Loadable Module:vmbix[vm.memory,{HOST.NAME},ballooned].last(10m)}&gt;0</expression>
+            <expression>{Template VmBix VM Loadable Module:vmbix[vm.memory,{HOST.HOST},ballooned].last(10m)}&gt;0</expression>
             <name>Ballooning memory</name>
             <url/>
             <status>0</status>
@@ -1911,7 +1962,7 @@
             <dependencies/>
         </trigger>
         <trigger>
-            <expression>{Template VmBix VM Loadable Module:vmbix[vm.consolidation,{HOST.NAME},needed].last()}&lt;&gt;0</expression>
+            <expression>{Template VmBix VM Loadable Module:vmbix[vm.consolidation,{HOST.HOST},needed].last()}&lt;&gt;0</expression>
             <name>Consolidation is needed</name>
             <url/>
             <status>0</status>
@@ -1921,7 +1972,7 @@
             <dependencies/>
         </trigger>
         <trigger>
-            <expression>{Template VmBix VM Loadable Module:vmbix[vm.memory,{HOST.NAME},swapped].last(10m)}&gt;0</expression>
+            <expression>{Template VmBix VM Loadable Module:vmbix[vm.memory,{HOST.HOST},swapped].last(10m)}&gt;0</expression>
             <name>ESX is swapping for this VM</name>
             <url/>
             <status>0</status>
@@ -1931,7 +1982,7 @@
             <dependencies/>
         </trigger>
         <trigger>
-            <expression>({Template VmBix VM Loadable Module:vmbix[vm.guest.tools.running,{HOST.NAME}].max(10m)}=0) and ({Template VmBix VM Loadable Module:vmbix[vm.powerstate,{HOST.NAME}].last()}&lt;&gt;0)</expression>
+            <expression>({Template VmBix VM Loadable Module:vmbix[vm.guest.tools.running,{HOST.HOST}].max(10m)}=0) and ({Template VmBix VM Loadable Module:vmbix[vm.powerstate,{HOST.HOST}].last()}&lt;&gt;0)</expression>
             <name>VM Tools are not running</name>
             <url/>
             <status>0</status>
@@ -1981,7 +2032,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.cpu.load,{HOST.NAME},used]</key>
+                        <key>vmbix[vm.cpu.load,{HOST.HOST},used]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2005,7 +2056,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.counter,{HOST.NAME},cpu.usage]</key>
+                        <key>vmbix[vm.counter,{HOST.HOST},cpu.usage.average]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2017,7 +2068,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.counter,{HOST.NAME},cpu.swapwait]</key>
+                        <key>vmbix[vm.counter,{HOST.HOST},cpu.swapwait.summation]</key>
                     </item>
                 </graph_item>
             </graph_items>
@@ -2049,7 +2100,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.memory,{HOST.NAME},total]</key>
+                        <key>vmbix[vm.memory,{HOST.HOST},total]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2061,7 +2112,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.memory,{HOST.NAME},active]</key>
+                        <key>vmbix[vm.memory,{HOST.HOST},active]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2073,7 +2124,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.memory,{HOST.NAME},ballooned]</key>
+                        <key>vmbix[vm.memory,{HOST.HOST},ballooned]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2085,7 +2136,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.memory,{HOST.NAME},compressed]</key>
+                        <key>vmbix[vm.memory,{HOST.HOST},compressed]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2097,7 +2148,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.memory,{HOST.NAME},consumed]</key>
+                        <key>vmbix[vm.memory,{HOST.HOST},consumed]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2109,7 +2160,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.memory,{HOST.NAME},overheadConsumed]</key>
+                        <key>vmbix[vm.memory,{HOST.HOST},overheadConsumed]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2121,7 +2172,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.memory,{HOST.NAME},private]</key>
+                        <key>vmbix[vm.memory,{HOST.HOST},private]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2133,7 +2184,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.memory,{HOST.NAME},shared]</key>
+                        <key>vmbix[vm.memory,{HOST.HOST},shared]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2145,7 +2196,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.memory,{HOST.NAME},swapped]</key>
+                        <key>vmbix[vm.memory,{HOST.HOST},swapped]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2157,7 +2208,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.counter,{HOST.NAME},mem.latency]</key>
+                        <key>vmbix[vm.counter,{HOST.HOST},mem.latency.average]</key>
                     </item>
                 </graph_item>
             </graph_items>
@@ -2189,7 +2240,7 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.counter,{HOST.NAME},net.bytesRx]</key>
+                        <key>vmbix[vm.counter,{HOST.HOST},net.bytesRx.average]</key>
                     </item>
                 </graph_item>
                 <graph_item>
@@ -2201,10 +2252,100 @@
                     <type>0</type>
                     <item>
                         <host>Template VmBix VM Loadable Module</host>
-                        <key>vmbix[vm.counter,{HOST.NAME},net.bytesTx]</key>
+                        <key>vmbix[vm.counter,{HOST.HOST},net.bytesTx.average]</key>
                     </item>
                 </graph_item>
             </graph_items>
         </graph>
     </graphs>
+    <value_maps>
+        <value_map>
+            <name>VMware status</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>gray</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>green</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>yellow</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>red</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>VMWare Tools Running Status</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>guestToolsNotRunning</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>guestToolsRunning</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>guestToolsExecutingScripts</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>unknown</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>VMWare Tools Version Status</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>guestToolsNotInstalled</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>guestToolsCurrent</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>guestToolsNeedUpgrade</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>guestToolsUnmanaged</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>unknown</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>VMWare VM Power State</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>poweredOff</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>poweredOn</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>suspended</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>unknown</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
 </zabbix_export>

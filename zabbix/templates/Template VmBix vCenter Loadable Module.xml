@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
-    <version>2.0</version>
-    <date>2014-09-23T11:54:33Z</date>
+    <version>3.0</version>
+    <date>2016-06-22T12:14:24Z</date>
     <groups>
+        <group>
+            <name>Discovered hosts</name>
+        </group>
         <group>
             <name>Hypervisors</name>
         </group>
@@ -15,8 +18,8 @@
     </groups>
     <templates>
         <template>
-            <template>Template VmBix vCenter</template>
-            <name>Template VmBix vCenter</name>
+            <template>Template VmBix vCenter Loadable Module</template>
+            <name>Template VmBix vCenter Loadable Module</name>
             <description/>
             <groups>
                 <group>
@@ -52,14 +55,14 @@
             <items>
                 <item>
                     <name>About</name>
-                    <type>0</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>about</key>
+                    <key>vmbix[about]</key>
                     <delay>3600</delay>
                     <history>7</history>
-                    <trends>365</trends>
+                    <trends>0</trends>
                     <status>0</status>
                     <value_type>1</value_type>
                     <allowed_hosts/>
@@ -95,14 +98,14 @@
                 </item>
                 <item>
                     <name>Latest event</name>
-                    <type>0</type>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>event.latest[*]</key>
+                    <key>vmbix[event.latest,*]</key>
                     <delay>60</delay>
                     <history>7</history>
-                    <trends>365</trends>
+                    <trends>0</trends>
                     <status>0</status>
                     <value_type>1</value_type>
                     <allowed_hosts/>
@@ -137,12 +140,12 @@
                     <logtimefmt/>
                 </item>
                 <item>
-                    <name>VMBIX Ping</name>
-                    <type>0</type>
+                    <name>VmBix Ping</name>
+                    <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>ping</key>
+                    <key>vmbix[ping]</key>
                     <delay>60</delay>
                     <history>7</history>
                     <trends>365</trends>
@@ -183,10 +186,10 @@
             <discovery_rules>
                 <discovery_rule>
                     <name>Datastores</name>
-                    <type>0</type>
+                    <type>3</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>datastore.discovery[*]</key>
+                    <key>vmbix[datastore.discovery,*]</key>
                     <delay>3600</delay>
                     <status>0</status>
                     <allowed_hosts/>
@@ -216,11 +219,11 @@
                     <item_prototypes>
                         <item_prototype>
                             <name>Datastore {#DATASTORE} free space</name>
-                            <type>0</type>
+                            <type>3</type>
                             <snmp_community/>
                             <multiplier>0</multiplier>
                             <snmp_oid/>
-                            <key>datastore.size[{#DATASTORE},free]</key>
+                            <key>vmbix[datastore.size,{#UUID},free]</key>
                             <delay>900</delay>
                             <history>90</history>
                             <trends>365</trends>
@@ -256,14 +259,15 @@
                             </applications>
                             <valuemap/>
                             <logtimefmt/>
+                            <application_prototypes/>
                         </item_prototype>
                         <item_prototype>
                             <name>Datastore {#DATASTORE} total size</name>
-                            <type>0</type>
+                            <type>3</type>
                             <snmp_community/>
                             <multiplier>0</multiplier>
                             <snmp_oid/>
-                            <key>datastore.size[{#DATASTORE},total]</key>
+                            <key>vmbix[datastore.size,{#UUID},total]</key>
                             <delay>900</delay>
                             <history>90</history>
                             <trends>365</trends>
@@ -299,6 +303,7 @@
                             </applications>
                             <valuemap/>
                             <logtimefmt/>
+                            <application_prototypes/>
                         </item_prototype>
                     </item_prototypes>
                     <trigger_prototypes/>
@@ -329,8 +334,8 @@
                                     <calc_fnc>2</calc_fnc>
                                     <type>2</type>
                                     <item>
-                                        <host>Template VmBix vCenter</host>
-                                        <key>datastore.size[{#DATASTORE},total]</key>
+                                        <host>Template VmBix vCenter Loadable Module</host>
+                                        <key>vmbix[datastore.size,{#UUID},total]</key>
                                     </item>
                                 </graph_item>
                                 <graph_item>
@@ -341,21 +346,44 @@
                                     <calc_fnc>2</calc_fnc>
                                     <type>0</type>
                                     <item>
-                                        <host>Template VmBix vCenter</host>
-                                        <key>datastore.size[{#DATASTORE},free]</key>
+                                        <host>Template VmBix vCenter Loadable Module</host>
+                                        <key>vmbix[datastore.size,{#UUID},free]</key>
                                     </item>
                                 </graph_item>
                             </graph_items>
                         </graph_prototype>
                     </graph_prototypes>
-                    <host_prototypes/>
+                    <host_prototypes>
+                        <host_prototype>
+                            <host>{#UUID}</host>
+                            <name>{#DATASTORE}</name>
+                            <status>0</status>
+                            <group_links>
+                                <group_link>
+                                    <group>
+                                        <name>Discovered hosts</name>
+                                    </group>
+                                </group_link>
+                            </group_links>
+                            <group_prototypes>
+                                <group_prototype>
+                                    <name>{#CLUSTER}</name>
+                                </group_prototype>
+                            </group_prototypes>
+                            <templates>
+                                <template>
+                                    <name>Template VmBix Datastore Loadable Module</name>
+                                </template>
+                            </templates>
+                        </host_prototype>
+                    </host_prototypes>
                 </discovery_rule>
                 <discovery_rule>
                     <name>ESX Hosts</name>
-                    <type>0</type>
+                    <type>3</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>esx.discovery[*]</key>
+                    <key>vmbix[esx.discovery,*]</key>
                     <delay>3600</delay>
                     <status>0</status>
                     <allowed_hosts/>
@@ -387,7 +415,7 @@
                     <graph_prototypes/>
                     <host_prototypes>
                         <host_prototype>
-                            <host>{#ESXHOST}</host>
+                            <host>{#UUID}</host>
                             <name>{#ESXHOST}</name>
                             <status>0</status>
                             <group_links>
@@ -397,10 +425,14 @@
                                     </group>
                                 </group_link>
                             </group_links>
-                            <group_prototypes/>
+                            <group_prototypes>
+                                <group_prototype>
+                                    <name>{#CLUSTER}</name>
+                                </group_prototype>
+                            </group_prototypes>
                             <templates>
                                 <template>
-                                    <name>Template VmBix ESX</name>
+                                    <name>Template VmBix ESX Loadable Module</name>
                                 </template>
                             </templates>
                         </host_prototype>
@@ -408,10 +440,10 @@
                 </discovery_rule>
                 <discovery_rule>
                     <name>Virtual machines</name>
-                    <type>0</type>
+                    <type>3</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>vm.discovery[*]</key>
+                    <key>vmbix[vm.discovery,*]</key>
                     <delay>900</delay>
                     <status>0</status>
                     <allowed_hosts/>
@@ -443,7 +475,7 @@
                     <graph_prototypes/>
                     <host_prototypes>
                         <host_prototype>
-                            <host>{#VIRTUALMACHINE}</host>
+                            <host>{#UUID}</host>
                             <name>{#VIRTUALMACHINE}</name>
                             <status>0</status>
                             <group_links>
@@ -454,7 +486,11 @@
                                 </group_link>
                             </group_links>
                             <group_prototypes/>
-                            <templates/>
+                            <templates>
+                                <template>
+                                    <name>Template VmBix VM Loadable Module</name>
+                                </template>
+                            </templates>
                         </host_prototype>
                     </host_prototypes>
                 </discovery_rule>
@@ -466,7 +502,7 @@
     </templates>
     <triggers>
         <trigger>
-            <expression>{Template VmBix vCenter:ping.nodata(5m)}=1</expression>
+            <expression>{Template VmBix vCenter Loadable Module:vmbix[ping].nodata(5m)}=1</expression>
             <name>No response from VMBIX</name>
             <url/>
             <status>0</status>
