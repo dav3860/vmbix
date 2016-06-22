@@ -24,7 +24,7 @@
             </applications>
             <items>
                 <item>
-                    <name>Datastore {#DATASTORE} free space</name>
+                    <name>Datastore free space</name>
                     <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
@@ -67,7 +67,7 @@
                     <logtimefmt/>
                 </item>
                 <item>
-                    <name>Datastore {#DATASTORE} total size</name>
+                    <name>Datastore total size</name>
                     <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
