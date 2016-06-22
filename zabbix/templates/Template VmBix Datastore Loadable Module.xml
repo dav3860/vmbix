@@ -1,25 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>3.0</version>
-    <date>2016-06-22T12:29:09Z</date>
+    <date>2016-06-22T15:38:11Z</date>
     <groups>
         <group>
-            <name>Discovered hosts</name>
-        </group>
-        <group>
-            <name>Hypervisors</name>
-        </group>
-        <group>
             <name>Templates</name>
-        </group>
-        <group>
-            <name>Virtual machines</name>
         </group>
     </groups>
     <templates>
         <template>
-            <template>Template VmBix vCenter Loadable Module</template>
-            <name>Template VmBix vCenter Loadable Module</name>
+            <template>Template VmBix Datastore Loadable Module</template>
+            <name>Template VmBix Datastore Loadable Module</name>
             <description/>
             <groups>
                 <group>
@@ -28,131 +19,24 @@
             </groups>
             <applications>
                 <application>
-                    <name>CPU</name>
-                </application>
-                <application>
                     <name>Datastore</name>
-                </application>
-                <application>
-                    <name>ESX</name>
-                </application>
-                <application>
-                    <name>Memory</name>
-                </application>
-                <application>
-                    <name>Performance</name>
-                </application>
-                <application>
-                    <name>Storage</name>
-                </application>
-                <application>
-                    <name>vCenter</name>
-                </application>
-                <application>
-                    <name>Virtual Machine</name>
                 </application>
             </applications>
             <items>
                 <item>
-                    <name>About</name>
+                    <name>Datastore {#DATASTORE} free space</name>
                     <type>3</type>
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[about]</key>
-                    <delay>3600</delay>
-                    <history>7</history>
-                    <trends>0</trends>
-                    <status>0</status>
-                    <value_type>1</value_type>
-                    <allowed_hosts/>
-                    <units/>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>vCenter</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>Latest event</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>0</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[event.latest,*]</key>
-                    <delay>60</delay>
-                    <history>7</history>
-                    <trends>0</trends>
-                    <status>0</status>
-                    <value_type>1</value_type>
-                    <allowed_hosts/>
-                    <units/>
-                    <delta>0</delta>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <formula>1</formula>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <data_type>0</data_type>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <description/>
-                    <inventory_link>0</inventory_link>
-                    <applications>
-                        <application>
-                            <name>vCenter</name>
-                        </application>
-                    </applications>
-                    <valuemap/>
-                    <logtimefmt/>
-                </item>
-                <item>
-                    <name>VmBix Ping</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <multiplier>0</multiplier>
-                    <snmp_oid/>
-                    <key>vmbix[ping]</key>
-                    <delay>60</delay>
-                    <history>7</history>
+                    <key>vmbix[datastore.size,{HOST.HOST},free]</key>
+                    <delay>900</delay>
+                    <history>90</history>
                     <trends>365</trends>
                     <status>0</status>
                     <value_type>3</value_type>
                     <allowed_hosts/>
-                    <units/>
+                    <units>B</units>
                     <delta>0</delta>
                     <snmpv3_contextname/>
                     <snmpv3_securityname/>
@@ -165,7 +49,7 @@
                     <delay_flex/>
                     <params/>
                     <ipmi_sensor/>
-                    <data_type>3</data_type>
+                    <data_type>0</data_type>
                     <authtype>0</authtype>
                     <username/>
                     <password/>
@@ -176,206 +60,60 @@
                     <inventory_link>0</inventory_link>
                     <applications>
                         <application>
-                            <name>vCenter</name>
+                            <name>Datastore</name>
+                        </application>
+                    </applications>
+                    <valuemap/>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Datastore {#DATASTORE} total size</name>
+                    <type>3</type>
+                    <snmp_community/>
+                    <multiplier>0</multiplier>
+                    <snmp_oid/>
+                    <key>vmbix[datastore.size,{HOST.HOST},total]</key>
+                    <delay>900</delay>
+                    <history>90</history>
+                    <trends>365</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units>B</units>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Datastore</name>
                         </application>
                     </applications>
                     <valuemap/>
                     <logtimefmt/>
                 </item>
             </items>
-            <discovery_rules>
-                <discovery_rule>
-                    <name>Datastores</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <snmp_oid/>
-                    <key>vmbix[datastore.discovery,*]</key>
-                    <delay>3600</delay>
-                    <status>0</status>
-                    <allowed_hosts/>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <filter>
-                        <evaltype>0</evaltype>
-                        <formula/>
-                        <conditions/>
-                    </filter>
-                    <lifetime>30</lifetime>
-                    <description/>
-                    <item_prototypes/>
-                    <trigger_prototypes/>
-                    <graph_prototypes/>
-                    <host_prototypes>
-                        <host_prototype>
-                            <host>{#UUID}</host>
-                            <name>{#DATASTORE}</name>
-                            <status>0</status>
-                            <group_links>
-                                <group_link>
-                                    <group>
-                                        <name>Discovered hosts</name>
-                                    </group>
-                                </group_link>
-                            </group_links>
-                            <group_prototypes>
-                                <group_prototype>
-                                    <name>{#CLUSTER}</name>
-                                </group_prototype>
-                            </group_prototypes>
-                            <templates>
-                                <template>
-                                    <name>Template VmBix Datastore Loadable Module</name>
-                                </template>
-                            </templates>
-                        </host_prototype>
-                    </host_prototypes>
-                </discovery_rule>
-                <discovery_rule>
-                    <name>ESX Hosts</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <snmp_oid/>
-                    <key>vmbix[esx.discovery,*]</key>
-                    <delay>3600</delay>
-                    <status>0</status>
-                    <allowed_hosts/>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <filter>
-                        <evaltype>0</evaltype>
-                        <formula/>
-                        <conditions/>
-                    </filter>
-                    <lifetime>30</lifetime>
-                    <description/>
-                    <item_prototypes/>
-                    <trigger_prototypes/>
-                    <graph_prototypes/>
-                    <host_prototypes>
-                        <host_prototype>
-                            <host>{#UUID}</host>
-                            <name>{#ESXHOST}</name>
-                            <status>0</status>
-                            <group_links>
-                                <group_link>
-                                    <group>
-                                        <name>Hypervisors</name>
-                                    </group>
-                                </group_link>
-                            </group_links>
-                            <group_prototypes>
-                                <group_prototype>
-                                    <name>{#CLUSTER}</name>
-                                </group_prototype>
-                            </group_prototypes>
-                            <templates>
-                                <template>
-                                    <name>Template VmBix ESX Loadable Module</name>
-                                </template>
-                            </templates>
-                        </host_prototype>
-                    </host_prototypes>
-                </discovery_rule>
-                <discovery_rule>
-                    <name>Virtual machines</name>
-                    <type>3</type>
-                    <snmp_community/>
-                    <snmp_oid/>
-                    <key>vmbix[vm.discovery,*]</key>
-                    <delay>900</delay>
-                    <status>0</status>
-                    <allowed_hosts/>
-                    <snmpv3_contextname/>
-                    <snmpv3_securityname/>
-                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
-                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
-                    <snmpv3_authpassphrase/>
-                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
-                    <snmpv3_privpassphrase/>
-                    <delay_flex/>
-                    <params/>
-                    <ipmi_sensor/>
-                    <authtype>0</authtype>
-                    <username/>
-                    <password/>
-                    <publickey/>
-                    <privatekey/>
-                    <port/>
-                    <filter>
-                        <evaltype>0</evaltype>
-                        <formula/>
-                        <conditions/>
-                    </filter>
-                    <lifetime>30</lifetime>
-                    <description/>
-                    <item_prototypes/>
-                    <trigger_prototypes/>
-                    <graph_prototypes/>
-                    <host_prototypes>
-                        <host_prototype>
-                            <host>{#UUID}</host>
-                            <name>{#VIRTUALMACHINE}</name>
-                            <status>0</status>
-                            <group_links>
-                                <group_link>
-                                    <group>
-                                        <name>Virtual machines</name>
-                                    </group>
-                                </group_link>
-                            </group_links>
-                            <group_prototypes/>
-                            <templates>
-                                <template>
-                                    <name>Template VmBix VM Loadable Module</name>
-                                </template>
-                            </templates>
-                        </host_prototype>
-                    </host_prototypes>
-                </discovery_rule>
-            </discovery_rules>
+            <discovery_rules/>
             <macros/>
             <templates/>
             <screens/>
         </template>
     </templates>
-    <triggers>
-        <trigger>
-            <expression>{Template VmBix vCenter Loadable Module:vmbix[ping].nodata(5m)}=1</expression>
-            <name>No response from VMBIX</name>
-            <url/>
-            <status>0</status>
-            <priority>3</priority>
-            <description/>
-            <type>0</type>
-            <dependencies/>
-        </trigger>
-    </triggers>
 </zabbix_export>
