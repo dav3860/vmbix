@@ -1,19 +1,21 @@
 # VmBix ![alt text](https://travis-ci.org/dav3860/vmbix.svg?branch=master "Build Status")
 
-VmBix is a multi-thread TCP server written in java, it accepts connections from a Zabbix server/proxy/agent or zabbix_get and translates them to VMWare API calls.
+VmBix is a multi-threaded TCP proxy for the VMWare Sphere API written in Java. It accepts connections from a [Zabbix](http://www.zabbix.com/) server/proxy/agent or the zabbix_get binary and translates them to VMWare API calls.
 
 Starting from version 2.2, Zabbix can natively monitor a VMWare environment. But there are a few drawbacks :
-* The monitored items are not all very relevant.
-* The created ESX and VM hosts are mostly read-only. You cannot attach them different templates or monitor them with an agent.
-VmBix helps you to overcome this limitations, with very good performance. It is multi-threaded and can be queried using a Zabbix loadable module. VmBix also exposes VMWare API methods that are not included in Zabbix, for example the [Performance Counters](http://fr.slideshare.net/alanrenouf/vsphere-apis-for-performance-monitoring). You can use these VmBix methods to query interesting VMWare metrics, for example :
+* The monitored items are not all very relevant
+* This is not easily extensible
+* The created ESX and VM hosts are mostly read-only. You cannot attach them different templates or use a Zabbix agent to monitor their OS or apps
+
+VmBix helps you to overcome this limitations, with very good performance. It is multi-threaded and can be queried using a Zabbix loadable module. You can use these VmBix methods to query interesting VMWare metrics, for example :
 
 ```
-TEST# esx.counter[esx01.domain.local,cpu.ready.summation]
+esx.counter[esx01.domain.local,cpu.ready.summation]
 1135
 ```
 
 ```
-TEST# vm.counter.discovery[VM01,virtualDisk.totalReadLatency.average]
+vm.counter.discovery[VM01,virtualDisk.totalReadLatency.average]
 {
     "data": [
         {
@@ -42,17 +44,20 @@ TEST# vm.counter.discovery[VM01,virtualDisk.totalReadLatency.average]
 ```
 
 ```
-TEST# vm.counter[VM01,virtualDisk.totalReadLatency.average,scsi2:4,300]
+vm.counter[VM01,virtualDisk.totalReadLatency.average,scsi2:4,300]
 2
 ```
 
 ## Installation
-Get the latest version [here](https://bintray.com/dav3860/generic/vmbix/view/files).
+Get the latest version of the server [here](https://bintray.com/dav3860/generic/vmbix/view/files). You will also need the [loadable module](https://github.com/dav3860/vmbix_zabbix_module) corresponding to your zabbix version. RPM & DEB packages are provided.
+
+The VmBix server can be installed on the same machine as a Zabbix server or proxy. The loadable module must be installed on the Zabbix machine that will monitor the VMWare environment.
 
 ## Or build from source
-Note: you'll need to install JDK and Maven to follow this article. Sources could also be compiled manually.
+Note: you will need to install JDK and Maven to compile VmBix.
 * Install Maven
-Follow the instructions on this page to install Maven (https://maven.apache.org/install.html).
+
+Follow the instructions on [this](https://maven.apache.org/install.html) page to install Maven.
 * Compile
 ```
 tar -zxvf vmbix-x.x.tar.gz
@@ -60,11 +65,15 @@ cd vmbix-x.x
 mvn package
 ```
 
+See the instructions [here](https://github.com/dav3860/vmbix_zabbix_module) to compile the loadable module.
+
 ## Quick start
-Note: To run VmBix you'll have to install jre, OpenJDK should suite but not tested. All the shell scripts are tested on Centos 7 but thould work on other nix distributions as well.
+
+Note: to run VmBix you'll have to install a JRE (OpenJDK should suite but not tested). All the scripts are tested on Centos 7 but should work on other \*NIX distributions as well.
+
 ### Test the binary
 
-Try to run /usr/local/sbin/vmbix, you should get a "usage" output.
+Try to run /usr/local/sbin/vmbix, you should get a *usage* output :
 
 ```
 # /usr/local/sbin/vmbix
@@ -74,19 +83,22 @@ or
 vmbix [-c|--config] config_file  [-f|--pid pidfile] [-i|--interval interval] [-U|--useuuid (true|false)]
 ```
 
-### Configure daemon
+### Configure the daemon
 
 It is strongly recommended to check your parameters before writing them down to a config file. Run VmBix with your username, password and service url:
 
 ```
-$ vmbix -P 12050 -u username -p password -s https://vcenter.mycompany.com/sdk
-starting server on port
-port opened
-time taken:5450 #this line means that you got connected to vcenter/esx
-```
-If you find your output similar to one listed here, feel free to set parameters at /etc/vmbix/vmbix.conf.
+$ vmbix -P 12050 -u "MYDOMAIN\\myvmwareuser" -p "mypassword"" -s "https://myvcenter.mydomain.local/sdk"
+log4j:WARN No appenders could be found for logger (com.vmware.vim25.ws.XmlGenDom).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+17:39:08.430 [main] INFO net.dav3860.VmBix - starting server on port 12050
+17:39:08.433 [main] INFO net.dav3860.VmBix - server started
 
-To install as daemon:
+```
+You should see a similar ouput. Once you have validated that you can start VmBix, you can edit the configuration file /etc/vmbix/vmbix.conf and run the daemon. You can still run the process in foreground for real-time troubleshooting if necessary.
+
+To install as a daemon:
 ```
 chkconfig --add vmbixd
 ```
@@ -98,48 +110,49 @@ And configure autostart if you wish:
 ```
 chkconfig vmbixd on
 ```
-For logs, check:
+For logs, check the file :
 ```
 tail -f /var/log/vmbix.log
 ```
+
 ### Configure Zabbix
 
 All the ESX servers, datastores and virtual machines will automatically be discovered and created in Zabbix. Here is how to configure Zabbix :
 
-1. Import the templates from [zabbix_templates](https://github.com/dav3860/vmbix/tree/master/zabbix) (import the vCenter templates after the others). There are two template flavours : with or without the Zabbix loadable module. The Zabbix loadable module method is useful if you want to monitor your virtual machines with a Zabbix agent in addition to VmBix.
-  * Without the module, the VmBix items in Zabbix are configured with the "Zabbix agent" type. So Zabbix directly talks to VmBix using the Zabbix agent protocol on port 12050 by default. This is good, but it means that the hosts cannot also be monitored using the Zabbix agent as all the created hosts will have an IP of 127.0.0.1 and a port of 12050 by default for their "agent" interface. This is a limitation for virtual machines for example.
-  * With the loadable module, the VmBix items in Zabbix are configured with an "Simple Check" type. Zabbix uses a loadable module to talk to VmBix. So it is still possible to use a Zabbix agent to monitor the hosts. The vmbix.so [loadable module](https://github.com/dav3860/vmbix_zabbix_module) must be installed on your server/proxy.
+1. Import the templates from [here](https://github.com/dav3860/vmbix/tree/master/zabbix) (import the vCenter template after the others). At the moment, only Zabbix 3.0.x templates are provided. The VmBix items in Zabbix are configured with an "Simple Check" type as Zabbix uses a loadable module to talk to VmBix. So it is still possible to use a Zabbix agent in parallel to monitor the hosts. The vmbix.so [loadable module](https://github.com/dav3860/vmbix_zabbix_module) must be installed on your server/proxy.
 
-2. Create a host named "VmBix" for example and link it with the VmBix vCenter template (with or without the module). The host must be configured like this :
-  * Set host ip to 127.0.0.1 or IP of the server where VmBix runs.
-  * Set "Connect to" to "IP address" and set port to 12050 or the one you've set in VmBix config file.
+2. Create a host named "VmBix" for example and link it with the VmBix vCenter template. The IP address and port are not used, but it is necessary to make it monitored by the server/proxy running the loadable module.
 
-Wait for the ESX servers, datastores and virtual machines to be discovered and created. The VM and ESX hosts will be automatically linked to the VmBix ESX or VM template.
+Wait for the ESX servers, datastores and virtual machines to be discovered and created. They will be automatically linked to the VmBix ESX, datastore or VM template. You may need to increase the Timeout parameter in the Zabbix configuration file if VSphere takes too long to respond.
 
 You can also link additional templates to the created hosts by editing the corresponding host prototype in the VmBix vCenter template discovery rules.
 
 As these hosts are created using the host prototype mechanism in Zabbix, they will be almost read-only. For example, you can't edit one host to link it to a specific template. This must be made at the host prototype level, which can be a limitation if your virtual machines are different.
-To overcome this limitation, you can disable the VM discovery rule in the VmBix vCenter template and create your virtual machines manually in Zabbix (I do it using the API and a script of my own). Then, link them to the VmBix VM template (preferably with the loadable module method). You can then edit them as any other host.
+To overcome this limitation, you can disable the VM discovery rule in the VmBix vCenter template and create your virtual machines manually in Zabbix (or using the API and a script). Then, link them to the VmBix VM template (preferably with the loadable module method). You can then edit them as any other host.
+Note: if the parameter useuuid is set to *true* in the VmBix configuration file, the objects must be referenced using their VMWare UUID. So if you create a host manually, you must set its name to the UUID and its visible name to the name of the VM. You can use the \*.discovery[\*] methods to get the UUID of an object :
 
-You may need to increase the Timeout parameter in Zabbix configuration file.
+```
+# zabbix_get -s 127.0.0.1 -p 12050 -k "vm.discovery[*]"
+{"data":[{"{#VIRTUALMACHINE}":"MYVM01","{#UUID}":"4214811c-1bab-f0fb-363b-9698a2dc607c"},{"{#VIRTUALMACHINE}":"MYVM02","{#UUID}":"4214c939-18f1-2cd5-928a-67d83bc2f503"}]}
+```
 
 ### Querying VmBix in CLI
 You can query VmBix like a Zabbix agent using the zabbix_get tool :
 ```
-# zabbix_get -s 127.x.y.z -p 12050 -k about[*]
+# zabbix_get -s 127.0.0.1 -p 12050 -k about[*]
 VMware vCenter Server 5.1.0 build-1364037
-# zabbix_get -s 127.x.y.z -p 12050 -k esx.status[esx01.domain.local]
+# zabbix_get -s 127.0.0.1 -p 12050 -k esx.status[esx01.domain.local]
 1
-# zabbix_get -s 127.x.y.z -p 12050 -k vm.guest.os[MYVM01]
+# zabbix_get -s 127.0.0.1 -p 12050 -k vm.guest.os[4214811c-1bab-f0fb-363b-9698a2dc607c]
 CentOS 4/5/6 (64 bits)
-# zabbix_get -s 127.x.y.z -p 12050 -k esx.discovery[*]
+# zabbix_get -s 127.0.0.1 -p 12050 -k esx.discovery[*]
 {"data":[{"{#ESXHOST}":"esx01.domain.local"},{"{#ESXHOST}":"esx02.domain.local"}]}
-# zabbix_get -s 127.x.y.z -p 12050 -k vm.counter[MYVM01,virtualDisk.totalReadLatency.average,scsi0:1,300]
+# zabbix_get -s 127.0.0.1 -p 12050 -k vm.counter[MYVM01,virtualDisk.totalReadLatency.average,scsi0:1,300]
 2
 ```
-If useuuid is set to true in the configuration file, objects are identified using their UUID :
+Again, if useuuid is set to true in the configuration file, objects are identified using their UUID :
 ```
-# zabbix_get -s 127.x.y.z -p 12050 -k vm.guest.os[421448c4-8970-28f0-05a5-90a20724bd08]
+# zabbix_get -s 127.0.0.1 -p 12050 -k vm.guest.os[421448c4-8970-28f0-05a5-90a20724bd08]
 CentOS 4/5/6 (64 bits)
 ```
 
