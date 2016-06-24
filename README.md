@@ -48,6 +48,13 @@ vm.counter[VM01,virtualDisk.totalReadLatency.average,scsi2:4,300]
 2
 ```
 
+VmBix comes with a set of templates adding several monitored items, triggers and graphs in Zabbix. Here are a few screenshots :
+![](https://github.com/dav3860/vmbix/blob/master/screenshots/latest_data.png)
+
+![](https://github.com/dav3860/vmbix/blob/master/screenshots/triggers.png)
+
+![](https://github.com/dav3860/vmbix/blob/master/screenshots/graph.png)
+
 ## Installation
 Get the latest version of the server [here](https://bintray.com/dav3860/generic/vmbix/view/files). You will also need the [loadable module](https://github.com/dav3860/vmbix_zabbix_module) corresponding to your zabbix version. RPM & DEB packages are provided.
 
