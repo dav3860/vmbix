@@ -167,9 +167,9 @@ CentOS 4/5/6 (64 bits)
 
 ## Supported zabbix checks
 ```
-vmbix.about
-vmbix.ping
-vmbix.version
+about
+ping
+version
 cluster.discovery
 cluster.cpu[name,free]
 cluster.cpu[name,total]
