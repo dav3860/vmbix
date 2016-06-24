@@ -7,7 +7,16 @@ Starting from version 2.2, Zabbix can natively monitor a VMWare environment. But
 * This is not easily extensible
 * The created ESX and VM hosts are mostly read-only. You cannot attach them different templates or use a Zabbix agent to monitor their OS or apps
 
-VmBix helps you to overcome this limitations, with very good performance. It is multi-threaded and can be queried using a Zabbix loadable module. You can use these VmBix methods to query interesting VMWare metrics, for example :
+VmBix helps you to overcome this limitations, with very good performance. It is multi-threaded and can be queried using a Zabbix loadable module.
+
+VmBix comes with a set of templates adding several monitored items, triggers and graphs in Zabbix. Here are a few screenshots :
+![](https://github.com/dav3860/vmbix/blob/master/screenshots/latest_data.png)
+
+![](https://github.com/dav3860/vmbix/blob/master/screenshots/triggers.png)
+
+![](https://github.com/dav3860/vmbix/blob/master/screenshots/graph.png)
+
+You can use these VmBix methods to query interesting VMWare metrics, for example :
 
 ```
 esx.counter[esx01.domain.local,cpu.ready.summation]
@@ -47,13 +56,6 @@ vm.counter.discovery[VM01,virtualDisk.totalReadLatency.average]
 vm.counter[VM01,virtualDisk.totalReadLatency.average,scsi2:4,300]
 2
 ```
-
-VmBix comes with a set of templates adding several monitored items, triggers and graphs in Zabbix. Here are a few screenshots :
-![](https://github.com/dav3860/vmbix/blob/master/screenshots/latest_data.png)
-
-![](https://github.com/dav3860/vmbix/blob/master/screenshots/triggers.png)
-
-![](https://github.com/dav3860/vmbix/blob/master/screenshots/graph.png)
 
 ## Installation
 Get the latest version of the server [here](https://bintray.com/dav3860/generic/vmbix/view/files). You will also need the [loadable module](https://github.com/dav3860/vmbix_zabbix_module) corresponding to your zabbix version. RPM & DEB packages are provided.
