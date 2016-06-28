@@ -1,4 +1,4 @@
-# VmBix ![alt text](https://travis-ci.org/dav3860/vmbix.svg?branch=master "Build Status")
+# VmBix [![Build Status](https://travis-ci.org/dav3860/vmbix.svg?branch=master)](https://travis-ci.org/dav3860/vmbix)
 
 VmBix is a multi-threaded TCP proxy for the VMWare Sphere API written in Java. It accepts connections from a [Zabbix](http://www.zabbix.com/) server/proxy/agent or the zabbix_get binary and translates them to VMWare API calls.
 
