@@ -1,0 +1,6 @@
+docopt
+PyYaml
+datetime
+logging
+requests
+zabbix_api

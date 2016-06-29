@@ -1,0 +1,64 @@
+---
+vmbix:
+  hostname: 127.0.0.1
+  port: 12050
+  useuuid: false
+
+zabbix:
+  hostname: https://zabbix
+  username: myuser
+  password: mypassword
+
+
+  vsphere_object_vm:
+    #################################
+    # Zabbix proxy to use with VMs  #
+    #################################
+    proxy: myzabbixproxy
+    #################################
+    # Default Zabbix templates      #
+    #################################
+    templates:
+      - Template VmBix VM Loadable Module
+      - Template Ping Check
+    #################################
+    # Default Zabbix groups         #
+    #################################
+    groups:
+      - Virtual machines
+    #################################
+    # Default Zabbix MACROs         #
+    #################################
+    #macros:
+    #  MACRO1: Test1
+    #################################
+    # Conditional templates         #
+    #################################
+    optional_templates:
+      - method: vm.guest.os
+        pattern: (Centos|Enterprise Linux)
+        value: Template OS Linux
+    #################################
+    # Conditional groups            #
+    #################################
+    optional_groups:
+      - method: vm.folder
+        pattern: (Production|Critical)
+        value: Production Servers
+      - method: vm.name
+        pattern: (ZBX.*)
+        value: Zabbix Servers
+    #################################
+    # Inclusions                    #
+    #################################
+    include:
+      - method: vm.folder
+        pattern: (Important)
+    #################################
+    # Exclusions                    #
+    #################################
+    exclude:
+      - method: vm.powerstate
+        pattern: (0|2|3)
+      - method: vm.name
+        pattern: (DUMMY.*)
