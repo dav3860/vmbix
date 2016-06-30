@@ -21,6 +21,7 @@ install:
 - mkdir -p ${DEPLOY_ROOT}/usr/local/sbin/
 - mkdir -p ${DEPLOY_ROOT}/usr/local/vmbix/
 - mkdir -p ${DEPLOY_ROOT}/etc
+- mkdir -p ${DEPLOY_ROOT}/usr/share/vmbix/
 - gem install fpm
 - export TAR_FILE_NAME=${PROJECT_NAME}-${VERSION}.tar.gz
 - if [ "$TARGET_PLATFORM" == "deb" ]; then export FILE_NAME="${PROJECT_NAME}_${VERSION}-1_amd64";
@@ -32,6 +33,7 @@ script:
 - cp -dR ${TRAVIS_BUILD_DIR}/target/vmbix-${VERSION}-jar-with-dependencies.jar ${DEPLOY_ROOT}/usr/local/vmbix/vmbix.jar
 - cp -dR ${TRAVIS_BUILD_DIR}/etc-${TARGET_PLATFORM}/* ${DEPLOY_ROOT}/etc/
 - cp -dR ${TRAVIS_BUILD_DIR}/usr/ ${DEPLOY_ROOT}/
+- cp -dR ${TRAVIS_BUILD_DIR}/zabbix ${DEPLOY_ROOT}/usr/share/vmbix/
 - chmod +x ${DEPLOY_ROOT}/etc/init.d/vmbixd
 - chmod +x ${DEPLOY_ROOT}/usr/local/sbin/vmbix
 - chmod +x ${DEPLOY_ROOT}/usr/local/sbin/vmbixd
