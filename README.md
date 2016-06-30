@@ -136,14 +136,31 @@ Wait for the ESX servers, datastores and virtual machines to be discovered and c
 
 You can also link additional templates to the created hosts by editing the corresponding host prototype in the VmBix vCenter template discovery rules.
 
+#### Using VMWare objects as regular hosts in Zabbix
+
 As these hosts are created using the host prototype mechanism in Zabbix, they will be almost read-only. For example, you can't edit one host to link it to a specific template. This must be made at the host prototype level, which can be a limitation if your virtual machines are different.
+
 To overcome this limitation, you can disable the VM discovery rule in the VmBix vCenter template and create your virtual machines manually in Zabbix (or using the API and a script). Then, link them to the VmBix VM template (preferably with the loadable module method). You can then edit them as any other host.
+
 Note: if the parameter useuuid is set to *true* in the VmBix configuration file, the objects must be referenced using their VMWare UUID. So if you create a host manually, you must set its name to the UUID and its visible name to the name of the VM. You can use the \*.discovery[\*] methods to get the UUID of an object :
 
 ```
 # zabbix_get -s 127.0.0.1 -p 12050 -k "vm.discovery[*]"
-{"data":[{"{#VIRTUALMACHINE}":"MYVM01","{#UUID}":"4214811c-1bab-f0fb-363b-9698a2dc607c"},{"{#VIRTUALMACHINE}":"MYVM02","{#UUID}":"4214c939-18f1-2cd5-928a-67d83bc2f503"}]}
+{
+  "data": [
+    {
+      "{#VIRTUALMACHINE}": "MYVM01",
+      "{#UUID}": "4214811c-1bab-f0fb-363b-9698a2dc607c"
+    },
+    {
+      "{#VIRTUALMACHINE}": "MYVM02",
+      "{#UUID}": "4214c939-18f1-2cd5-928a-67d83bc2f503"
+    }
+  ]
+}
 ```
+
+A sample import [script](https://github.com/dav3860/vmbix/tree/zabbix-vsphere-import/zabbix/addons) is provided for this purpose.
 
 ### Querying VmBix in CLI
 You can query VmBix like a Zabbix agent using the zabbix_get tool :
@@ -155,8 +172,16 @@ VMware vCenter Server 5.1.0 build-1364037
 # zabbix_get -s 127.0.0.1 -p 12050 -k vm.guest.os[4214811c-1bab-f0fb-363b-9698a2dc607c]
 CentOS 4/5/6 (64 bits)
 # zabbix_get -s 127.0.0.1 -p 12050 -k esx.discovery[*]
-{"data":[{"{#ESXHOST}":"esx01.domain.local"},{"{#ESXHOST}":"esx02.domain.local"}]}
-# zabbix_get -s 127.0.0.1 -p 12050 -k vm.counter[MYVM01,virtualDisk.totalReadLatency.average,scsi0:1,300]
+{
+  "data": [
+    {
+      "{#ESXHOST}": "esx01.domain.local"
+    },
+    {
+      "{#ESXHOST}": "esx02.domain.local"
+    }
+  ]
+}# zabbix_get -s 127.0.0.1 -p 12050 -k vm.counter[MYVM01,virtualDisk.totalReadLatency.average,scsi0:1,300]
 2
 ```
 Again, if useuuid is set to true in the configuration file, objects are identified using their UUID :
