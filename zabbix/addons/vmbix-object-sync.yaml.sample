@@ -1,0 +1,104 @@
+---
+import:
+  sender: zabbix@localhost.localdomain
+  recipients: myemailaddress@localhost.localdomain
+
+vmbix:
+  hostname: 127.0.0.1
+  port: 12050
+  useuuid: true
+
+zabbix:
+  hostname: http://myzabbixserver/zabbix
+  username: myapiuser
+  password: myapipassword
+
+  vsphere_object_vm:
+    #################################
+    # Zabbix proxy to use with VMs  #
+    #################################
+    proxy: myzabbixproxy
+    #################################
+    # Default Zabbix templates      #
+    #################################
+    templates:
+      - Template VmBix VM Loadable Module
+    #################################
+    # Default Zabbix groups         #
+    #################################
+    groups:
+      - Virtual machines
+    #################################
+    # Default Zabbix MACROs         #
+    #################################
+    #macros:
+    #  MACRO1: Test1
+    #################################
+    # Conditional templates         #
+    #################################
+    optional_templates:
+      - method: vm.guest.os
+        pattern: (Centos|Enterprise Linux)
+        value: Template OS Linux
+      - method: vm.guest.os
+        pattern: (Windows)
+        value: Template OS Windows        
+    #################################
+    # Conditional groups            #
+    #################################
+    optional_groups:
+      - method: vm.folder
+        pattern: (Production)
+        value: Production Servers
+    optional_groups:
+      - method: vm.folder
+        pattern: (Lab|Test)
+        value: Lab Servers           
+    #################################
+    # Inclusions                    #
+    #################################
+    include:
+      - method: vm.folder
+        pattern: (Production|Lab|Test)
+    #################################
+    # Exclusions                    #
+    #################################
+    exclude:
+      - method: vm.powerstate
+        pattern: (0|2|3)
+    exclude:
+      - method: vm.name
+        pattern: (DUMMY.*) 
+        
+  vsphere_object_esx:
+    #################################
+    # Zabbix proxy to use with ESXs #
+    #################################
+    proxy: myzabbixproxy
+    #################################
+    # Default Zabbix templates      #
+    #################################
+    templates:
+      - Template VmBix ESX Loadable Module
+    #################################
+    # Default Zabbix groups         #
+    #################################
+    groups:
+      - Hypervisors
+
+  #vsphere_object_datastore:
+  #  #######################################
+  #  # Zabbix proxy to use with datastores #
+  #  #######################################
+  #  proxy: myzabbixproxy
+  #  #################################
+  #  # Default Zabbix templates      #
+  #  #################################
+  #  templates:
+  #    - Template VmBix Datastore Loadable Module
+  #  #################################
+  #  # Default Zabbix groups         #
+  #  #################################
+  #  groups:
+  #    - Datastores    
+        

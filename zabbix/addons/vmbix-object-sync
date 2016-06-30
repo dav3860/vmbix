@@ -27,7 +27,7 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """
-The vmbix-import tool is used for importing VMware vSphere objects
+The vmbix-object-sync tool is used for importing VMware vSphere objects
 into a Zabbix server as regular Zabbix hosts
 
 """
@@ -38,9 +38,48 @@ import zabbix_api
 import json
 import re
 from docopt import docopt
-from zget import ZGet
 import smtplib
 import logging
+import socket
+import struct
+
+
+class ZGet:
+  def __init__(self, host, port):
+    self.host = host
+    self.port = port
+    #self.key = ""
+
+  def str2packed(self, data):
+      header_field =  struct.pack('<4sBQ', 'ZBXD', 1, len(data))
+      return header_field + data
+
+  def packed2str(self, packed_data):
+      header, version, length = struct.unpack('<4sBQ', packed_data[:13])
+      (data, ) = struct.unpack('<%ds'%length, packed_data[13:13+length])
+      return data
+
+  def get(self, key):
+      key = key + "\n"
+      s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      s.connect((self.host, self.port))
+      s.sendall(self.str2packed(key))
+
+      data = ''
+      while True:
+          buff = s.recv(1024)
+          if not buff:
+              break
+          data += buff
+
+      if data.startswith('ZBXD\x01'):
+        response = self.packed2str(data)
+      else:
+        response = data
+
+      s.close()
+      return response
+
 
 class ZabbixException(Exception):
     """
@@ -65,7 +104,7 @@ class ZabbixConnector(object):
         Establishes a connection to the Zabbix server
 
         """
-        logging.info('[vSphere VirtualMachine] Connecting to Zabbix server at %s', self.options['zabbix']['hostname'])
+        logging.info('Connecting to Zabbix server at %s', self.options['zabbix']['hostname'])
 
         self.conn = zabbix_api.ZabbixAPI(server=self.options['zabbix']['hostname'])
 
@@ -75,7 +114,7 @@ class ZabbixConnector(object):
                 password=self.options['zabbix']['password']
             )
         except zabbix_api.ZabbixAPIException as e:
-            logging.error('[vSphere VirtualMachine] Cannot login to Zabbix server: %s', e)
+            logging.error('Cannot login to Zabbix server: %s', e)
             raise ZabbixException, 'Cannot login to Zabbix server: %s' % e
 
     def get_hosts(self):
@@ -99,7 +138,7 @@ class ZabbixConnector(object):
         hosts  = data['result']
 
         for host in hosts:
-            if host['name'] == name:
+            if host['host'] == name:
                 break
         else:
             return None
@@ -152,7 +191,7 @@ class ZabbixConnector(object):
         hosts  = data['result']
 
         for host in hosts:
-            if host['name'] == name:
+            if host['host'] == name:
                 break
         else:
             return None
@@ -298,8 +337,9 @@ class ZabbixConnector(object):
 
         """
         if not self.options['zabbix'].has_key(name):
-            logging.warning("[vSphere VirtualMachine] There is no '%s' entry in the config file", name)
-            raise ZabbixException, "There is no '%s' entry in the config file" % name
+            logging.warning("There is no '%s' entry in the config file", name)
+            #raise ZabbixException, "There is no '%s' entry in the config file" % name
+            return
 
         # Get the Zabbix Proxy if set
         proxy_id = None
@@ -307,43 +347,43 @@ class ZabbixConnector(object):
             proxy_name = self.options['zabbix'][name]['proxy']
             proxy_id = self.get_proxy_host_by_name(proxy_name)
             if not proxy_id:
-                logging.warning("[vSphere VirtualMachine] Unable to find Zabbix proxy '%s'", proxy_name)
+                logging.warning("Unable to find Zabbix proxy '%s'", proxy_name)
                 raise ZabbixException, "Unable to find Zabbix proxy '%s'" % proxy_name
 
         # Get ids of the Zabbix templates
         if not self.options['zabbix'][name].has_key('templates'):
-            logging.warning("[vSphere VirtualMachine] No templates are defined for '%s' config entry", name)
+            logging.warning("No templates are defined for '%s' config entry", name)
             raise ZabbixException, "No templates are defined for '%s' config entry" % name
 
         templates = []
         for template in self.options['zabbix'][name]['templates']:
             template_id = self.get_template_by_name(template)
             if not template_id:
-                logging.warning("[vSphere VirtualMachine] Template '%s' was not found on the Zabbix server", template)
+                logging.warning("Template '%s' was not found on the Zabbix server", template)
                 continue
             templates.append({ 'templateid': template_id })
 
         if not self.options['zabbix'][name].has_key('templates'):
-            logging.warning("[vSphere VirtualMachine] No templates are defined for '%s' config entry", name)
+            logging.warning("No templates are defined for '%s' config entry", name)
             raise ZabbixException, "No templates are defined for '%s' config entry" % name
 
         # Get ids of the Zabbix hostgroups
         if not self.options['zabbix'][name].has_key('groups'):
-            logging.warning("[vSphere VirtualMachine] No groups are defined for '%s' config entry", name)
+            logging.warning("No groups are defined for '%s' config entry", name)
             raise ZabbixException, "No groups are defined for '%s' config entry" % name
 
         groups = []
         for group in self.options['zabbix'][name]['groups']:
             group_id = self.get_host_group_by_name(group)
             if not group_id:
-                logging.warning("[vSphere VirtualMachine] Unable to find Zabbix host group '%s'", group)
-                logging.info("[vSphere VirtualMachine] Creating Zabbix host group '%s'", group)
+                logging.warning("Unable to find Zabbix host group '%s'", group)
+                logging.info("Creating Zabbix host group '%s'", group)
                 result = self.create_host_group(name=group)
                 group_id = result[0]
             groups.append({ 'groupid': group_id })
 
         if not groups:
-            logging.warning("[vSphere VirtualMachine] No valid groups found for '%s' config entry", name)
+            logging.warning("No valid groups found for '%s' config entry", name)
             raise ZabbixException, "No valid groups found for '%s' config entry" % name
 
         r = {
@@ -358,8 +398,8 @@ class ZabbixConnector(object):
           for test in self.options['zabbix'][name]['optional_groups']:
               group_id = self.get_host_group_by_name(test['value'])
               if not group_id:
-                  logging.warning("[vSphere VirtualMachine] Unable to find Zabbix host group '%s'", test['value'])
-                  logging.info("[vSphere VirtualMachine] Creating Zabbix host group '%s'", test['value'])
+                  logging.warning("Unable to find Zabbix host group '%s'", test['value'])
+                  logging.info("Creating Zabbix host group '%s'", test['value'])
                   result = self.create_host_group(name=test['value'])
                   group_id = result[0]
               optional_groups.append({'method': test['method'], 'pattern': test['pattern'], 'value': group_id})
@@ -413,48 +453,75 @@ class ZabbixConnector(object):
 
         return result
 
-    def import_vsphere_vms(self):
+    def import_vsphere_hosts(self, type):
         """
-        Import vSphere VMs into Zabbix as regular Zabbix hosts
+        Import vSphere hosts into Zabbix as regular Zabbix hosts
 
         """
-        logging.info('[vSphere VirtualMachine] Importing objects to Zabbix')
+        logging.info('Importing objects of type [%s] into Zabbix', type)
 
         # Get hosts options (templates, groups, macros) from the config file
-        host_options = self._get_zabbix_host_options('vsphere_object_vm')
+        host_options = self._get_zabbix_host_options(type)
+        if not host_options:
+          return
 
         zabbix_data  = self.get_hosts()
-        print zabbix_data
-        sys.exit(0)
-        
-        # Get VM list from VMBIX
-        zg = ZGet(host = self.options['vmbix']['hostname'], port = self.options['vmbix']['port'])
-        data = zg.get("vm.discovery[*]")
+        zabbix_hosts  = [host['host'] for host in zabbix_data['result']]
+       
+        # Get host list from VMBIX
+        zg = ZGet(host = self.options['vmbix']['hostname'], port = self.options['vmbix']['port']) 
+              
+        if type == 'vsphere_object_vm':
+          data = zg.get("vm.discovery[*]")
+          
+          try:
+            vsphere_data = json.loads(data)
+          except:
+            print "Cannot decode VmBix response"
+            logging.error("Cannot decode VmBix response")
+            exit(1)          
+          
+          if self.options['vmbix']['useuuid'] == 1:    
+            self.vsphere_hosts[type] = {host['{#UUID}']: host['{#VIRTUALMACHINE}'] for host in vsphere_data['data']}
+          else:
+            self.vsphere_hosts[type] = {host['{#VIRTUALMACHINE}']: host['{#VIRTUALMACHINE}'] for host in vsphere_data['data']}          
+        elif type == 'vsphere_object_esx':
+          data = zg.get("esx.discovery[*]")
+          
+          try:
+            vsphere_data = json.loads(data)
+          except:
+            print "Cannot decode VmBix response"
+            logging.error("Cannot decode VmBix response")
+            exit(1)          
+          
+          if self.options['vmbix']['useuuid'] == 1:    
+            self.vsphere_hosts[type] = {host['{#UUID}']: host['{#ESXHOST}'] for host in vsphere_data['data']}
+          else:
+            self.vsphere_hosts[type] = {host['{#ESXHOST}']: host['{#ESXHOST}'] for host in vsphere_data['data']} 
+        elif type == 'vsphere_object_datastore':
+          data = zg.get("datastore.discovery[*]")
+          
+          try:
+            vsphere_data = json.loads(data)
+          except:
+            print "Cannot decode VmBix response"
+            logging.error("Cannot decode VmBix response")
+            exit(1)          
+          
+          if self.options['vmbix']['useuuid'] == 1:    
+            self.vsphere_hosts[type] = {host['{#UUID}']: host['{#DATASTORE}'] for host in vsphere_data['data']}
+          else:
+            self.vsphere_hosts[type] = {host['{#DATASTORE}']: host['{#DATASTORE}'] for host in vsphere_data['data']}           
+  
+        missing_hosts = set(self.vsphere_hosts[type].keys()) - set(zabbix_hosts)
 
-        try:
-          vsphere_data = json.loads(data)
-        except:
-          print "Cannot decode VmBix response"
-          logging.error("[vSphere VirtualMachine] Cannot decode VmBix response")
-          exit(1)
-
-        zabbix_vms  = [host['host'] for host in zabbix_data['result']]
-        self.vsphere_vms = [host['{#VIRTUALMACHINE}'] for host in vsphere_data['data']]
-
-        # Filtering VMs that are not running
-        #for vm in vsphere_vms:
-        #  if not zg.get("vm.powerstate[" + vm + "]") == '1':
-        #    logging.info("[vSphere VirtualMachine] Host '%s' is not running, skipped.", vm)
-        #    vsphere_vms.remove(vm)
-
-        missing_vms = set(self.vsphere_vms) - set(zabbix_vms)
-
-        if not missing_vms:
-            logging.info('[vSphere VirtualMachine] Objects are in sync with Zabbix')
+        if not missing_hosts:
+            logging.info('Objects are in sync with Zabbix')
             return
 
-        logging.info('[vSphere VirtualMachine] Number of objects to be imported: %d', len(missing_vms))
-
+        logging.info('Number of objects to be checked: %d', len(missing_hosts))
+        
         # Add a default interface for the host
         host_options['interfaces'] = [
             {
@@ -466,248 +533,276 @@ class ZabbixConnector(object):
                 'port': '10050'
             }
         ]
-
+      
         # Create the hosts in Zabbix
-        for vm in missing_vms:
-            vm = vm.encode('utf-8')
-            params = deepcopy(host_options)
-            params['host'] = vm
+        i = 0
+        for host in missing_hosts:
+            i = i + 1
+            
+            name = self.vsphere_hosts[type][host].encode('utf-8')
+            host = host.encode('utf-8')
 
-            # Check if VM is included
+            params = deepcopy(host_options)
+            if self.options['vmbix']['useuuid'] == 1:
+              params['host'] = host
+              params['name'] = name
+            else:
+              params['host'] = host
+
+            logging.debug("Processing host '%s' [%s/%s]", name, i, len(missing_hosts))            
+
+            # Check if host is included
+            logging.debug("Checking inclusion rules for host '%s'", name)
             if params.has_key('include'):
               try:
                 for test in params['include']:
-                  result = zg.get("%s[%s]" % (test['method'], vm))
+                  result = zg.get("%s[%s]" % (test['method'], host))
                   reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                   if not reg.match(result):
-                    logging.debug("[vSphere VirtualMachine] Host '%s' matched inclusion rule '%s'", vm, test)
+                    logging.debug("Host '%s' did not match inclusion rule '%s'", name, test)
                     raise ZabbixException
               except ZabbixException:
-                logging.info("[vSphere VirtualMachine] Host '%s' was not included due to conditional filter", vm)
+                logging.debug("Host '%s' was not included due to conditional filter", name)
                 continue
 
               del params['include']
 
 
-            # Check if the VM should be skipped
+            # Check if the host should be skipped
+            logging.debug("Checking exclusion rules for host '%s'", name)
             if params.has_key('exclude'):
               try:
                 for test in params['exclude']:
-                  result = zg.get("%s[%s]" % (test['method'], vm))
+                  result = zg.get("%s[%s]" % (test['method'], host))
                   reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                   if reg.match(result):
-                    logging.debug("[vSphere VirtualMachine] Host '%s' matched exclusion rule '%s'", vm, test)
+                    logging.debug("Host '%s' matched exclusion rule '%s'", name, test)
                     raise ZabbixException
               except ZabbixException:
-                logging.info("[vSphere VirtualMachine] Host '%s' was excluded due to conditional filter", vm)
+                logging.debug("Host '%s' was excluded due to conditional filter ", name)
                 continue
 
               del params['exclude']
 
-            logging.info("[vSphere VirtualMachine] Creating Zabbix host '%s'", vm)
-
             # Checking if the hostname property can be retrieved
-            hostname = zg.get("vm.guest.name[" + vm + "]")
-            if hostname and hostname != "null":
-              logging.info("[vSphere VirtualMachine] Using hostname for host '%s'", vm)
-              params['interfaces'][0]['dns'] = hostname
-            else:
-              params['interfaces'][0]['dns'] = vm
+            params['interfaces'][0]['dns'] = name
+            if type == 'vsphere_object_vm':
+              hostname = zg.get("vm.guest.name[%s]" % host)
+              if hostname and hostname != "null" and not hostname.startswith("ZBX_NOTSUPPORTED"):
+                logging.debug("Using hostname for host '%s'", name)
+                params['interfaces'][0]['dns'] = hostname
 
             # Checking optional groups
+            logging.debug("Checking group rules for host '%s'", name)
             if params.has_key('optional_groups'):
               for test in params['optional_groups']:
-                result = zg.get("%s[%s]" % (test['method'], vm))
+                result = zg.get("%s[%s]" % (test['method'], host))
                 reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                 if reg.match(result):
+                  logging.debug("Host '%s' matched group rule '%s'", name, test)
                   params['groups'].append({'groupid': test['value']})
 
               del params['optional_groups']
 
             # Checking optional templates
+            logging.debug("Checking template rules for host '%s'", name)
             if params.has_key('optional_templates'):
               for test in params['optional_templates']:
-                result = zg.get("%s[%s]" % (test['method'], vm))
+                result = zg.get("%s[%s]" % (test['method'], host))
                 reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                 if reg.match(result):
+                  logging.debug("Host '%s' matched template rule '%s'", name, test)
                   params['templates'].append({'templateid': test['value']})
 
               del params['optional_templates']
 
+            logging.info("Creating Zabbix host '%s'", name)
             try:
-                result = self.create_host(params)
+              result = self.create_host(params)
+              self.email = self.email + name + "\r\n"
             except zabbix_api.ZabbixAPIException as e:
-                logging.warning('[vSphere VirtualMachine] Cannot create host in Zabbix: %s', e)
+              logging.warning('Cannot create host in Zabbix: %s', e)
 
-        logging.info('[vSphere VirtualMachine] Import of objects completed')
+        logging.info('Import of objects completed')
 
-    def check_for_extra_hosts(self, action, force, recipients, sender):
+    def check_for_extra_hosts(self, type):
         """
         Check for extra hosts in Zabbix which are no longer in vSphere
 
         Searching for extra hosts which are found in Zabbix, but are no longer
-        present on the vSphere host is done by filtering the Zabbix hosts,
-        which have the {$VSPHERE.HOST} macro and it's value is the vSphere host
-        on which they are supposed to be present.
+        present on the vSphere host.
 
         Args:
             action (string): delete or disable found extra hosts
 
         """
         logging.info(
-            '[vSphere VirtualMachine] Searching for extra hosts in Zabbix, which are no longer present at %s',
-            self.options['vmbix']['hostname']
+            'Searching for extra hosts in Zabbix of type [%s], which are no longer present at %s',
+            type, self.options['vmbix']['hostname']
         )
-
-        # Get all vSphere objects in one place for easy comparison
-        vsphere_objects = []
-        vsphere_objects.extend(self.vsphere_vms)
-
-        zabbix_data  = self.get_hosts_by_group(self.options['zabbix']['vsphere_object_vm']['groups'])
-        zabbix_vms  = [host['host'] for host in zabbix_data['result']]
-
-        extra_hosts = set(zabbix_vms) - set(vsphere_objects)
-
-        # Evaluate the conditional filters for all hosts in Zabbix
-        logging.info(
-            '[vSphere VirtualMachine] Checking conditional filters against already monitored VMs at %s',
-            self.options['vmbix']['hostname']
-        )
-        zg = ZGet(host = self.options['vmbix']['hostname'], port = self.options['vmbix']['port'])
+        
         # Get hosts options (templates, groups, macros) from the config file
-        host_options = self._get_zabbix_host_options('vsphere_object_vm')
+        host_options = self._get_zabbix_host_options(type)
+        if not host_options:
+          return        
 
-        for vm in zabbix_vms:
+        zabbix_data  = self.get_hosts_by_group(self.options['zabbix'][type]['groups'])
+        zabbix_hosts  = {host['host']:host['name'] for host in zabbix_data['result']}
+
+        extra_hosts = set(zabbix_hosts.keys()) - set(self.vsphere_hosts[type].keys())
+        logging.info('Number of extra hosts in Zabbix : %d', len(extra_hosts))
+        
+        zg = ZGet(host = self.options['vmbix']['hostname'], port = self.options['vmbix']['port'])
+
+        # Evaluate the conditional filters for all remaining hosts in Zabbix
+        logging.info(
+            'Checking conditional filters against the remaining hosts at %s',
+            self.options['vmbix']['hostname']
+        )
+        i = 0
+        common_hosts = set(zabbix_hosts.keys()) & set(self.vsphere_hosts[type].keys())        
+        logging.debug("Number of common hosts in Zabbix and vSphere : %s", len(common_hosts))
+        for vm in common_hosts:
+            i = i + 1
+            
+            name = self.vsphere_hosts[type][vm].encode('utf-8')
             vm = vm.encode('utf-8')
             params = deepcopy(host_options)
             params['host'] = vm
 
+            logging.debug("Processing host '%s' [%s/%s]", name, i, len(common_hosts))   
+            
+            logging.debug("Checking inclusion rules for host '%s'", name)
             if params.has_key('include'):
               try:
                 for test in params['include']:
-                  if test['method'] != "vm.powerstate": # ne pas tenir compte des machines eteintes
+                  if test['method'] != "vm.powerstate": # don't check for powered-off hosts
                     result = zg.get("%s[%s]" % (test['method'], vm))
                     reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                     if not reg.match(result):
-                      logging.debug("[vSphere VirtualMachine] Host '%s' matched inclusion rule '%s'", vm, test)
+                      logging.debug("Host '%s' did not match inclusion rule '%s'", name, test)
                       raise ZabbixException
-              except ZabbixException:
-                logging.info("[vSphere VirtualMachine] Host '%s' is not included anymore due to conditional filter", vm)
+              except ZabbixException:           
+                logging.debug("Host '%s' is not included anymore due to conditional filter", name)
                 extra_hosts.add(vm)
                 continue
 
               del params['include']
 
-            # Check if the VM should be skipped
+            # Check if the host should be skipped
+            logging.debug("Checking exclusion rules for host '%s'", name)
             if params.has_key('exclude'):
               try:
                 for test in params['exclude']:
-                  if test['method'] != "vm.powerstate": # ne pas tenir compte des machines eteintes
+                  if test['method'] != "vm.powerstate": # don't check for powered-off hosts
                     result = zg.get("%s[%s]" % (test['method'], vm))
                     reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                     if reg.match(result):
-                      logging.debug("[vSphere VirtualMachine] Host '%s' matched exclusion rule '%s'", vm, test)
+                      logging.debug("Host '%s' matched exclusion rule '%s'", name, test)
                       raise ZabbixException
               except ZabbixException:
-                logging.info("[vSphere VirtualMachine] Host '%s' is now excluded due to conditional filter", vm)
+                logging.debug("Host '%s' is now excluded due to conditional filter", name)
                 extra_hosts.add(vm)
                 continue
 
               del params['exclude']
 
         if not extra_hosts:
+            logging.info("No extra host in Zabbix")
             return
         else:
-          if (100 * len(extra_hosts)/len(zabbix_vms)) > 10:
+          if (100 * len(extra_hosts)/len(zabbix_hosts)) > 10:
             logging.warning(
-              "[vSphere VirtualMachine] Anomaly detected. More than 10% extra hosts in Zabbix."
+              "Anomaly detected. More than 10% extra hosts in Zabbix."
             )
-            if force:
+            if self.force:
               logging.info(
-                "[vSphere VirtualMachine] Force option is enabled. The selected action will be applied."
+                "Force option is enabled. The action [%s] will be applied.", self.action
               )
             else:
               logging.info(
-                "[vSphere VirtualMachine] Force option is disabled. Skipping."
+                "Force option is disabled. Skipping."
               )
               return
 
-        message = ""
+        if len(extra_hosts) > 0:
+          if self.action == 'disable':
+            self.email = self.email + """
+The following hosts were DISABLED in Zabbix :
+"""
+          if self.action == 'delete':
+            self.email = self.email + """
+The following hosts were DELETED in Zabbix :
+"""
+        i = 0
         for host in extra_hosts:
-          logging.info(
-            "[vSphere VirtualMachine] Host '%s' exists in Zabbix, but should be removed from monitoring",
-            host
-          )
-          if action == 'delete':
+          i = i + 1
+          name = zabbix_hosts[host].encode('utf-8')
+          logging.debug("Host '%s' [%s/%s] exists in Zabbix, but should be removed from monitoring", name, i ,len(extra_hosts))
+          if self.action == 'delete':
             hostid = self.get_hostid_by_name(host)
             logging.info(
-              "[vSphere VirtualMachine] Deleting host '%s' with hostid '%s'",
-              host,
+              "Deleting host '%s' with hostid '%s'",
+              name,
               hostid
             )
             result = self._call_zabbix_method(
               method='host.delete',
               params=[hostid]
             )
-            message = message + host + "\r\n"
-          if action == 'disable':
+            self.email = self.email + name + "\r\n"
+          if self.action == 'disable':
             data   = self.get_host(host)
             hostid = data['hostid']
             status = data['status']
 
             if status == '0':
               logging.info(
-                "[vSphere VirtualMachine] Disabling host '%s' with hostid '%s'",
-                host,
+                "Disabling host '%s' with hostid '%s'",
+                name,
                 hostid
               )
               result = self._call_zabbix_method(
                 method='host.update',
                 params=[{'hostid': hostid, 'status': 1}]
               )
-              message = message + host + "\r\n"
+              self.email = self.email + name + "\r\n"
             else:
               logging.info(
-                "[vSphere VirtualMachine] host '%s' with hostid '%s' is not enabled. Skipping.",
-                host,
+                "Host '%s' with hostid '%s' is not enabled. Skipping.",
+                name,
                 hostid
               )
+             
 
-        if not message == "" and recipients and sender:
-          header = """From: Zabbix VSphere Import <""" + sender + """>
+    def send_report(self):
+        if not self.email == "" and self.options['import']['recipients'] and self.options['import']['sender']:
+          header = """From: Zabbix VSphere Import <""" + self.options['import']['sender'] + """>
 X-Priority:2
-Subject: Zabbix/Unprovisioned VMs
-"""
-          if action == 'disable':
-            header = header + """
-The following hosts were DISABLED in Zabbix :
-"""
-          if action == 'delete':
-            header = header + """
-The following hosts were DELETED in Zabbix :
+Subject: Zabbix/vSphere hosts provisioning
 """
           try:
-             message = header + message
+             self.email = header + self.email
              smtpObj = smtplib.SMTP('localhost')
-             smtpObj.sendmail(sender, recipients, message)
-             logging.info("[vSphere VirtualMachine] Successfully sent email.")
-          except SMTPException:
-             logging.error("[vSphere VirtualMachine] Error: unable to send email.")
+             smtpObj.sendmail(self.options['import']['sender'], self.options['import']['recipients'], self.email)
+             logging.info("Successfully sent email.")
+          except smtplib.SMTPException:
+             logging.error("Error: unable to send email.")
+             
 
 def main():
     usage="""
-Usage: vmbix-import [-d] [-a <delete|disable>] [-f] [-e <recipients>] -c <config>
-       vmbix-import -v
-       vmbix-import -h
+Usage: vmbix-object-sync [-d] [-f] -c <config> [-a <delete|disable|simulate>]
+       vmbix-object-sync -v
+       vmbix-object-sync -h
 
 Options:
   -h, --help                                         Display this usage info
   -v, --version                                      Display version and exit
-  -c <config>, --config <config>                     Configuration file to use
-  -f, --force                                        Force action even if an anomaly is detected
-  -a <delete|disable>, --action <delete|disable>     Delete or disable extra hosts from Zabbix which are no longer found in vSphere
   -d, --debug                                        Debug mode, be more verbose
-
+  -f, --force                                        Force action even if an anomaly is detected
+  -c <config>, --config <config>                     Configuration file to use
+  -a <action>, --action <action>                     Action for extra hosts [default: simulate]
 
 """
 
@@ -729,20 +824,31 @@ Options:
         level=level
     )
 
-    sender = 'zabbix@localhost.localdomain'
     try:
         with open(args['--config'], 'r') as f:
             options = yaml.load(f)
     except Exception as e:
-        logging.warning('[vSphere VirtualMachine] Cannot load configuration file %s: %s', args['--config'], e)
+        logging.warning('Cannot load configuration file %s: %s', args['--config'], e)
         raise ZabbixException, 'Cannot load configuration file %s: %s' % (args['--config'], e)
 
+    logging.info('Action for extra hosts : %s', args['--action'])
+    
     zabbix = ZabbixConnector(options=options)
     zabbix.connect()
+    
+    zabbix.action = args['--action']
+    zabbix.force = args['--force']
+    zabbix.email = ''
+    zabbix.vsphere_hosts = {}
 
     # Import vSphere objects into Zabbix
-    zabbix.import_vsphere_vms()
-    zabbix.check_for_extra_hosts(action=args['--action'], force=args['--force'], recipients=args['--email'], sender=sender)
+    zabbix.import_vsphere_hosts('vsphere_object_vm')
+    zabbix.check_for_extra_hosts('vsphere_object_vm')
+    zabbix.import_vsphere_hosts('vsphere_object_esx')
+    zabbix.check_for_extra_hosts('vsphere_object_esx')    
+    zabbix.import_vsphere_hosts('vsphere_object_datastore')
+    zabbix.check_for_extra_hosts('vsphere_object_datastore')        
+    zabbix.send_report()
 
     logging.info('Sync completed')
 
