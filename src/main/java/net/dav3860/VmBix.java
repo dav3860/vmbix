@@ -362,7 +362,7 @@ public class VmBix {
 
     static void usage(String str) {
         Integer version = null;
-        Package aPackage = getClass().getPackage();
+        Package aPackage = VmBix.getPackage();
         if (aPackage != null) {
             version = aPackage.getImplementationVersion();
             if (version == null) {
