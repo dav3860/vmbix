@@ -267,9 +267,9 @@ public class VmBix {
     static void methods() {
         System.out.println(
                 "Available methods :                                           \n"
-                + "vmbix.about                                                 \n"
                 + "vmbix.ping                                                  \n"
                 + "vmbix.version                                               \n"
+                + "about                                                       \n"                
                 + "cluster.discovery                                           \n"
                 + "cluster.cpu[name,free]                                      \n"
                 + "cluster.cpu[name,total]                                     \n"

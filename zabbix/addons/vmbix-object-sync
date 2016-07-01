@@ -45,12 +45,12 @@ import struct
 
 
 class ZGet:
-    """
-    Zabbix Get class
+  """
+  Zabbix Get class
 
-    Implements the zabbix_get tool in Python
+  Implements the zabbix_get tool in Python
 
-    """
+  """
   def __init__(self, host, port):
     self.host = host
     self.port = port
