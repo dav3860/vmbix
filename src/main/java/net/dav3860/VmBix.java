@@ -361,19 +361,6 @@ public class VmBix {
     ;
 
     static void usage(String str) {
-        Integer version = null;
-        Package aPackage = VmBix.getPackage();
-        if (aPackage != null) {
-            version = aPackage.getImplementationVersion();
-            if (version == null) {
-                version = aPackage.getSpecificationVersion();
-            }
-        }
-        
-        if (version != null) {
-            System.out.println("VmBix version : " + version + "\n");
-        }
-        
         String sname = "{-u|--username} \u001B[4musername\u001B[0m";
         String spass = "{-p|--password} \u001B[4mpassword\u001B[0m";
         String ssurl = "{-s|--serviceurl} \u001B[4mhttp[s]://serveraddr/sdk\u001B[0m";
