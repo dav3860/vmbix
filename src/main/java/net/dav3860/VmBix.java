@@ -369,7 +369,7 @@ public class VmBix {
             }
         }
         
-        if version != null {
+        if (version != null) {
             System.out.println("VmBix version : " + version + "\n");
         }
         
