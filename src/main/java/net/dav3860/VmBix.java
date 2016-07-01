@@ -3275,7 +3275,7 @@ public class VmBix {
          */
         private void getDatastoreLocal(String dsName, PrintWriter out) throws IOException {
             Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
-            Integer local;
+            Integer local = 0;
             if (ds == null) {
                 LOG.warn("No datastore named '" + dsName + "' found");
             } else {
