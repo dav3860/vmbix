@@ -6,7 +6,7 @@ import:
 vmbix:
   hostname: 127.0.0.1
   port: 12050
-  useuuid: true
+  useuuid: false
 
 zabbix:
   hostname: http://myzabbixserver/zabbix
