@@ -1,3 +1,9 @@
+2.3
+* Added a datastore.local method to check if a datastore is local
+* Replaced the Python import script by a new one : vmbix-object-sync. Check the [README](https://github.com/dav3860/vmbix/tree/master/zabbix/addons) for details.
+* Included the *zabbix* folder into the packages. This folder is installed in /usr/share/vmbix/
+* Improved the documentation
+
 2.2
 * **BREAKING CHANGE** : Refactored the performance counter methods to include the rollup type in the counter name. Instead of querying a performance
   counter like this for example :

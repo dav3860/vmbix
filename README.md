@@ -168,7 +168,7 @@ Note: if the parameter useuuid is set to *true* in the VmBix configuration file,
 }
 ```
 
-As it would be a pain to create all your virtual machines/ESX/datastores manually, a sample import script (vmbix-object-sync) is provided for this purpose. This is the recommended way to discover your environment with VmBix. Check the instructions [here](https://github.com/dav3860/vmbix/tree/zabbix-vsphere-import/zabbix/addons) to setup and configure the script.
+As it would be a pain to create all your virtual machines/ESX/datastores manually, a sample import script (vmbix-object-sync) is provided for this purpose. This is the recommended way to discover your environment with VmBix. Check the instructions [here](https://github.com/dav3860/vmbix/tree/master/zabbix/addons) to setup and configure the script.
 
 If you installed VmBix from a package, the script is located in /usr/share/vmbix/zabbix/addons.
 
@@ -220,6 +220,7 @@ cluster.hosts[name,total]
 datacenter.discovery
 datacenter.status[name,(overall|config)]
 datastore.discovery
+datastore.local[(uuid|name)]
 datastore.size[(uuid|name),free]
 datastore.size[(uuid|name),total]
 datastore.size[(uuid|name),provisioned]
@@ -330,7 +331,7 @@ static void methods() {
 ## Querying multiple vCenters
 At the moment, VmBix does not support multiple vCenters. If you still want to query multiple vCenters, you need to install VmBix on different Zabbix proxies, pointing to different vCenters. Then select the right proxy in each Zabbix host configuration page.
 - If you use Zabbix LLD to discover the VMWare environment, you will need to create multiple VmBix hosts, one for each proxy/VmBix installation.
-- If you use the Python [script](https://github.com/dav3860/vmbix/tree/zabbix-vsphere-import/zabbix/addons), you will have to edit its configuration file to assign a Zabbix proxy to the discovered hosts.
+- If you use the Python [script](https://github.com/dav3860/vmbix/tree/master/zabbix/addons), you will have to edit its configuration file to assign a Zabbix proxy to the discovered hosts.
 
 ## Version history
 See [CHANGELOG](https://github.com/dav3860/VmBix/blob/master/CHANGELOG.md)
