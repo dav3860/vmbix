@@ -83,9 +83,9 @@ public class VmBix {
     static Integer dsCacheTtl = 15;        // in minutes
     static Integer dsCacheSize = 100;       // in items
     static Integer perfIdCacheTtl = 5;    // in minutes
-    static Integer perfIdCacheSize = 1000;   // in items 
+    static Integer perfIdCacheSize = 1000;   // in items
     static Integer counterCacheTtl = 5;   // in minutes
-    static Integer counterCacheSize = 1000;  // in items 
+    static Integer counterCacheSize = 1000;  // in items
     static Integer hriCacheTtl = 15;       // in minutes
     static Integer hriCacheSize = 100;      // in items (1 esxi = 1 item)
     static Integer clCacheTtl = 15;       // in minutes
@@ -235,10 +235,10 @@ public class VmBix {
     }
 
     ;
-    
+
     static void createPid(String pidFile, String pid) {
         try {
-            // Create pid file 
+            // Create pid file
             FileWriter fstream = new FileWriter(pidFile);
             BufferedWriter out = new BufferedWriter(fstream);
             out.write(pid + "\n");
@@ -269,7 +269,7 @@ public class VmBix {
                 "Available methods :                                           \n"
                 + "vmbix.about                                                 \n"
                 + "vmbix.ping                                                  \n"
-                + "vmbix.version                                               \n"                             
+                + "vmbix.version                                               \n"
                 + "cluster.discovery                                           \n"
                 + "cluster.cpu[name,free]                                      \n"
                 + "cluster.cpu[name,total]                                     \n"
@@ -285,12 +285,13 @@ public class VmBix {
                 + "datacenter.discovery                                        \n"
                 + "datacenter.status[name,(overall|config)]                    \n"
                 + "datastore.discovery                                         \n"
+                + "datastore.local[(uuid|name)]                                \n"
                 + "datastore.size[(uuid|name),free]                            \n"
                 + "datastore.size[(uuid|name),total]                           \n"
                 + "datastore.size[(uuid|name),provisioned]                     \n"
                 + "datastore.size[(uuid|name),uncommitted]                     \n"
                 + "esx.connection[(uuid|name)]                                 \n"
-                + "esx.uptime[(uuid|name)]                                     \n"                        
+                + "esx.uptime[(uuid|name)]                                     \n"
                 + "esx.cpu.load[(uuid|name),cores]                             \n"
                 + "esx.cpu.load[(uuid|name),total]                             \n"
                 + "esx.cpu.load[(uuid|name),used]                              \n"
@@ -315,15 +316,15 @@ public class VmBix {
                 + "esx.counter[(uuid|name),counter,[instance,interval]]        \n"
                 + "esx.counter.discovery[(uuid|name),counter,[interval]]       \n"
                 + "esx.counter.list[(uuid|name)]                               \n"
-                + "event.latest[*]                                             \n"                  
+                + "event.latest[*]                                             \n"
                 + "vm.consolidation[(uuid|name),needed]                        \n"
                 + "vm.cpu.load[(uuid|name),cores]                              \n"
                 + "vm.cpu.load[(uuid|name),total]                              \n"
                 + "vm.cpu.load[(uuid|name),used]                               \n"
-                + "vm.discovery[*]                                             \n"                        
+                + "vm.discovery[*]                                             \n"
                 + "vm.discovery.full[*]                                        \n"
                 + "vm.folder[(uuid|name)]                                      \n"
-                + "vm.uptime[(uuid|name)]                                      \n"                      
+                + "vm.uptime[(uuid|name)]                                      \n"
                 + "vm.name[(uuid|name)]                                        \n"
                 + "vm.annotation[(uuid|name)]                                  \n"
                 + "vm.guest.disk.discovery[(uuid|name)]                        \n"
@@ -358,7 +359,7 @@ public class VmBix {
     }
 
     ;
-    
+
     static void usage(String str) {
         String sname = "{-u|--username} \u001B[4musername\u001B[0m";
         String spass = "{-p|--password} \u001B[4mpassword\u001B[0m";
@@ -388,7 +389,7 @@ public class VmBix {
 
     ;
 
-    
+
     public static synchronized void putConnection(Socket socket) throws IOException {
         if (sockets.size() < 150) {
             sockets.add(socket);
@@ -469,7 +470,7 @@ public class VmBix {
             listen = new ServerSocket(port, 50, addr);//(port, backlog, bindaddr)
         } else {
             LOG.info("starting server on port " + port.toString());
-            listen = new ServerSocket(port);//(port)        
+            listen = new ServerSocket(port);//(port)
         }
         LOG.info("server started");
         while (true) {
@@ -479,7 +480,7 @@ public class VmBix {
     }
 
     ;
-    
+
     static class Request {
 
         public Socket socket;
@@ -531,10 +532,10 @@ public class VmBix {
 
         private void checkAllPatterns(String string, PrintWriter out) throws IOException {
             LOG.debug("Parsing this request : " + string);
-            
-            Pattern pPing = Pattern.compile("^(?:\\s*ZBXD.)?.*(ping)");        //        
-            Pattern pAbout = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)");        //            
-            Pattern pVersion = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.version)");        //            
+
+            Pattern pPing = Pattern.compile("^(?:\\s*ZBXD.)?.*(ping)");        //
+            Pattern pAbout = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)");        //
+            Pattern pVersion = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.version)");        //
             Pattern pClusters = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.(discovery)");        //
             Pattern pClusterCpuFree = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),free\\]");        //
             Pattern pClusterCpuTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),total\\]");        //
@@ -548,29 +549,29 @@ public class VmBix {
             Pattern pClusterHostsMaint = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.hosts\\[(.+),maint\\]");        //
             Pattern pClusterHostsTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.hosts\\[(.+),total\\]");        //
             Pattern pDatacenters = Pattern.compile("^(?:\\s*ZBXD.)?.*datacenter\\.(discovery)");        //
-            //TODO: split into two metods 
-            Pattern pDatacenterStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*datacenter\\.status\\[(.+),(overall|config)\\]");      //            
-            Pattern pLatestEvent = Pattern.compile("^(?:\\s*ZBXD.)?.*(event\\.latest)");        //            
-            Pattern pVMsFullDiscovery = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.(discovery)\\.(full)");       //            
+            //TODO: split into two metods
+            Pattern pDatacenterStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*datacenter\\.status\\[(.+),(overall|config)\\]");      //
+            Pattern pLatestEvent = Pattern.compile("^(?:\\s*ZBXD.)?.*(event\\.latest)");        //
+            Pattern pVMsFullDiscovery = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.(discovery)\\.(full)");       //
             Pattern pVMs = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.(discovery)");        //
-            Pattern pHosts = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.(discovery)");        // 
-            Pattern pDatastores = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.(discovery)");        //             
-            Pattern pHostConnection = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.connection\\[(.+)\\]");        // 
-            Pattern pHostUptime = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.uptime\\[(.+)\\]");        //             
-            Pattern pHostStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.status\\[(.+)\\]");        // 
-            Pattern pHostName = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.name\\[(.+)\\]");        //             
-            Pattern pVmStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.status\\[(.+)\\]");        // 
-            Pattern pHostMaintenance = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.maintenance\\[(.+)\\]");        // 
-            Pattern pHostCpuUsed = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.cpu\\.load\\[(.+),used\\]");        // 
-            Pattern pHostDisabledPaths = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.path\\[(.+),disabled\\]");        // 
-            Pattern pHostActivePaths = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.path\\[(.+),active\\]");        // 
-            Pattern pHostStandbyPaths = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.path\\[(.+),standby\\]");        // 
-            Pattern pHostDeadPaths = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.path\\[(.+),dead\\]");        // 
+            Pattern pHosts = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.(discovery)");        //
+            Pattern pDatastores = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.(discovery)");        //
+            Pattern pHostConnection = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.connection\\[(.+)\\]");        //
+            Pattern pHostUptime = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.uptime\\[(.+)\\]");        //
+            Pattern pHostStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.status\\[(.+)\\]");        //
+            Pattern pHostName = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.name\\[(.+)\\]");        //
+            Pattern pVmStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.status\\[(.+)\\]");        //
+            Pattern pHostMaintenance = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.maintenance\\[(.+)\\]");        //
+            Pattern pHostCpuUsed = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.cpu\\.load\\[(.+),used\\]");        //
+            Pattern pHostDisabledPaths = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.path\\[(.+),disabled\\]");        //
+            Pattern pHostActivePaths = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.path\\[(.+),active\\]");        //
+            Pattern pHostStandbyPaths = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.path\\[(.+),standby\\]");        //
+            Pattern pHostDeadPaths = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.path\\[(.+),dead\\]");        //
             Pattern pHostCpuTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.cpu\\.load\\[(.+),total\\]");        //
             Pattern pHostVMs = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.vms\\.count\\[(.+)\\]");        //
-            Pattern pHostCpuCores = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.cpu\\.load\\[(.+),cores\\]");        // 
-            Pattern pHostMemUsed = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.memory\\[(.+),used\\]");        // 
-            Pattern pHostMemTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.memory\\[(.+),total\\]");        // 
+            Pattern pHostCpuCores = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.cpu\\.load\\[(.+),cores\\]");        //
+            Pattern pHostMemUsed = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.memory\\[(.+),used\\]");        //
+            Pattern pHostMemTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.memory\\[(.+),total\\]");        //
             Pattern pHostMemStatsPrivate = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.vms.memory\\[(.+),private\\]");        // :this is a heavy check. Counts average private          memory usage in % for all powered on vms.
             Pattern pHostMemStatsShared = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.vms.memory\\[(.+),shared\\]");        // :this is a heavy check. Counts average shared           memory usage in % for all powered on vms.
             Pattern pHostMemStatsSwapped = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.vms.memory\\[(.+),swapped\\]");        // :this is a heavy check. Counts average swapped          memory usage in % for all powered on vms.
@@ -578,50 +579,51 @@ public class VmBix {
             Pattern pHostMemStatsOverhCons = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.vms.memory\\[(.+),overheadConsumed\\]");        // :this is a heavy check. Counts average overheadConsumed memory usage in % for all powered on vms.
             Pattern pHostMemStatsConsumed = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.vms.memory\\[(.+),consumed\\]");        // :this is a heavy check. Counts average consumed         memory usage in % for all powered on vms.
             Pattern pHostMemStatsBallooned = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.vms.memory\\[(.+),ballooned\\]");        // :this is a heavy check. Counts average ballooned         memory usage in % for all powered on vms.
-            Pattern pHostMemStatsActive = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.vms.memory\\[(.+),active\\]");        // :this is a heavy check. Counts average active           memory usage in % for all powered on vms.           
-            Pattern pHostAvailablePerfCounters = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.counter\\.list\\[(.+)\\]");        //                         
+            Pattern pHostMemStatsActive = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.vms.memory\\[(.+),active\\]");        // :this is a heavy check. Counts average active           memory usage in % for all powered on vms.
+            Pattern pHostAvailablePerfCounters = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.counter\\.list\\[(.+)\\]");        //
             Pattern pHostPerfCounterValue = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.counter\\[([^,]+),([^,]+)(?:,([^,]*))?(?:,([^,]*))?\\]");
             Pattern pHostPerfCounterDiscovery = Pattern.compile("^(?:\\s*ZBXD.)?.*esx\\.counter\\.discovery\\[([^,]+),([^,]+)(?:,([^,]*))?\\]");
-            Pattern pVmName = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.name\\[(.+)\\]");        //             
-            Pattern pVmCpuUsed = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.cpu\\.load\\[(.+),used\\]");        // 
-            Pattern pVmCpuTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.cpu\\.load\\[(.+),total\\]");        // 
-            Pattern pVmCpuCores = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.cpu\\.load\\[(.+),cores\\]");        // 
-            Pattern pVmMemPrivate = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),private\\]");        // 
-            Pattern pVmMemShared = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),shared\\]");        // 
-            Pattern pVmMemSwapped = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),swapped\\]");        // 
-            Pattern pVmMemCompressed = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),compressed\\]");        // 
-            Pattern pVmMemOverheadConsumed = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),overheadConsumed\\]");        // 
-            Pattern pVmMemConsumed = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),consumed\\]");        // 
-            Pattern pVmMemBallooned = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),ballooned\\]");        // 
-            Pattern pVmMemActive = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),active\\]");        // 
-            Pattern pVmMemSize = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),total\\]");        // 
-            Pattern pVmHost = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.host\\[(.+)\\]");        // 
-            Pattern pVmPowerState = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.powerstate\\[(.+)\\]");        // 
-            Pattern pVmFolder = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.folder\\[(.+)\\]");        // 
-            Pattern pVmUptime = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.uptime\\[(.+)\\]");        //             
+            Pattern pVmName = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.name\\[(.+)\\]");        //
+            Pattern pVmCpuUsed = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.cpu\\.load\\[(.+),used\\]");        //
+            Pattern pVmCpuTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.cpu\\.load\\[(.+),total\\]");        //
+            Pattern pVmCpuCores = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.cpu\\.load\\[(.+),cores\\]");        //
+            Pattern pVmMemPrivate = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),private\\]");        //
+            Pattern pVmMemShared = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),shared\\]");        //
+            Pattern pVmMemSwapped = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),swapped\\]");        //
+            Pattern pVmMemCompressed = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),compressed\\]");        //
+            Pattern pVmMemOverheadConsumed = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),overheadConsumed\\]");        //
+            Pattern pVmMemConsumed = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),consumed\\]");        //
+            Pattern pVmMemBallooned = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),ballooned\\]");        //
+            Pattern pVmMemActive = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),active\\]");        //
+            Pattern pVmMemSize = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.memory\\[(.+),total\\]");        //
+            Pattern pVmHost = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.host\\[(.+)\\]");        //
+            Pattern pVmPowerState = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.powerstate\\[(.+)\\]");        //
+            Pattern pVmFolder = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.folder\\[(.+)\\]");        //
+            Pattern pVmUptime = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.uptime\\[(.+)\\]");        //
             Pattern pVmAnnotation = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.annotation\\[(.+)\\]");        //
-            Pattern pVmStorageCommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.committed\\[(.+)\\]");        // 
-            Pattern pVmStorageUncommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.uncommitted\\[(.+)\\]");        // 
-            Pattern pVmStorageUnshared = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.unshared\\[(.+)\\]");        // 
-            Pattern pVmGuestShortName = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.os\\.short\\[(.+)\\]");        // 
+            Pattern pVmStorageCommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.committed\\[(.+)\\]");        //
+            Pattern pVmStorageUncommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.uncommitted\\[(.+)\\]");        //
+            Pattern pVmStorageUnshared = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.unshared\\[(.+)\\]");        //
+            Pattern pVmGuestShortName = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.os\\.short\\[(.+)\\]");        //
             Pattern pVmGuestFullName = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.os\\[(.+)\\]");        //
-            Pattern pVmGuestHostName = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.name\\[(.+)\\]");        // 
-            Pattern pVmGuestDisks = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.all\\[(.+)\\]");        // 
-            Pattern pVmGuestDisksDiscovery = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.discovery\\[(.+)\\]");        //             
-            Pattern pVmGuestDiskCapacity = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.capacity\\[(.+),(.+)\\]");        // 
-            Pattern pVmGuestDiskFreeSpace = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.free\\[(.+),(.+)\\]");        // 
-            Pattern pVmAvailablePerfCounters = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.counter\\.list\\[(.+)\\]");        //                                     
+            Pattern pVmGuestHostName = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.name\\[(.+)\\]");        //
+            Pattern pVmGuestDisks = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.all\\[(.+)\\]");        //
+            Pattern pVmGuestDisksDiscovery = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.discovery\\[(.+)\\]");        //
+            Pattern pVmGuestDiskCapacity = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.capacity\\[(.+),(.+)\\]");        //
+            Pattern pVmGuestDiskFreeSpace = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.disk\\.free\\[(.+),(.+)\\]");        //
+            Pattern pVmAvailablePerfCounters = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.counter\\.list\\[(.+)\\]");        //
             Pattern pVmPerfCounterValue = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.counter\\[([^,]+),([^,]+)(?:,([^,]*))?(?:,([^,]*))?\\]");
             Pattern pVmPerfCounterDiscovery = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.counter\\.discovery\\[([^,]+),([^,]+)(?:,([^,]*))?\\]");
-            Pattern pVmGuestIpAddress = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.ip\\[(.+)\\]");        // 
-            Pattern pVmGuestToolsRunningStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.tools\\.running\\[(.+)\\]");  // 
-            Pattern pVmGuestToolsVersionStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.tools\\.version\\[(.+)\\]");  // 
-            Pattern pVmConsolidationNeeded = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.consolidation\\[(.+),needed\\]");        // 
-            Pattern pVmToolsInstallerMounted = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.tools\\.mounted\\[(.+)\\]");        //      
-            Pattern pDatastoreFree = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),free\\]");        // 
-            Pattern pDatastoreTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),total\\]");        // 
-            Pattern pDatastoreProvisioned = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),provisioned\\]");        // 
-            Pattern pDatastoreUncommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),uncommitted\\]");        //       
+            Pattern pVmGuestIpAddress = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.ip\\[(.+)\\]");        //
+            Pattern pVmGuestToolsRunningStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.tools\\.running\\[(.+)\\]");  //
+            Pattern pVmGuestToolsVersionStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.tools\\.version\\[(.+)\\]");  //
+            Pattern pVmConsolidationNeeded = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.consolidation\\[(.+),needed\\]");        //
+            Pattern pVmToolsInstallerMounted = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.guest\\.tools\\.mounted\\[(.+)\\]");        //
+            Pattern pDatastoreLocal = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.local\\[(.+)\\]");        //
+            Pattern pDatastoreFree = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),free\\]");        //
+            Pattern pDatastoreTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),total\\]");        //
+            Pattern pDatastoreProvisioned = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),provisioned\\]");        //
+            Pattern pDatastoreUncommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*datastore\\.size\\[(.+),uncommitted\\]");        //
 
             String found;
             String[] founds;
@@ -639,7 +641,7 @@ public class VmBix {
             if (found != null) {
                 getVersion(out);
                 return;
-            }            
+            }
             found = checkPattern(pClusters, string);
             if (found != null) {
                 getClusters(out);
@@ -705,7 +707,7 @@ public class VmBix {
                 getDatacenters(out);
                 return;
             }
-            //TODO: split in 
+            //TODO: split in
             founds = checkMultiplePattern(pDatacenterStatus, string);
             if (founds != null) {
                 getDatacenterStatus(founds[0], founds[1], out);
@@ -720,12 +722,12 @@ public class VmBix {
             if (found != null) {
                 getVMsFullDiscovery(out);
                 return;
-            }             
+            }
             found = checkPattern(pVMs, string);
             if (found != null) {
                 getVMs(out);
                 return;
-            }           
+            }
             found = checkPattern(pHosts, string);
             if (found != null) {
                 getHosts(out);
@@ -745,7 +747,7 @@ public class VmBix {
             if (found != null) {
                 getHostUptime(found, out);
                 return;
-            }            
+            }
             found = checkPattern(pHostStatus, string);
             if (found != null) {
                 getHostStatus(found, out);
@@ -1051,6 +1053,11 @@ public class VmBix {
                 getHostCpuCores(found, out);
                 return;
             }
+            found = checkPattern(pDatastoreLocal, string);
+            if (found != null) {
+                getDatastoreLocal(found, out);
+                return;
+            }
             found = checkPattern(pDatastoreFree, string);
             if (found != null) {
                 getDatastoreSizeFree(found, out);
@@ -1070,7 +1077,7 @@ public class VmBix {
             if (found != null) {
                 getDatastoreSizeUncommitted(found, out);
                 return;
-            }       
+            }
 
             LOG.info("String '" + string + "' not supported");
             out.print("ZBX_NOTSUPPORTED\n");
@@ -1277,7 +1284,7 @@ public class VmBix {
             hostPerfCache.put(name, queryAvailablePerfMetric);
             LOG.debug("CacheMISS: PerfID name: " + name);
             return queryAvailablePerfMetric;
-        }     
+        }
 
         /**
          * Always return "1"
@@ -1287,7 +1294,7 @@ public class VmBix {
             out.flush();
 
         }
-        
+
         /**
          * Returns VmBix version
         */
@@ -1306,10 +1313,10 @@ public class VmBix {
 
             if (version == null) {
                 // we could not compute the version so use a blank
-            }      
+            }
             out.print(version);
-            out.flush();        
-        }  
+            out.flush();
+        }
 
         /**
          * Returns the CPU power of a host in MHz
@@ -1586,7 +1593,7 @@ public class VmBix {
             out.print(jOutput);
             out.flush();
         }
-        
+
         /**
          * Returns a JSON-formatted array with the virtual machines list for use
          * with Zabbix low-level discovery
@@ -1630,7 +1637,7 @@ public class VmBix {
             jOutput.add("data", jArray);
             out.print(jOutput);
             out.flush();
-        }        
+        }
 
         /**
          * Returns a JSON-formatted array with the hosts list for use with
@@ -1687,7 +1694,7 @@ public class VmBix {
          * Zabbix low-level discovery
          */
         private void getDatacenters(PrintWriter out) throws IOException {
-            //throw new UnsupportedOperationException("Not yet implemented");            
+            //throw new UnsupportedOperationException("Not yet implemented");
             ManagedEntity[] dc = getManagedEntities("Datacenter");
             JsonArray jArray = new JsonArray();
             for (int j = 0; j < dc.length; j++) {
@@ -1765,7 +1772,7 @@ public class VmBix {
                             jObject.addProperty("{#CLUSTER}", d.getParent().getName());
                             jObject.addProperty("{#LOCAL}", !d.getSummary().multipleHostAccess);
                             jObject.addProperty("{#NAA}", naaName.getName());
-                            jArray.add(jObject); 
+                            jArray.add(jObject);
                         }
                     }
                     else
@@ -1780,9 +1787,9 @@ public class VmBix {
                             jObject.addProperty("{#CLUSTER}", d.getParent().getName());
                             jObject.addProperty("{#LOCAL}", !d.getSummary().multipleHostAccess);
                             jObject.addProperty("{#NAA}", naaName[0].getDiskName());
-                            jArray.add(jObject); 
+                            jArray.add(jObject);
                         }
-                    }                    
+                    }
                 }
             }
             JsonObject jOutput = new JsonObject();
@@ -1793,7 +1800,7 @@ public class VmBix {
 
         /**
          * Returns the uptime of a host in seconds
-         */        
+         */
         private void getHostUptime(String hostName, PrintWriter out) throws IOException {
             HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
             Integer uptime = 0;
@@ -1802,7 +1809,7 @@ public class VmBix {
             } else {
                 HostListSummary hostSummary = host.getSummary();
                 HostListSummaryQuickStats hostQuickStats = hostSummary.getQuickStats();
-                
+
                 if (hostQuickStats != null) {
                     uptime = hostQuickStats.getUptime();
                     if (uptime == null) {
@@ -1812,7 +1819,7 @@ public class VmBix {
             }
             out.print(uptime);
             out.flush();
-        }        
+        }
 
         /**
          * Returns the CPU usage of a host
@@ -2175,7 +2182,7 @@ public class VmBix {
                     return;
                 }
                 ManagedEntity me = MorUtil.createExactManagedEntity(serviceInstance.getServerConnection(), hostMor);
-                //HostSystem 
+                //HostSystem
                 HostSystem host = (HostSystem) me;
 
                 mhz = getHostMHZ(host);
@@ -2410,11 +2417,11 @@ public class VmBix {
                 } else {
                     LOG.error("Cannot handle metric " + perfCounterName + " rollup type");
                 }
-                
+
                 if (!perfCounterStatsType.equals("delta")) {
                         value = value / serie.length;
                 }
-            
+
                 if (perfCounterUnitInfo.equals("percent")) {
                     // convert to percent
                     value = value / 100;
@@ -2513,7 +2520,7 @@ public class VmBix {
                     if (counter == null) {
                         LOG.info("Metric " + perfCounterName + " doesn't exist for host " + hostName);
                     } else {
-                        // The counter exists                   
+                        // The counter exists
                         Integer perfCounterId = Integer.valueOf((String) counter.get(0));
                         String perfCounterUnitInfo = (String) counter.get(1);
                         String perfCounterStatsType = (String) counter.get(2);
@@ -2673,7 +2680,7 @@ public class VmBix {
             out.print(vmFolder);
             out.flush();
         }
-        
+
         /**
          * Returns the uptime in seconds of a virtual machine
          */
@@ -2685,7 +2692,7 @@ public class VmBix {
             } else {
                 VirtualMachineSummary vmSummary = vm.getSummary();
                 VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
-                
+
                 if (vmQuickStats != null) {
                     uptime = vmQuickStats.getUptimeSeconds();
                     if (uptime == null) {
@@ -3264,6 +3271,21 @@ public class VmBix {
         }
 
         /**
+         * Returns 1 if the datastore is local
+         */
+        private void getDatastoreLocal(String dsName, PrintWriter out) throws IOException {
+            Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
+            Integer local;
+            if (ds == null) {
+                LOG.warn("No datastore named '" + dsName + "' found");
+            } else {
+                local = (ds.getSummary().multipleHostAccess == true) ? 0 : 1; // return 1 for local datastores
+            }
+            out.print(local);
+            out.flush();
+        }
+
+        /**
          * Returns the free space of a datastore
          */
         private void getDatastoreSizeFree(String dsName, PrintWriter out) throws IOException {
@@ -3363,7 +3385,7 @@ public class VmBix {
                         int continues = 1;
                         while (continues == 1) {
                             String message = in.readLine();
-                            
+
                             if (message != null) {
                                 checkAllPatterns(message, out);
                             }

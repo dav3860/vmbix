@@ -43,6 +43,6 @@ Options:
 
 Explanation:
 - The *-a* parameter specifies how to handle the hosts that should be removed from Zabbix (disabled, deleted, or just simulate it)
-- The *-f* parameter force the deletion/disabling of Zabbix hosts, even if more that 10% of the hosts should be removed. It is a protection against errors.
- 
+- The *-f* parameter force the deletion/disabling of Zabbix hosts, even if more that 10% of the hosts should be removed. **USE WITH CAUTION**
+
 *vmbix-object-sync* reuses code from the [vPoller](https://github.com/dnaeon/py-vpoller) project.

@@ -5,18 +5,18 @@ VmBix is a multi-threaded TCP proxy for the VMWare Sphere API written in Java. I
 Starting from version 2.2, Zabbix can natively monitor a VMWare environment. But there are a few drawbacks :
 * The monitored items are not all very relevant
 * This is not easily extensible
-* The created ESX and VM hosts are mostly read-only. You cannot attach them different templates or use a Zabbix agent to monitor their OS or apps
+* The created ESX and VM hosts are mostly read-only. You cannot attach them different templates, put them into different groups, or use a Zabbix agent to monitor their OS or apps
 
-VmBix helps you to overcome this limitations, with very good performance. It is multi-threaded and can be queried using a Zabbix loadable module.
+VmBix helps you to overcome these limitations, with very good performance. It is multi-threaded, implements objects caching, and can be queried using a Zabbix [loadable module](https://www.zabbix.com/documentation/3.0/manual/config/items/loadablemodules).
 
-VmBix comes with a set of templates adding several monitored items, triggers and graphs in Zabbix. Here are a few screenshots :
+VmBix comes with a set of templates adding several monitored items, triggers and graphs in Zabbix. Here are a few screenshots of what you can expect in Zabbix :
 ![](https://github.com/dav3860/vmbix/blob/master/screenshots/latest_data.png)
 
 ![](https://github.com/dav3860/vmbix/blob/master/screenshots/triggers.png)
 
 ![](https://github.com/dav3860/vmbix/blob/master/screenshots/graph.png)
 
-You can use these VmBix methods to query interesting VMWare metrics, for example :
+You can use VmBix methods to query interesting VMWare metrics, for example :
 
 ```
 esx.counter[esx01.domain.local,cpu.ready.summation]
@@ -58,7 +58,9 @@ vm.counter[VM01,virtualDisk.totalReadLatency.average,scsi2:4,300]
 ```
 
 ## Installation
-Get the latest version of the server [here](https://bintray.com/dav3860/generic/vmbix/view/files). You will also need the [loadable module](https://github.com/dav3860/vmbix_zabbix_module) corresponding to your zabbix version. RPM & DEB packages are provided.
+Get the latest version of the server [here](https://bintray.com/dav3860/generic/vmbix/view/files). RPM & DEB packages are provided.
+
+You will also need the Zabbix [loadable module](https://www.zabbix.com/documentation/3.0/manual/config/items/loadablemodules) corresponding to your zabbix version. See https://github.com/dav3860/vmbix_zabbix_module for installation details.
 
 The VmBix server can be installed on the same machine as a Zabbix server or proxy. The loadable module must be installed on the Zabbix machine that will monitor the VMWare environment.
 
@@ -126,21 +128,27 @@ tail -f /var/log/vmbix.log
 
 ### Configure Zabbix
 
-All the ESX servers, datastores and virtual machines will automatically be discovered and created in Zabbix. Here is how to configure Zabbix :
+All the ESX servers, datastores and virtual machines will automatically be discovered and created in Zabbix. See the following instructions to configure Zabbix.
 
-1. Import the templates from [here](https://github.com/dav3860/vmbix/tree/master/zabbix) (import the vCenter template after the others). At the moment, only Zabbix 3.0.x templates are provided. The VmBix items in Zabbix are configured with an "Simple Check" type as Zabbix uses a loadable module to talk to VmBix. So it is still possible to use a Zabbix agent in parallel to monitor the hosts. The vmbix.so [loadable module](https://github.com/dav3860/vmbix_zabbix_module) must be installed on your server/proxy.
+#### Import the templates
+Import the templates from [here](https://github.com/dav3860/vmbix/tree/master/zabbix) (import the vCenter template after the others). At the moment, only Zabbix 3.0.x templates are provided. The VmBix items in Zabbix are configured with an "Simple Check" type as Zabbix uses a loadable module to talk to VmBix. So it is still possible to use a Zabbix agent in parallel to monitor the hosts. The vmbix.so [loadable module](https://github.com/dav3860/vmbix_zabbix_module) must be installed on your server/proxy.
 
-2. Create a host named "VmBix" for example and link it with the VmBix vCenter template. The IP address and port are not used, but it is necessary to make it monitored by the server/proxy running the loadable module.
+#### Discover the objects
+VmBix can discover and create your VMWare environment (hypervisors, VMs, datastores) in too ways :
+- using Zabbix Low-Level Discovery (LLD) and host prototypes
+- using a provided script talking to the Zabbix API to create regular Zabbix hosts (*recommended*)
+
+#### Using Zabbix LLD
+Create a host named "VmBix" for example and link it with the VmBix vCenter template. The IP address and port are not used, but it is necessary to make it monitored by the server/proxy running the loadable module.
 
 Wait for the ESX servers, datastores and virtual machines to be discovered and created. They will be automatically linked to the VmBix ESX, datastore or VM template. You may need to increase the Timeout parameter in the Zabbix configuration file if VSphere takes too long to respond.
 
 You can also link additional templates to the created hosts by editing the corresponding host prototype in the VmBix vCenter template discovery rules.
 
-#### Using VMWare objects as regular hosts in Zabbix
-
 As these hosts are created using the host prototype mechanism in Zabbix, they will be almost read-only. For example, you can't edit one host to link it to a specific template. This must be made at the host prototype level, which can be a limitation if your virtual machines are different.
 
-To overcome this limitation, you can disable the VM discovery rule in the VmBix vCenter template and create your virtual machines manually in Zabbix (or using the API and a script). Then, link them to the VmBix VM template (preferably with the loadable module method). You can then edit them as any other host.
+#### Using VMWare objects as regular hosts in Zabbix
+To overcome this limitation, you can disable the VM discovery rule in the VmBix vCenter template and create your virtual machines manually in Zabbix. Then, link them to the VmBix VM template (preferably with the loadable module method). You can then edit them as any other host.
 
 Note: if the parameter useuuid is set to *true* in the VmBix configuration file, the objects must be referenced using their VMWare UUID. So if you create a host manually, you must set its name to the UUID and its visible name to the name of the VM. You can use the \*.discovery[\*] methods to get the UUID of an object :
 
@@ -160,7 +168,7 @@ Note: if the parameter useuuid is set to *true* in the VmBix configuration file,
 }
 ```
 
-A sample import [script](https://github.com/dav3860/vmbix/tree/zabbix-vsphere-import/zabbix/addons) is provided for this purpose.
+As it would be a pain to create all your virtual machines/ESX/datastores manually, a sample import script is provided for this purpose. This is the recommended way to discover your environment with VmBix. Check the instructions [here](https://github.com/dav3860/vmbix/tree/zabbix-vsphere-import/zabbix/addons) to setup and configure the script.
 
 ### Querying VmBix in CLI
 You can query VmBix like a Zabbix agent using the zabbix_get tool :
@@ -316,6 +324,11 @@ static void methods() {
             [...]
           + "esx.cpu.load[name,used]                              \n"
 ```
+
+## Querying multiple vCenters
+At the moment, VmBix does not support multiple vCenters. If you still want to query multiple vCenters, you need to install VmBix on different Zabbix proxies, pointing to different vCenters. Then select the right proxy in each Zabbix host configuration page.
+- If you use Zabbix LLD to discover the VMWare environment, you will need to create multiple VmBix hosts, one for each proxy/VmBix installation.
+- If you use the Python [script](https://github.com/dav3860/vmbix/tree/zabbix-vsphere-import/zabbix/addons), you will have to edit its configuration file to assign a Zabbix proxy to the discovered hosts.
 
 ## Version history
 See [CHANGELOG](https://github.com/dav3860/VmBix/blob/master/CHANGELOG.md)
