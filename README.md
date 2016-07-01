@@ -131,7 +131,7 @@ tail -f /var/log/vmbix.log
 All the ESX servers, datastores and virtual machines will automatically be discovered and created in Zabbix. See the following instructions to configure Zabbix.
 
 #### Import the templates
-Import the templates from [here](https://github.com/dav3860/vmbix/tree/master/zabbix) (import the vCenter template after the others). At the moment, only Zabbix 3.0.x templates are provided. The VmBix items in Zabbix are configured with an "Simple Check" type as Zabbix uses a loadable module to talk to VmBix. So it is still possible to use a Zabbix agent in parallel to monitor the hosts. The vmbix.so [loadable module](https://github.com/dav3860/vmbix_zabbix_module) must be installed on your server/proxy.
+Import the templates from [here](https://github.com/dav3860/vmbix/tree/master/zabbix) or from /usr/share/vmbix/zabbix/templates if you installed a package (import the vCenter template after the others). At the moment, only Zabbix 3.0.x templates are provided. The VmBix items in Zabbix are configured with an "Simple Check" type as Zabbix uses a loadable module to talk to VmBix. So it is still possible to use a Zabbix agent in parallel to monitor the hosts. The vmbix.so [loadable module](https://github.com/dav3860/vmbix_zabbix_module) must be installed on your server/proxy.
 
 #### Discover the objects
 VmBix can discover and create your VMWare environment (hypervisors, VMs, datastores) in too ways :
@@ -168,7 +168,9 @@ Note: if the parameter useuuid is set to *true* in the VmBix configuration file,
 }
 ```
 
-As it would be a pain to create all your virtual machines/ESX/datastores manually, a sample import script is provided for this purpose. This is the recommended way to discover your environment with VmBix. Check the instructions [here](https://github.com/dav3860/vmbix/tree/zabbix-vsphere-import/zabbix/addons) to setup and configure the script.
+As it would be a pain to create all your virtual machines/ESX/datastores manually, a sample import script (vmbix-object-sync) is provided for this purpose. This is the recommended way to discover your environment with VmBix. Check the instructions [here](https://github.com/dav3860/vmbix/tree/zabbix-vsphere-import/zabbix/addons) to setup and configure the script.
+
+If you installed VmBix from a package, the script is located in /usr/share/vmbix/zabbix/addons.
 
 ### Querying VmBix in CLI
 You can query VmBix like a Zabbix agent using the zabbix_get tool :

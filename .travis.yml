@@ -22,7 +22,7 @@ install:
 - mkdir -p ${DEPLOY_ROOT}/usr/local/vmbix/
 - mkdir -p ${DEPLOY_ROOT}/etc
 - mkdir -p ${DEPLOY_ROOT}/usr/share/vmbix/
-- gem install fpm
+- gem install fpm -v 1.6.1
 - export TAR_FILE_NAME=${PROJECT_NAME}-${VERSION}.tar.gz
 - if [ "$TARGET_PLATFORM" == "deb" ]; then export FILE_NAME="${PROJECT_NAME}_${VERSION}-1_amd64";
   export JAVA_PACKAGE="default-jre-headless"; fi
