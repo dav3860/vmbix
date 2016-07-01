@@ -343,7 +343,7 @@ class ZabbixConnector(object):
 
         """
         if not self.options['zabbix'].has_key(name):
-            logging.warning("There is no '%s' entry in the config file", name)
+            logging.warning("[%s] There is no '%s' entry in the config file", name, name)
             #raise ZabbixException, "There is no '%s' entry in the config file" % name
             return
 
@@ -353,40 +353,40 @@ class ZabbixConnector(object):
             proxy_name = self.options['zabbix'][name]['proxy']
             proxy_id = self.get_proxy_host_by_name(proxy_name)
             if not proxy_id:
-                logging.warning("Unable to find Zabbix proxy '%s'", proxy_name)
+                logging.warning("[%s] Unable to find Zabbix proxy '%s'", name, proxy_name)
                 raise ZabbixException, "Unable to find Zabbix proxy '%s'" % proxy_name
 
         # Get ids of the Zabbix templates
         if not self.options['zabbix'][name].has_key('templates'):
-            logging.warning("No templates are defined for '%s' config entry", name)
+            logging.warning("[%s] No templates are defined for '%s' config entry", name, name)
             raise ZabbixException, "No templates are defined for '%s' config entry" % name
 
         templates = []
         for template in self.options['zabbix'][name]['templates']:
             template_id = self.get_template_by_name(template)
             if not template_id:
-                logging.warning("Template '%s' was not found on the Zabbix server", template)
+                logging.warning("[%s] Template '%s' was not found on the Zabbix server", name, template)
                 continue
             templates.append({ 'templateid': template_id })
 
         # Get ids of the Zabbix hostgroups
         if not self.options['zabbix'][name].has_key('groups'):
-            logging.warning("No groups are defined for '%s' config entry", name)
+            logging.warning("[%s] No groups are defined for '%s' config entry", name, name)
             raise ZabbixException, "No groups are defined for '%s' config entry" % name
 
         groups = []
         for group in self.options['zabbix'][name]['groups']:
             group_id = self.get_host_group_by_name(group)
             if not group_id:
-                logging.warning("Unable to find Zabbix host group '%s'", group)
-                logging.info("Creating Zabbix host group '%s'", group)
+                logging.warning("[%s] Unable to find Zabbix host group '%s'", name, group)
+                logging.info("[%s] Creating Zabbix host group '%s'", name, group)
                 result = self.create_host_group(name=group)
                 group_id = result[0]
             groups.append({ 'groupid': group_id })
 
         # At least one group must be defined
         if not groups:
-            logging.warning("No valid groups found for '%s' config entry", name)
+            logging.warning("[%s] No valid groups found for '%s' config entry", name, name)
             raise ZabbixException, "No valid groups found for '%s' config entry" % name
 
         # The host skeleton
@@ -402,8 +402,8 @@ class ZabbixConnector(object):
           for test in self.options['zabbix'][name]['optional_groups']:
               group_id = self.get_host_group_by_name(test['value'])
               if not group_id:
-                  logging.warning("Unable to find Zabbix host group '%s'", test['value'])
-                  logging.info("Creating Zabbix host group '%s'", test['value'])
+                  logging.warning("[%s] Unable to find Zabbix host group '%s'", name, test['value'])
+                  logging.info("[%s] Creating Zabbix host group '%s'", name, test['value'])
                   result = self.create_host_group(name=test['value'])
                   group_id = result[0]
               optional_groups.append({'method': test['method'], 'pattern': test['pattern'], 'value': group_id})
@@ -415,7 +415,7 @@ class ZabbixConnector(object):
           for test in self.options['zabbix'][name]['optional_templates']:
               template_id = self.get_template_by_name(test['value'])
               if not template_id:
-                  logging.warning("Template '%s' was not found on the Zabbix server", template)
+                  logging.warning("[%s] Template '%s' was not found on the Zabbix server", name, template)
                   continue
               optional_templates.append({'method': test['method'], 'pattern': test['pattern'], 'value': template_id})
           r['optional_templates'] = optional_templates
@@ -466,7 +466,7 @@ class ZabbixConnector(object):
             type (str): The type of object to import (VM, ESX, datastore)
 
         """
-        logging.info('Importing objects of type [%s] into Zabbix', type)
+        logging.info('[%s] Importing objects of type [%s] into Zabbix', type, type)
 
         # Get hosts options (templates, groups, macros) from the config file
         host_options = self._get_zabbix_host_options(type)
@@ -486,7 +486,7 @@ class ZabbixConnector(object):
             vsphere_data = json.loads(data)
           except:
             print "Cannot decode VmBix response"
-            logging.error("Cannot decode VmBix response")
+            logging.error("[%s] Cannot decode VmBix response", type)
             exit(1)
 
           if self.options['vmbix']['useuuid'] == 1:
@@ -500,7 +500,7 @@ class ZabbixConnector(object):
             vsphere_data = json.loads(data)
           except:
             print "Cannot decode VmBix response"
-            logging.error("Cannot decode VmBix response")
+            logging.error("[%s] Cannot decode VmBix response", type)
             exit(1)
 
           if self.options['vmbix']['useuuid'] == 1:
@@ -514,7 +514,7 @@ class ZabbixConnector(object):
             vsphere_data = json.loads(data)
           except:
             print "Cannot decode VmBix response"
-            logging.error("Cannot decode VmBix response")
+            logging.error("[%s] Cannot decode VmBix response", type)
             exit(1)
 
           if self.options['vmbix']['useuuid'] == 1:
@@ -526,10 +526,10 @@ class ZabbixConnector(object):
         missing_hosts = set(self.vsphere_hosts[type].keys()) - set(zabbix_hosts)
 
         if not missing_hosts:
-            logging.info('Objects are in sync with Zabbix')
+            logging.info('[%s] Objects are in sync with Zabbix', type)
             return
 
-        logging.info('Number of objects to be checked: %d', len(missing_hosts))
+        logging.info('[%s] Number of objects to be checked: %d', type, len(missing_hosts))
 
         # Add a default interface for the host
         host_options['interfaces'] = [
@@ -558,36 +558,36 @@ class ZabbixConnector(object):
             else:
               params['host'] = host
 
-            logging.debug("Processing host '%s' [%s/%s]", name, i, len(missing_hosts))
+            logging.debug("[%s] Processing host '%s' [%s/%s]", type, name, i, len(missing_hosts))
 
             # Check if host should be included
-            logging.debug("Checking inclusion rules for host '%s'", name)
+            logging.debug("[%s] Checking inclusion rules for host '%s'", type, name)
             if params.has_key('include'):
               try:
                 for test in params['include']:
                   result = zg.get("%s[%s]" % (test['method'], host))
                   reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                   if not reg.match(result):
-                    logging.debug("Host '%s' did not match inclusion rule '%s'", name, test)
+                    logging.debug("[%s] Host '%s' did not match inclusion rule '%s'", type, name, test)
                     raise ZabbixException
               except ZabbixException:
-                logging.debug("Host '%s' was not included due to conditional filter", name)
+                logging.debug("[%s] Host '%s' was not included due to conditional filter", type, name)
                 continue
 
               del params['include']
 
             # Check if the host should be skipped
-            logging.debug("Checking exclusion rules for host '%s'", name)
+            logging.debug("[%s] Checking exclusion rules for host '%s'", type, name)
             if params.has_key('exclude'):
               try:
                 for test in params['exclude']:
                   result = zg.get("%s[%s]" % (test['method'], host))
                   reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                   if reg.match(result):
-                    logging.debug("Host '%s' matched exclusion rule '%s'", name, test)
+                    logging.debug("[%s] Host '%s' matched exclusion rule '%s'", type, name, test)
                     raise ZabbixException
               except ZabbixException:
-                logging.debug("Host '%s' was excluded due to conditional filter ", name)
+                logging.debug("[%s] Host '%s' was excluded due to conditional filter ", type, name)
                 continue
 
               del params['exclude']
@@ -598,35 +598,35 @@ class ZabbixConnector(object):
               hostname = zg.get("vm.guest.name[%s]" % host)
               # Check if the hostname is valid
               if hostname and hostname != "null" and not hostname.startswith("ZBX_NOTSUPPORTED"):
-                logging.debug("Using hostname for host '%s'", name)
+                logging.debug("[%s] Using hostname for host '%s'", type, name)
                 params['interfaces'][0]['dns'] = hostname
 
             # Checking optional groups
-            logging.debug("Checking group rules for host '%s'", name)
+            logging.debug("[%s] Checking group rules for host '%s'", type, name)
             if params.has_key('optional_groups'):
               for test in params['optional_groups']:
                 result = zg.get("%s[%s]" % (test['method'], host))
                 reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                 if reg.match(result):
-                  logging.debug("Host '%s' matched group rule '%s'", name, test)
+                  logging.debug("[%s] Host '%s' matched group rule '%s'", type, name, test)
                   params['groups'].append({'groupid': test['value']})
 
               del params['optional_groups']
 
             # Checking optional templates
-            logging.debug("Checking template rules for host '%s'", name)
+            logging.debug("[%s] Checking template rules for host '%s'", type, name)
             if params.has_key('optional_templates'):
               for test in params['optional_templates']:
                 result = zg.get("%s[%s]" % (test['method'], host))
                 reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                 if reg.match(result):
-                  logging.debug("Host '%s' matched template rule '%s'", name, test)
+                  logging.debug("[%s] Host '%s' matched template rule '%s'", type, name, test)
                   params['templates'].append({'templateid': test['value']})
 
               del params['optional_templates']
 
             # Try to create the host in Zabbix
-            logging.info("Creating Zabbix host '%s'", name)
+            logging.info("[%s] Creating Zabbix host '%s'", type, name)
             try:
               result = self.create_host(params)
               self.email = self.email + name + "\r\n"
@@ -649,10 +649,11 @@ class ZabbixConnector(object):
         logging.info(
             'Searching for extra hosts in Zabbix of type [%s], which are no longer present in vSphere', type)
 
-        if len(self.vsphere_hosts[type].keys()) == 0:
-          logging.warning('No object found in vSphere : skipping")
+        if not self.vsphere_hosts.has_key(type) or not self.vsphere_hosts.has_key(type):
+          logging.warning('[%s] No object found in vSphere : skipping')
+          return
 
-        # Get hosts options (templates, groups, macros) from the config file
+        # Get hosts options (templates, type, groups, macros) from the config file
         host_options = self._get_zabbix_host_options(type)
         if not host_options:
           return
@@ -673,7 +674,7 @@ class ZabbixConnector(object):
         )
 
         common_hosts = set(zabbix_hosts.keys()) & set(self.vsphere_hosts[type].keys())
-        logging.debug("Number of common hosts in Zabbix and vSphere : %s", len(common_hosts))
+        logging.debug("[%s] Number of common hosts in Zabbix and vSphere : %s", type, len(common_hosts))
 
         # Check if the already nomitored hosts still match the conditions
         i = 0
@@ -685,10 +686,10 @@ class ZabbixConnector(object):
             params = deepcopy(host_options)
             params['host'] = vm
 
-            logging.debug("Processing host '%s' [%s/%s]", name, i, len(common_hosts))
+            logging.debug("[%s] Processing host '%s' [%s/%s]", type, name, i, len(common_hosts))
 
             # Check if the host should be included
-            logging.debug("Checking inclusion rules for host '%s'", name)
+            logging.debug("[%s] Checking inclusion rules for host '%s'", type, name)
             if params.has_key('include'):
               try:
                 for test in params['include']:
@@ -696,17 +697,17 @@ class ZabbixConnector(object):
                     result = zg.get("%s[%s]" % (test['method'], vm))
                     reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                     if not reg.match(result):
-                      logging.debug("Host '%s' did not match inclusion rule '%s'", name, test)
+                      logging.debug("[%s] Host '%s' did not match inclusion rule '%s'", type, name, test)
                       raise ZabbixException
               except ZabbixException:
-                logging.debug("Host '%s' is not included anymore due to conditional filter", name)
+                logging.debug("[%s] Host '%s' is not included anymore due to conditional filter", type, name)
                 extra_hosts.add(vm)
                 continue
 
               del params['include']
 
             # Check if the host should be skipped
-            logging.debug("Checking exclusion rules for host '%s'", name)
+            logging.debug("[%s] Checking exclusion rules for host '%s'", type, name)
             if params.has_key('exclude'):
               try:
                 for test in params['exclude']:
@@ -714,10 +715,10 @@ class ZabbixConnector(object):
                     result = zg.get("%s[%s]" % (test['method'], vm))
                     reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                     if reg.match(result):
-                      logging.debug("Host '%s' matched exclusion rule '%s'", name, test)
+                      logging.debug("[%s] Host '%s' matched exclusion rule '%s'", type, name, test)
                       raise ZabbixException
               except ZabbixException:
-                logging.debug("Host '%s' is now excluded due to conditional filter", name)
+                logging.debug("[%s] Host '%s' is now excluded due to conditional filter", type, name)
                 extra_hosts.add(vm)
                 continue
 
@@ -755,7 +756,7 @@ The following hosts were DELETED in Zabbix :
         for host in extra_hosts:
           i = i + 1
           name = zabbix_hosts[host].encode('utf-8')
-          logging.debug("Host '%s' [%s/%s] exists in Zabbix, but should be removed from monitoring", name, i ,len(extra_hosts))
+          logging.debug("[%s] Host '%s' [%s/%s] exists in Zabbix, type, but should be removed from monitoring", name, i ,len(extra_hosts))
           if self.action == 'delete':
             hostid = self.get_hostid_by_name(host)
             logging.info(
