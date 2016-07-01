@@ -45,6 +45,12 @@ import struct
 
 
 class ZGet:
+    """
+    Zabbix Get class
+
+    Implements the zabbix_get tool in Python
+
+    """
   def __init__(self, host, port):
     self.host = host
     self.port = port
@@ -363,10 +369,6 @@ class ZabbixConnector(object):
                 continue
             templates.append({ 'templateid': template_id })
 
-        if not self.options['zabbix'][name].has_key('templates'):
-            logging.warning("No templates are defined for '%s' config entry", name)
-            raise ZabbixException, "No templates are defined for '%s' config entry" % name
-
         # Get ids of the Zabbix hostgroups
         if not self.options['zabbix'][name].has_key('groups'):
             logging.warning("No groups are defined for '%s' config entry", name)
@@ -382,17 +384,19 @@ class ZabbixConnector(object):
                 group_id = result[0]
             groups.append({ 'groupid': group_id })
 
+        # At least one group must be defined
         if not groups:
             logging.warning("No valid groups found for '%s' config entry", name)
             raise ZabbixException, "No valid groups found for '%s' config entry" % name
 
+        # The host skeleton
         r = {
             'proxy_hostid': proxy_id,
             'templates': templates,
             'groups': groups,
         }
 
-        # Optional parameters
+        # Optional groups
         if self.options['zabbix'][name].has_key('optional_groups'):
           optional_groups = []
           for test in self.options['zabbix'][name]['optional_groups']:
@@ -405,6 +409,7 @@ class ZabbixConnector(object):
               optional_groups.append({'method': test['method'], 'pattern': test['pattern'], 'value': group_id})
           r['optional_groups'] = optional_groups
 
+        # Optional templates
         if self.options['zabbix'][name].has_key('optional_templates'):
           optional_templates = []
           for test in self.options['zabbix'][name]['optional_templates']:
@@ -457,6 +462,9 @@ class ZabbixConnector(object):
         """
         Import vSphere hosts into Zabbix as regular Zabbix hosts
 
+        Args:
+            type (str): The type of object to import (VM, ESX, datastore)
+
         """
         logging.info('Importing objects of type [%s] into Zabbix', type)
 
@@ -466,54 +474,55 @@ class ZabbixConnector(object):
           return
 
         zabbix_data  = self.get_hosts()
-        zabbix_hosts  = [host['host'] for host in zabbix_data['result']]
-       
+        zabbix_hosts  = [host['host'] for host in zabbix_data['result']] # keep the host "technical name"
+
         # Get host list from VMBIX
-        zg = ZGet(host = self.options['vmbix']['hostname'], port = self.options['vmbix']['port']) 
-              
-        if type == 'vsphere_object_vm':
+        zg = ZGet(host = self.options['vmbix']['hostname'], port = self.options['vmbix']['port'])
+
+        if type == 'vsphere_object_vm': # for VMs
           data = zg.get("vm.discovery[*]")
-          
+
           try:
             vsphere_data = json.loads(data)
           except:
             print "Cannot decode VmBix response"
             logging.error("Cannot decode VmBix response")
-            exit(1)          
-          
-          if self.options['vmbix']['useuuid'] == 1:    
+            exit(1)
+
+          if self.options['vmbix']['useuuid'] == 1:
             self.vsphere_hosts[type] = {host['{#UUID}']: host['{#VIRTUALMACHINE}'] for host in vsphere_data['data']}
           else:
-            self.vsphere_hosts[type] = {host['{#VIRTUALMACHINE}']: host['{#VIRTUALMACHINE}'] for host in vsphere_data['data']}          
-        elif type == 'vsphere_object_esx':
+            self.vsphere_hosts[type] = {host['{#VIRTUALMACHINE}']: host['{#VIRTUALMACHINE}'] for host in vsphere_data['data']}
+        elif type == 'vsphere_object_esx': # ESXs
           data = zg.get("esx.discovery[*]")
-          
+
           try:
             vsphere_data = json.loads(data)
           except:
             print "Cannot decode VmBix response"
             logging.error("Cannot decode VmBix response")
-            exit(1)          
-          
-          if self.options['vmbix']['useuuid'] == 1:    
+            exit(1)
+
+          if self.options['vmbix']['useuuid'] == 1:
             self.vsphere_hosts[type] = {host['{#UUID}']: host['{#ESXHOST}'] for host in vsphere_data['data']}
           else:
-            self.vsphere_hosts[type] = {host['{#ESXHOST}']: host['{#ESXHOST}'] for host in vsphere_data['data']} 
-        elif type == 'vsphere_object_datastore':
+            self.vsphere_hosts[type] = {host['{#ESXHOST}']: host['{#ESXHOST}'] for host in vsphere_data['data']}
+        elif type == 'vsphere_object_datastore': # datastores
           data = zg.get("datastore.discovery[*]")
-          
+
           try:
             vsphere_data = json.loads(data)
           except:
             print "Cannot decode VmBix response"
             logging.error("Cannot decode VmBix response")
-            exit(1)          
-          
-          if self.options['vmbix']['useuuid'] == 1:    
+            exit(1)
+
+          if self.options['vmbix']['useuuid'] == 1:
             self.vsphere_hosts[type] = {host['{#UUID}']: host['{#DATASTORE}'] for host in vsphere_data['data']}
           else:
-            self.vsphere_hosts[type] = {host['{#DATASTORE}']: host['{#DATASTORE}'] for host in vsphere_data['data']}           
-  
+            self.vsphere_hosts[type] = {host['{#DATASTORE}']: host['{#DATASTORE}'] for host in vsphere_data['data']}
+
+        # Identify the hosts that are not in Zabbix
         missing_hosts = set(self.vsphere_hosts[type].keys()) - set(zabbix_hosts)
 
         if not missing_hosts:
@@ -521,7 +530,7 @@ class ZabbixConnector(object):
             return
 
         logging.info('Number of objects to be checked: %d', len(missing_hosts))
-        
+
         # Add a default interface for the host
         host_options['interfaces'] = [
             {
@@ -533,12 +542,12 @@ class ZabbixConnector(object):
                 'port': '10050'
             }
         ]
-      
-        # Create the hosts in Zabbix
+
+        # Create the hosts in Zabbix if they match the rules
         i = 0
         for host in missing_hosts:
             i = i + 1
-            
+
             name = self.vsphere_hosts[type][host].encode('utf-8')
             host = host.encode('utf-8')
 
@@ -549,9 +558,9 @@ class ZabbixConnector(object):
             else:
               params['host'] = host
 
-            logging.debug("Processing host '%s' [%s/%s]", name, i, len(missing_hosts))            
+            logging.debug("Processing host '%s' [%s/%s]", name, i, len(missing_hosts))
 
-            # Check if host is included
+            # Check if host should be included
             logging.debug("Checking inclusion rules for host '%s'", name)
             if params.has_key('include'):
               try:
@@ -566,7 +575,6 @@ class ZabbixConnector(object):
                 continue
 
               del params['include']
-
 
             # Check if the host should be skipped
             logging.debug("Checking exclusion rules for host '%s'", name)
@@ -588,6 +596,7 @@ class ZabbixConnector(object):
             params['interfaces'][0]['dns'] = name
             if type == 'vsphere_object_vm':
               hostname = zg.get("vm.guest.name[%s]" % host)
+              # Check if the hostname is valid
               if hostname and hostname != "null" and not hostname.startswith("ZBX_NOTSUPPORTED"):
                 logging.debug("Using hostname for host '%s'", name)
                 params['interfaces'][0]['dns'] = hostname
@@ -616,6 +625,7 @@ class ZabbixConnector(object):
 
               del params['optional_templates']
 
+            # Try to create the host in Zabbix
             logging.info("Creating Zabbix host '%s'", name)
             try:
               result = self.create_host(params)
@@ -633,25 +643,27 @@ class ZabbixConnector(object):
         present on the vSphere host.
 
         Args:
-            action (string): delete or disable found extra hosts
+            type (string): The type of object to import (VM, ESX, datastore)
 
         """
         logging.info(
-            'Searching for extra hosts in Zabbix of type [%s], which are no longer present at %s',
-            type, self.options['vmbix']['hostname']
-        )
-        
+            'Searching for extra hosts in Zabbix of type [%s], which are no longer present in vSphere', type)
+
+        if len(self.vsphere_hosts[type].keys()) == 0:
+          logging.warning('No object found in vSphere : skipping")
+
         # Get hosts options (templates, groups, macros) from the config file
         host_options = self._get_zabbix_host_options(type)
         if not host_options:
-          return        
+          return
 
         zabbix_data  = self.get_hosts_by_group(self.options['zabbix'][type]['groups'])
         zabbix_hosts  = {host['host']:host['name'] for host in zabbix_data['result']}
 
+        # Number of hosts in Zabbix but not in vCenter
         extra_hosts = set(zabbix_hosts.keys()) - set(self.vsphere_hosts[type].keys())
         logging.info('Number of extra hosts in Zabbix : %d', len(extra_hosts))
-        
+
         zg = ZGet(host = self.options['vmbix']['hostname'], port = self.options['vmbix']['port'])
 
         # Evaluate the conditional filters for all remaining hosts in Zabbix
@@ -659,19 +671,23 @@ class ZabbixConnector(object):
             'Checking conditional filters against the remaining hosts at %s',
             self.options['vmbix']['hostname']
         )
-        i = 0
-        common_hosts = set(zabbix_hosts.keys()) & set(self.vsphere_hosts[type].keys())        
+
+        common_hosts = set(zabbix_hosts.keys()) & set(self.vsphere_hosts[type].keys())
         logging.debug("Number of common hosts in Zabbix and vSphere : %s", len(common_hosts))
+
+        # Check if the already nomitored hosts still match the conditions
+        i = 0
         for vm in common_hosts:
             i = i + 1
-            
+
             name = self.vsphere_hosts[type][vm].encode('utf-8')
             vm = vm.encode('utf-8')
             params = deepcopy(host_options)
             params['host'] = vm
 
-            logging.debug("Processing host '%s' [%s/%s]", name, i, len(common_hosts))   
-            
+            logging.debug("Processing host '%s' [%s/%s]", name, i, len(common_hosts))
+
+            # Check if the host should be included
             logging.debug("Checking inclusion rules for host '%s'", name)
             if params.has_key('include'):
               try:
@@ -682,7 +698,7 @@ class ZabbixConnector(object):
                     if not reg.match(result):
                       logging.debug("Host '%s' did not match inclusion rule '%s'", name, test)
                       raise ZabbixException
-              except ZabbixException:           
+              except ZabbixException:
                 logging.debug("Host '%s' is not included anymore due to conditional filter", name)
                 extra_hosts.add(vm)
                 continue
@@ -711,6 +727,7 @@ class ZabbixConnector(object):
             logging.info("No extra host in Zabbix")
             return
         else:
+          # Protection against accidental errors or bugs
           if (100 * len(extra_hosts)/len(zabbix_hosts)) > 10:
             logging.warning(
               "Anomaly detected. More than 10% extra hosts in Zabbix."
@@ -773,7 +790,7 @@ The following hosts were DELETED in Zabbix :
                 name,
                 hostid
               )
-             
+
 
     def send_report(self):
         if not self.email == "" and self.options['import']['recipients'] and self.options['import']['sender']:
@@ -788,7 +805,7 @@ Subject: Zabbix/vSphere hosts provisioning
              logging.info("Successfully sent email.")
           except smtplib.SMTPException:
              logging.error("Error: unable to send email.")
-             
+
 
 def main():
     usage="""
@@ -832,10 +849,10 @@ Options:
         raise ZabbixException, 'Cannot load configuration file %s: %s' % (args['--config'], e)
 
     logging.info('Action for extra hosts : %s', args['--action'])
-    
+
     zabbix = ZabbixConnector(options=options)
     zabbix.connect()
-    
+
     zabbix.action = args['--action']
     zabbix.force = args['--force']
     zabbix.email = ''
@@ -845,9 +862,9 @@ Options:
     zabbix.import_vsphere_hosts('vsphere_object_vm')
     zabbix.check_for_extra_hosts('vsphere_object_vm')
     zabbix.import_vsphere_hosts('vsphere_object_esx')
-    zabbix.check_for_extra_hosts('vsphere_object_esx')    
+    zabbix.check_for_extra_hosts('vsphere_object_esx')
     zabbix.import_vsphere_hosts('vsphere_object_datastore')
-    zabbix.check_for_extra_hosts('vsphere_object_datastore')        
+    zabbix.check_for_extra_hosts('vsphere_object_datastore')
     zabbix.send_report()
 
     logging.info('Sync completed')

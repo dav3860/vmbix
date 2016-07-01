@@ -42,7 +42,7 @@ zabbix:
         value: Template OS Linux
       - method: vm.guest.os
         pattern: (Windows)
-        value: Template OS Windows        
+        value: Template OS Windows
     #################################
     # Conditional groups            #
     #################################
@@ -53,7 +53,7 @@ zabbix:
     optional_groups:
       - method: vm.folder
         pattern: (Lab|Test)
-        value: Lab Servers           
+        value: Lab Servers
     #################################
     # Inclusions                    #
     #################################
@@ -68,8 +68,8 @@ zabbix:
         pattern: (0|2|3)
     exclude:
       - method: vm.name
-        pattern: (DUMMY.*) 
-        
+        pattern: (DUMMY.*)
+
   vsphere_object_esx:
     #################################
     # Zabbix proxy to use with ESXs #
@@ -86,19 +86,24 @@ zabbix:
     groups:
       - Hypervisors
 
-  #vsphere_object_datastore:
-  #  #######################################
-  #  # Zabbix proxy to use with datastores #
-  #  #######################################
-  #  proxy: myzabbixproxy
-  #  #################################
-  #  # Default Zabbix templates      #
-  #  #################################
-  #  templates:
-  #    - Template VmBix Datastore Loadable Module
-  #  #################################
-  #  # Default Zabbix groups         #
-  #  #################################
-  #  groups:
-  #    - Datastores    
-        
+  vsphere_object_datastore:
+    #######################################
+    # Zabbix proxy to use with datastores #
+    #######################################
+    proxy: myzabbixproxy
+    #################################
+    # Default Zabbix templates      #
+    #################################
+    templates:
+      - Template VmBix Datastore Loadable Module
+    #################################
+    # Default Zabbix groups         #
+    #################################
+    groups:
+      - Datastores
+    #################################
+    # Inclusions                    #
+    #################################
+    include:
+      - method: datastore.local
+        pattern: (0)
