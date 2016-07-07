@@ -269,7 +269,7 @@ public class VmBix {
                 "Available methods :                                           \n"
                 + "vmbix.ping                                                  \n"
                 + "vmbix.version                                               \n"
-                + "about                                                       \n"                
+                + "about                                                       \n"
                 + "cluster.discovery                                           \n"
                 + "cluster.cpu[name,free]                                      \n"
                 + "cluster.cpu[name,total]                                     \n"
@@ -355,6 +355,7 @@ public class VmBix {
                 + "vm.storage.committed[(uuid|name)]                           \n"
                 + "vm.storage.uncommitted[(uuid|name)]                         \n"
                 + "vm.storage.unshared[(uuid|name)]                            \n"
+                + "vm.snapshots[(uuid|name)]                                   \n"
         );
     }
 
@@ -601,6 +602,7 @@ public class VmBix {
             Pattern pVmFolder = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.folder\\[(.+)\\]");        //
             Pattern pVmUptime = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.uptime\\[(.+)\\]");        //
             Pattern pVmAnnotation = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.annotation\\[(.+)\\]");        //
+            Pattern pVmSnapshots = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.snapshots\\[(.+)\\]");        //
             Pattern pVmStorageCommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.committed\\[(.+)\\]");        //
             Pattern pVmStorageUncommitted = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.uncommitted\\[(.+)\\]");        //
             Pattern pVmStorageUnshared = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.storage\\.unshared\\[(.+)\\]");        //
@@ -956,6 +958,11 @@ public class VmBix {
             found = checkPattern(pVmAnnotation, string);
             if (found != null) {
                 getVmAnnotation(found, out);
+                return;
+            }
+            found = checkPattern(pVmSnapshots, string);
+            if (found != null) {
+                getVmSnapshots(found, out);
                 return;
             }
             found = checkPattern(pVmStorageCommitted, string);
@@ -2226,6 +2233,23 @@ public class VmBix {
                 an = vmcfg.getAnnotation();
             }
             out.print(an);
+            out.flush();
+        }
+
+        /**
+         * Returns 1 if the virtual machine has at least one snapshot
+         */
+        private void getVmSnapshots(String vmName, PrintWriter out) throws IOException {
+            VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+            Integer snapshot = 0;
+            if (vm == null) {
+                LOG.warn("No vm named '" + vmName + "' found");
+            } else {
+                VirtualMachineSnapshotInfo vmsi = vm.getSnapshot();
+                snapshot= (vmsi != null) ? 1 : 0;
+                }
+            }
+            out.print(snapshot);
             out.flush();
         }
 
