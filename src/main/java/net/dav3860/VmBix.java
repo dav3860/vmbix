@@ -1775,7 +1775,7 @@ public class VmBix {
                             JsonObject jObject = new JsonObject();
                             jObject.addProperty("{#DATASTORE}", d.getName());
                             //jObject.addProperty("{#UUID}", uuid);
-                            jObject.addProperty("{#UUID}", "N/A");
+                            jObject.addProperty("{#UUID}", dsInfo.url.substring(19, dsInfo.url.length() - 1) );
                             jObject.addProperty("{#CLUSTER}", d.getParent().getName());
                             jObject.addProperty("{#LOCAL}", !d.getSummary().multipleHostAccess);
                             jObject.addProperty("{#NAA}", naaName.getName());

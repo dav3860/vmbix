@@ -1,3 +1,7 @@
+2.4
+* Fixed the UUID in the discovery of NAS datastores
+* Added a vm.snapshot method that replies *1* if a VM has at least one snapshot.
+
 2.3
 * Added a datastore.local method to check if a datastore is local
 * Replaced the Python import script by a new one : vmbix-object-sync. Check the [README](https://github.com/dav3860/vmbix/tree/master/zabbix/addons) for details.
