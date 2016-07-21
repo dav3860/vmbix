@@ -76,6 +76,7 @@ public class VmBix {
     static String pidFile;
     static Integer interval = 300; // Default interval of 300s for performance metrics queries
     static Boolean useUuid = false; // Use object name by default
+    static Boolean escapeChars = false;
     static Integer vmCacheTtl = 15;        // in minutes
     static Integer vmCacheSize = 1000;       // in items (1 vm = 1 item)
     static Integer esxiCacheTtl = 15;      // in minutes
@@ -167,6 +168,7 @@ public class VmBix {
 
                     interval = Integer.parseInt(prop.getProperty("interval"));
                     useUuid = Boolean.parseBoolean(prop.getProperty("useuuid"));
+                    escapeChars = Boolean.parseBoolean(prop.getProperty("escapechars"));
 
                     vmCacheTtl = Integer.parseInt(prop.getProperty("vmCacheTtl"));
                     esxiCacheTtl = Integer.parseInt(prop.getProperty("esxiCacheTtl"));
@@ -3035,7 +3037,11 @@ public class VmBix {
                     if (vmDisks != null) {
                         for (int j = 0; j < vmDisks.length; j++) {
                             JsonObject jObject = new JsonObject();
-                            jObject.addProperty("{#GUESTDISK}", vmDisks[j].getDiskPath());
+                            String disk = vmDisks[j].getDiskPath());
+                            If (escapeChars == true && disk.endsWith("\\")) {
+                                disk += " ";
+                            }
+                            jObject.addProperty("{#GUESTDISK}", disk);
                             jArray.add(jObject);
                         }
                     } else {
