@@ -3037,7 +3037,7 @@ public class VmBix {
                     if (vmDisks != null) {
                         for (int j = 0; j < vmDisks.length; j++) {
                             JsonObject jObject = new JsonObject();
-                            String disk = vmDisks[j].getDiskPath());
+                            String disk = vmDisks[j].getDiskPath();
                             If (escapeChars == true && disk.endsWith("\\")) {
                                 disk += " ";
                             }
