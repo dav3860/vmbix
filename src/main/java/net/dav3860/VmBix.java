@@ -3040,7 +3040,7 @@ public class VmBix {
                             String disk = vmDisks[j].getDiskPath();
                             if (escapeChars == true && disk.endsWith("\\")) {
                                 LOG.debug("The disk '" + disk + "' of the VM '" + vmName + "' ends with a backslash and will be sanitized");
-                                disk.concat(" ");
+                                disk = disk.concat(" ");
                             }
 
                             jObject.addProperty("{#GUESTDISK}", disk);
