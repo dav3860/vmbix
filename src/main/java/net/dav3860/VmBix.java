@@ -3039,12 +3039,15 @@ public class VmBix {
                             JsonObject jObject = new JsonObject();
                             String disk = vmDisks[j].getDiskPath();
                             if (escapeChars == true && disk.endsWith("\\")) {
-                                disk += " ";
+                                LOG.debug("The disk '" + disk + "' of the VM '" + vmName + "' ends with a backslash and will be sanitized");
+                                disk.concat(" ");
                             }
+
                             jObject.addProperty("{#GUESTDISK}", disk);
                             jArray.add(jObject);
                         }
                     } else {
+                        LOG.info("Cannot query disks for VM '" + vmName);
                     }
                 }
             }
@@ -3069,6 +3072,10 @@ public class VmBix {
                 } else {
                     GuestDiskInfo[] vmDisks = gInfo.getDisk();
                     if (vmDisks != null) {
+                        if (escapeChars == true && vmDisk.endsWith(" ")) {
+                            LOG.debug("The disk '" + vmDisk + "' of the VM '" + vmName + "' ends with a space and will be sanitized");
+                            vmDisk = vmDisk.substring(0,vmDisk.length()-1);
+                        }
                         for (int j = 0; j < vmDisks.length; j++) {
                             if (vmDisks[j].getDiskPath().equals(vmDisk)) {
                                 size = vmDisks[j].getCapacity();
@@ -3098,6 +3105,10 @@ public class VmBix {
                 } else {
                     GuestDiskInfo[] vmDisks = gInfo.getDisk();
                     if (vmDisks != null) {
+                        if (escapeChars == true && vmDisk.endsWith(" ")) {
+                            LOG.debug("The disk '" + vmDisk + "' of the VM '" + vmName + "' ends with a space and will be sanitized");
+                            vmDisk = vmDisk.substring(0,vmDisk.length()-1);
+                        }
                         for (int j = 0; j < vmDisks.length; j++) {
                             if (vmDisks[j].getDiskPath().equals(vmDisk)) {
                                 size = vmDisks[j].getFreeSpace();
