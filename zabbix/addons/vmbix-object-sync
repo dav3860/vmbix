@@ -629,9 +629,9 @@ class ZabbixConnector(object):
             logging.info("[%s] Creating Zabbix host '%s'", type, name)
             try:
               result = self.create_host(params)
-              self.email = self.email + name + "\r\n"
+              self.added_hosts.append(name)
             except zabbix_api.ZabbixAPIException as e:
-              logging.warning('Cannot create host in Zabbix: %s', e)
+              logging.warning('[%s] Cannot create host in Zabbix: %s', type, e)
 
         logging.info('Import of objects completed')
 
@@ -650,7 +650,7 @@ class ZabbixConnector(object):
             'Searching for extra hosts in Zabbix of type [%s], which are no longer present in vSphere', type)
 
         if not self.vsphere_hosts.has_key(type) or not self.vsphere_hosts.has_key(type):
-          logging.warning('[%s] No object found in vSphere : skipping')
+          logging.warning('[%s] No object found in vSphere : skipping', type)
           return
 
         # Get hosts options (templates, type, groups, macros) from the config file
@@ -663,20 +663,20 @@ class ZabbixConnector(object):
 
         # Number of hosts in Zabbix but not in vCenter
         extra_hosts = set(zabbix_hosts.keys()) - set(self.vsphere_hosts[type].keys())
-        logging.info('Number of extra hosts in Zabbix : %d', len(extra_hosts))
+        logging.info('[%s] Number of extra hosts in Zabbix : %d', type, len(extra_hosts))
 
         zg = ZGet(host = self.options['vmbix']['hostname'], port = self.options['vmbix']['port'])
 
         # Evaluate the conditional filters for all remaining hosts in Zabbix
         logging.info(
-            'Checking conditional filters against the remaining hosts at %s',
+            '[%s] Checking conditional filters against the remaining hosts at %s', type, 
             self.options['vmbix']['hostname']
         )
 
         common_hosts = set(zabbix_hosts.keys()) & set(self.vsphere_hosts[type].keys())
         logging.debug("[%s] Number of common hosts in Zabbix and vSphere : %s", type, len(common_hosts))
 
-        # Check if the already nomitored hosts still match the conditions
+        # Check if the already monitored hosts still match the conditions
         i = 0
         for vm in common_hosts:
             i = i + 1
@@ -725,42 +725,34 @@ class ZabbixConnector(object):
               del params['exclude']
 
         if not extra_hosts:
-            logging.info("No extra host in Zabbix")
+            logging.info("[%s] No extra host in Zabbix", type)
             return
         else:
           # Protection against accidental errors or bugs
           if (100 * len(extra_hosts)/len(zabbix_hosts)) > 10:
             logging.warning(
-              "Anomaly detected. More than 10% extra hosts in Zabbix."
+              "[%s] Anomaly detected. More than 10% extra hosts in Zabbix.", type
             )
             if self.force:
               logging.info(
-                "Force option is enabled. The action [%s] will be applied.", self.action
+                "[%s] Force option is enabled. The action [%s] will be applied.", type, self.action
               )
             else:
               logging.info(
-                "Force option is disabled. Skipping."
+                "[%s] Force option is disabled. Skipping.", type
               )
               return
 
-        if len(extra_hosts) > 0:
-          if self.action == 'disable':
-            self.email = self.email + """
-The following hosts were DISABLED in Zabbix :
-"""
-          if self.action == 'delete':
-            self.email = self.email + """
-The following hosts were DELETED in Zabbix :
-"""
         i = 0
         for host in extra_hosts:
           i = i + 1
           name = zabbix_hosts[host].encode('utf-8')
-          logging.debug("[%s] Host '%s' [%s/%s] exists in Zabbix, type, but should be removed from monitoring", name, i ,len(extra_hosts))
+          logging.debug("[%s] Host '%s' [%s/%s] exists in Zabbix, type, but should be removed from monitoring", type, name, i , len(extra_hosts))
           if self.action == 'delete':
             hostid = self.get_hostid_by_name(host)
             logging.info(
-              "Deleting host '%s' with hostid '%s'",
+              "[%s] Deleting host '%s' with hostid '%s'",
+              type,
               name,
               hostid
             )
@@ -768,7 +760,7 @@ The following hosts were DELETED in Zabbix :
               method='host.delete',
               params=[hostid]
             )
-            self.email = self.email + name + "\r\n"
+            self.removed_hosts.append(name)
           if self.action == 'disable':
             data   = self.get_host(host)
             hostid = data['hostid']
@@ -776,7 +768,8 @@ The following hosts were DELETED in Zabbix :
 
             if status == '0':
               logging.info(
-                "Disabling host '%s' with hostid '%s'",
+                "[%s] Disabling host '%s' with hostid '%s'",
+                type,
                 name,
                 hostid
               )
@@ -784,28 +777,44 @@ The following hosts were DELETED in Zabbix :
                 method='host.update',
                 params=[{'hostid': hostid, 'status': 1}]
               )
-              self.email = self.email + name + "\r\n"
+              self.removed_hosts.append(name)
             else:
               logging.info(
-                "Host '%s' with hostid '%s' is not enabled. Skipping.",
+                "[%s] Host '%s' with hostid '%s' is not enabled. Skipping.",
+                type,
                 name,
                 hostid
               )
 
 
     def send_report(self):
-        if not self.email == "" and self.options['import']['recipients'] and self.options['import']['sender']:
-          header = """From: Zabbix VSphere Import <""" + self.options['import']['sender'] + """>
+        if self.options['import']['recipients'] and self.options['import']['sender'] and (len(self.added_hosts) + len(self.removed_hosts)) > 0:
+          email = """From: Zabbix VSphere Import <""" + self.options['import']['sender'] + """>
 X-Priority:2
 Subject: Zabbix/vSphere hosts provisioning
+"""      
+          if len(self.added_hosts) > 0:
+            email = email + """
+The following hosts were ADDED in Zabbix :
 """
+            email = email + ','.join(self.added_hosts) + "\r\n"
+          
+          if len(self.removed_hosts) > 0:
+            if self.action == 'disable':
+              email = email + """
+The following hosts were DISABLED in Zabbix :
+"""
+            if self.action == 'delete':
+              email = email + """
+The following hosts were DELETED in Zabbix :
+"""
+            email = email + ','.join(self.removed_hosts) + "\r\n"
           try:
-             self.email = header + self.email
-             smtpObj = smtplib.SMTP('localhost')
-             smtpObj.sendmail(self.options['import']['sender'], self.options['import']['recipients'], self.email)
-             logging.info("Successfully sent email.")
+            smtpObj = smtplib.SMTP('localhost')
+            smtpObj.sendmail(self.options['import']['sender'], self.options['import']['recipients'], email)
+            logging.info("Successfully sent email.")
           except smtplib.SMTPException:
-             logging.error("Error: unable to send email.")
+            logging.error("Error: unable to send email.")
 
 
 def main():
@@ -856,8 +865,9 @@ Options:
 
     zabbix.action = args['--action']
     zabbix.force = args['--force']
-    zabbix.email = ''
     zabbix.vsphere_hosts = {}
+    zabbix.added_hosts = []
+    zabbix.removed_hosts = []
 
     # Import vSphere objects into Zabbix
     zabbix.import_vsphere_hosts('vsphere_object_vm')
