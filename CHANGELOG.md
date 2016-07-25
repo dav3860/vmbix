@@ -1,5 +1,6 @@
 2.5
 * Improved the script vmbix-object-sync
+* Hacked the vm.guest.disk.* methods with a workaround for ZBX-10590. If a disk name ends with *\*, a space will be added at the end of the disk name. This is controlled by the parameter *escapechars* in the configuration file. It is set to false by default.
 
 2.4
 * Fixed the UUID in the discovery of NAS datastores

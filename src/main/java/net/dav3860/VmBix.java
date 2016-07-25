@@ -76,6 +76,7 @@ public class VmBix {
     static String pidFile;
     static Integer interval = 300; // Default interval of 300s for performance metrics queries
     static Boolean useUuid = false; // Use object name by default
+    static Boolean escapeChars = false;
     static Integer vmCacheTtl = 15;        // in minutes
     static Integer vmCacheSize = 1000;       // in items (1 vm = 1 item)
     static Integer esxiCacheTtl = 15;      // in minutes
@@ -167,6 +168,7 @@ public class VmBix {
 
                     interval = Integer.parseInt(prop.getProperty("interval"));
                     useUuid = Boolean.parseBoolean(prop.getProperty("useuuid"));
+                    escapeChars = Boolean.parseBoolean(prop.getProperty("escapechars"));
 
                     vmCacheTtl = Integer.parseInt(prop.getProperty("vmCacheTtl"));
                     esxiCacheTtl = Integer.parseInt(prop.getProperty("esxiCacheTtl"));
@@ -3035,10 +3037,17 @@ public class VmBix {
                     if (vmDisks != null) {
                         for (int j = 0; j < vmDisks.length; j++) {
                             JsonObject jObject = new JsonObject();
-                            jObject.addProperty("{#GUESTDISK}", vmDisks[j].getDiskPath());
+                            String disk = vmDisks[j].getDiskPath();
+                            if (escapeChars == true && disk.endsWith("\\")) {
+                                LOG.debug("The disk '" + disk + "' of the VM '" + vmName + "' ends with a backslash and will be sanitized");
+                                disk = disk.concat(" ");
+                            }
+
+                            jObject.addProperty("{#GUESTDISK}", disk);
                             jArray.add(jObject);
                         }
                     } else {
+                        LOG.info("Cannot query disks for VM '" + vmName);
                     }
                 }
             }
@@ -3063,6 +3072,10 @@ public class VmBix {
                 } else {
                     GuestDiskInfo[] vmDisks = gInfo.getDisk();
                     if (vmDisks != null) {
+                        if (escapeChars == true && vmDisk.endsWith(" ")) {
+                            LOG.debug("The disk '" + vmDisk + "' of the VM '" + vmName + "' ends with a space and will be sanitized");
+                            vmDisk = vmDisk.substring(0,vmDisk.length()-1);
+                        }
                         for (int j = 0; j < vmDisks.length; j++) {
                             if (vmDisks[j].getDiskPath().equals(vmDisk)) {
                                 size = vmDisks[j].getCapacity();
@@ -3092,6 +3105,10 @@ public class VmBix {
                 } else {
                     GuestDiskInfo[] vmDisks = gInfo.getDisk();
                     if (vmDisks != null) {
+                        if (escapeChars == true && vmDisk.endsWith(" ")) {
+                            LOG.debug("The disk '" + vmDisk + "' of the VM '" + vmName + "' ends with a space and will be sanitized");
+                            vmDisk = vmDisk.substring(0,vmDisk.length()-1);
+                        }
                         for (int j = 0; j < vmDisks.length; j++) {
                             if (vmDisks[j].getDiskPath().equals(vmDisk)) {
                                 size = vmDisks[j].getFreeSpace();
