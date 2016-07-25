@@ -1,3 +1,6 @@
+2.5
+* Improved the script vmbix-object-sync
+
 2.4
 * Fixed the UUID in the discovery of NAS datastores
 * Added a vm.snapshot method that replies *1* if a VM has at least one snapshot.
