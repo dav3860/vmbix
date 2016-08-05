@@ -3055,8 +3055,11 @@ public class VmBix {
                       }
                   }
                 }
+                catch (RemoteException ex) {
+                    LOG.error("MyRemoteException : " + ex);            
+                }
                 catch (Exception ex) {
-                    ex.printStackTrace();
+                    LOG.error("MyException : " + ex);
                 }
             }
             JsonObject jOutput = new JsonObject();
