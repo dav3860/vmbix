@@ -68,6 +68,9 @@ public class VmBix {
     static Cache<String, PerfMetricId[]> hostPerfCache;
     static Cache<String, HostRuntimeInfo> hriCache;
 
+    static Integer nbFailures = 0;
+    static Integer connDelay = 60;
+
     static String sdkUrl;
     static String uname;
     static String passwd;
@@ -3029,26 +3032,31 @@ public class VmBix {
             if (vm == null) {
                 LOG.warn("No vm named '" + vmName + "' found");
             } else {
-                GuestInfo gInfo = vm.getGuest();
-                if (gInfo == null) {
-                    LOG.info("Cannot query guest OS for VM '" + vmName);
-                } else {
-                    GuestDiskInfo[] vmDisks = gInfo.getDisk();
-                    if (vmDisks != null) {
-                        for (int j = 0; j < vmDisks.length; j++) {
-                            JsonObject jObject = new JsonObject();
-                            String disk = vmDisks[j].getDiskPath();
-                            if (escapeChars == true && disk.endsWith("\\")) {
-                                LOG.debug("The disk '" + disk + "' of the VM '" + vmName + "' ends with a backslash and will be sanitized");
-                                disk = disk.concat(" ");
-                            }
+                try {
+                  GuestInfo gInfo = vm.getGuest();
+                  if (gInfo == null) {
+                      LOG.info("Cannot query guest OS for VM '" + vmName);
+                  } else {
+                      GuestDiskInfo[] vmDisks = gInfo.getDisk();
+                      if (vmDisks != null) {
+                          for (int j = 0; j < vmDisks.length; j++) {
+                              JsonObject jObject = new JsonObject();
+                              String disk = vmDisks[j].getDiskPath();
+                              if (escapeChars == true && disk.endsWith("\\")) {
+                                  LOG.debug("The disk '" + disk + "' of the VM '" + vmName + "' ends with a backslash and will be sanitized");
+                                  disk = disk.concat(" ");
+                              }
 
-                            jObject.addProperty("{#GUESTDISK}", disk);
-                            jArray.add(jObject);
-                        }
-                    } else {
-                        LOG.info("Cannot query disks for VM '" + vmName);
-                    }
+                              jObject.addProperty("{#GUESTDISK}", disk);
+                              jArray.add(jObject);
+                          }
+                      } else {
+                          LOG.info("Cannot query disks for VM '" + vmName);
+                      }
+                  }
+                }
+                catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
             JsonObject jOutput = new JsonObject();
