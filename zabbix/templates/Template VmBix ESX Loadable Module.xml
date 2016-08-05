@@ -99,7 +99,7 @@
                     <snmpv3_privpassphrase/>
                     <formula>1</formula>
                     <delay_flex/>
-                    <params>(last(&quot;vmbix[esx.cpu.load,{HOST.HOST},used]&quot;)/last(&quot;vmbix[esx.cpu.load,{HOST.HOST},all]&quot;))*100</params>
+                    <params>(last(&quot;vmbix[esx.cpu.load,{HOST.HOST},used]&quot;)/last(&quot;esx.cpu.load[{HOST.HOST},all]&quot;))*100</params>
                     <ipmi_sensor/>
                     <data_type>0</data_type>
                     <authtype>0</authtype>
