@@ -96,7 +96,7 @@ vmbix [-c|--config] config_file  [-f|--pid pidfile] [-i|--interval interval] [-U
 
 ### Configure the daemon
 
-It is strongly recommended to check your parameters before writing them down to a config file. Run VmBix with your username, password and service url:
+It is strongly recommended to check your parameters before writing them down to a config file. Run VmBix with your username, password and service url. *It is recommended to use a read-only user to connect to the vCenter.*
 
 ```
 $ vmbix -P 12050 -u "MYDOMAIN\\myvmwareuser" -p "mypassword"" -s "https://myvcenter.mydomain.local/sdk"
