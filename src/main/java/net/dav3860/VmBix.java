@@ -3055,7 +3055,7 @@ public class VmBix {
                       }
                   }
                 }
-                catch (ConnectException ex) {
+                catch (java.net.ConnectException ex) {
                     LOG.error("MyRemoteException : " + ex);
                 }
                 catch (Exception ex) {
