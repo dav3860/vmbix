@@ -1594,6 +1594,12 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
+        if (ex instanceof java.rmi.RemoteException) {
+          LOG.debug("*** java.rmi.RemoteException ***");
+          if (ex.getCause() instanceof java.net.ConnectException) {
+            LOG.debug("*** java.net.ConnectException ***");
+          }
+        }
       }
     }
 
