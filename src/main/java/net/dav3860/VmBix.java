@@ -4052,8 +4052,8 @@ public class VmBix {
             }
           }
         }
-        if (alive > lifeTime and pauseThread = false) {
-          LOG.info("thread  closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
+        if (alive > lifeTime && pauseThread = false) {
+          LOG.info("thread closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
           reincornate = 0;
         }
         if (pauseTimer > 30000) {
