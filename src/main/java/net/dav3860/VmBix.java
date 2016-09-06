@@ -3055,15 +3055,13 @@ public class VmBix {
                       }
                     }
                 }
-            }
-            catch (Exception ex) {
-                LOG.error("An error occurred : " + ex);
-            }
-            finally {
                 JsonObject jOutput = new JsonObject();
                 jOutput.add("data", jArray);
                 out.print(jOutput);
                 out.flush();
+            }
+            catch (Exception ex) {
+                LOG.error("An error occurred : " + ex);
             }
         }
 
