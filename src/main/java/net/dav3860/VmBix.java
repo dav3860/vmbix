@@ -416,6 +416,10 @@ public class VmBix {
       LOG.error("serviceInstance in null! Connection failed.");
       return;
     }
+    WSClient wsc = serviceInstance.getServerConnection().getVimService().getWsc();
+    wsc.setConnectTimeout(10*1000);
+    wsc.setReadTimeout(5*1000);
+
     Folder rootFolder = serviceInstance.getRootFolder();
     inventoryNavigator = new InventoryNavigator(serviceInstance.getRootFolder());
     performanceManager = serviceInstance.getPerformanceManager();
