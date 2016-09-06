@@ -460,17 +460,6 @@ public class VmBix {
   static void server() throws IOException {
     ServerSocket listen;
     updateConnection();
-    String version = null;
-
-    Package aPackage = getClass().getPackage();
-    if (aPackage != null) {
-      version = aPackage.getImplementationVersion();
-      if (version == null) {
-        version = aPackage.getSpecificationVersion();
-      }
-    }
-    LOG.info("VmBix version : " + version);
-
     if (ipaddr != null) {
       LOG.info("starting server on " + ipaddr + "/" + port.toString());
       InetAddress addr = InetAddress.getByName(ipaddr);
@@ -1311,14 +1300,19 @@ public class VmBix {
     private void getVersion(PrintWriter out) throws IOException {
       String version = null;
 
-      Package aPackage = getClass().getPackage();
-      if (aPackage != null) {
-        version = aPackage.getImplementationVersion();
-        if (version == null) {
-          version = aPackage.getSpecificationVersion();
+      if (version == null) {
+        Package aPackage = getClass().getPackage();
+        if (aPackage != null) {
+          version = aPackage.getImplementationVersion();
+          if (version == null) {
+            version = aPackage.getSpecificationVersion();
+          }
         }
       }
 
+      if (version == null) {
+        // we could not compute the version so use a blank
+      }
       out.print(version);
       out.flush();
     }
