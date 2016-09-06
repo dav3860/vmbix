@@ -3029,14 +3029,14 @@ public class VmBix {
         private void getVmGuestDisks(String vmName, PrintWriter out) throws IOException {
             VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
             JsonArray jArray = new JsonArray();
-            if (vm == null) {
-                LOG.warn("No vm named '" + vmName + "' found");
-            } else {
-                try {
-                  GuestInfo gInfo = vm.getGuest();
-                  if (gInfo == null) {
+            try {
+                if (vm == null) {
+                    LOG.warn("No vm named '" + vmName + "' found");
+                } else {
+                    GuestInfo gInfo = vm.getGuest();
+                    if (gInfo == null) {
                       LOG.info("Cannot query guest OS for VM '" + vmName);
-                  } else {
+                    } else {
                       GuestDiskInfo[] vmDisks = gInfo.getDisk();
                       if (vmDisks != null) {
                           for (int j = 0; j < vmDisks.length; j++) {
@@ -3053,17 +3053,18 @@ public class VmBix {
                       } else {
                           LOG.info("Cannot query disks for VM '" + vmName);
                       }
-                  }
-                }
-                catch (RemoteException ex) {
-                    LOG.error("MyException : " + ex);
-                    ex.printStackTrace();
+                    }
                 }
             }
-            JsonObject jOutput = new JsonObject();
-            jOutput.add("data", jArray);
-            out.print(jOutput);
-            out.flush();
+            catch (Exception ex) {
+                LOG.error("An error occurred : " + ex);
+            }
+            finally {
+                JsonObject jOutput = new JsonObject();
+                jOutput.add("data", jArray);
+                out.print(jOutput);
+                out.flush();
+            }
         }
 
         /**
