@@ -42,6 +42,7 @@ import java.util.regex.*;
 import java.util.concurrent.TimeUnit;
 import java.net.URL;
 import com.vmware.vim25.*;
+import com.vmware.vim25.ws.*;
 import com.vmware.vim25.mo.*;
 import com.vmware.vim25.mo.util.*;
 import jargs.gnu.CmdLineParser;
