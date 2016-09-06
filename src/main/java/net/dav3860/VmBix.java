@@ -1591,11 +1591,17 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-        if (ex instanceof java.rmi.RemoteException) {
+        if (ex instanceof RemoteException) {
           LOG.debug("*** java.rmi.RemoteException ***");
-          if (ex.getCause() instanceof java.net.ConnectException) {
+          if (ex.getCause() instanceof ConnectException) {
             LOG.debug("*** java.net.ConnectException ***");
           }
+          else {
+            LOG.debug("*** NOT java.net.ConnectException ***");
+          }
+        }
+        else {
+          LOG.debug("*** NOT java.rmi.RemoteException ***");
         }
       }
     }
