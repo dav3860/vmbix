@@ -2489,8 +2489,6 @@ public class VmBix {
           } else {
             // The counter exists
             Integer perfCounterId = Integer.valueOf((String) counter.get(0));
-//                  performanceManager.queryAvailablePerfMetric(host, null, null, interval);
-            //PerfMetricId[] queryAvailablePerfMetric = performanceManager.queryAvailablePerfMetric(host, null, null, 20);
             PerfMetricId[] queryAvailablePerfMetric = getHostPerformanceManager(host, 20);
             for (int i2 = 0; i2 < queryAvailablePerfMetric.length; i2++) {
               PerfMetricId pMetricId = queryAvailablePerfMetric[i2];
@@ -3061,7 +3059,8 @@ public class VmBix {
         out.flush();
       }
       catch (Exception ex) {
-        LOG.error("An error occurred : " + ex);
+        LOG.error("An error occurred : " + ex.getMessage());
+        LOG.debug("Exception : " + ex);
       }
     }
 
