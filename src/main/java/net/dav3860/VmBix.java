@@ -1589,6 +1589,15 @@ public class VmBix {
 	      out.print(intStatus);
 	      out.flush();
     	}
+      catch (RuntimeException ex) {
+        LOG.debug("***** RuntimeException ***");
+        if (ex.getCause() instanceof java.rmi.RemoteException) {
+          LOG.debug("**** java.rmi.RemoteException ***");
+        }
+        else {
+          LOG.debug("**** NOT java.rmi.RemoteException ***");
+        }
+      }
       catch (java.net.ConnectException ex) {
         LOG.debug("***** java.net.ConnectException ***");
       }
