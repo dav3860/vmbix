@@ -1556,7 +1556,7 @@ public class VmBix {
     /**
      * Returns the status of a virtual machine
      */
-    private void getVmStatus(String vmName, PrintWriter out) throws IOException {
+    private void getVmStatus(String vmName, PrintWriter out) {
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
 	      Integer intStatus = 4;
@@ -1589,12 +1589,12 @@ public class VmBix {
 	      out.print(intStatus);
 	      out.flush();
     	}
-      catch (java.net.ConnectException cex) {
+      catch (ConnectException ex) {
         LOG.debug("***** java.net.ConnectException ***");
       }
-      catch (RemoteException rex) {
+      catch (RemoteException ex) {
         LOG.debug("**** java.rmi.RemoteException ***");
-        if (rex.getCause() instanceof java.net.ConnectException) {
+        if (ex.getCause() instanceof java.net.ConnectException) {
           LOG.debug("**** java.net.ConnectException ***");
         }
         else {
