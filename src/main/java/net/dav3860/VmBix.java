@@ -1589,10 +1589,10 @@ public class VmBix {
 	      out.print(intStatus);
 	      out.flush();
     	}
-      catch (ConnectException ex) {
+      catch (java.net.ConnectException ex) {
         LOG.debug("***** java.net.ConnectException ***");
       }
-      catch (RemoteException ex) {
+      catch (java.rmi.RemoteException ex) {
         LOG.debug("**** java.rmi.RemoteException ***");
         if (ex.getCause() instanceof java.net.ConnectException) {
           LOG.debug("**** java.net.ConnectException ***");
