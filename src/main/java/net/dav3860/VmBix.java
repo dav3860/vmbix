@@ -4012,56 +4012,54 @@ public class VmBix {
       int alive = 0;
       int pauseTimer = 0;
       while (reincornate == 1) {
-        if (pauseThread == true) {
+        Request request = VmBix.pullConnection();
+        if (request == null) {
           VmBix.sleep(10);
-          pauseTimer += 10;
-        }
-        else {
-          Request request = VmBix.pullConnection();
-          if (request == null) {
-            VmBix.sleep(10);
-            alive += 10;
-          } else {
-            connected = request.socket;
-            serviceInstance = request.serviceInstance;
-            alive = 0;
+          alive += 10;
+          if (pauseThread = true) {
+            pauseTimer += 10;
+          }
+        } else {
+          connected = request.socket;
+          serviceInstance = request.serviceInstance;
+          alive = 0;
+          try {
+            PrintWriter out = new PrintWriter(connected.getOutputStream());
+            BufferedReader in = new BufferedReader(new InputStreamReader(connected.getInputStream()));
+            int continues = 1;
+            while (continues == 1) {
+              String message = in.readLine();
+
+              if (message != null && pauseThread = false) {
+                checkAllPatterns(message, out);
+              }
+              continues = 0;
+
+            }
+            in.close();
+            out.close();
+            connected.close();
+          } catch (IOException e) {
+            LOG.info("thread I/O error: "
+                + e.toString() + ". closing socket"
+            );
             try {
-              PrintWriter out = new PrintWriter(connected.getOutputStream());
-              BufferedReader in = new BufferedReader(new InputStreamReader(connected.getInputStream()));
-              int continues = 1;
-              while (continues == 1) {
-                String message = in.readLine();
-
-                if (message != null) {
-                  checkAllPatterns(message, out);
-                }
-                continues = 0;
-
-              }
-              in.close();
-              out.close();
               connected.close();
-            } catch (IOException e) {
-              LOG.info("thread I/O error: "
-                  + e.toString() + ". closing socket"
+            } catch (IOException ee) {
+              LOG.info("thread I/O error, can't close socket: "
+                  + ee.toString()
               );
-              try {
-                connected.close();
-              } catch (IOException ee) {
-                LOG.info("thread I/O error, can't close socket: "
-                    + ee.toString()
-                );
-              }
             }
           }
-          if (alive > lifeTime) {
-            LOG.info("thread  closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
-            reincornate = 0;
-          }
+        }
+        if (alive > lifeTime and pauseThread = false) {
+          LOG.info("thread  closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
+          reincornate = 0;
         }
         if (pauseTimer > 30000) {
           LOG.info("Thread if now going out of pause");
           pauseThread = false;
+          pauseTimer = 0;
         }
       }
     }
