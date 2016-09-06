@@ -497,6 +497,7 @@ public class VmBix {
     ServiceInstance serviceInstance;
     InventoryNavigator inventoryNavigator;
     PerformanceManager performanceManager;
+    Boolean pauseThread = false;
 
     Connection(Request request) {
       this.serviceInstance = request.serviceInstance;
@@ -1556,7 +1557,7 @@ public class VmBix {
     /**
      * Returns the status of a virtual machine
      */
-    private void getVmStatus(String vmName, PrintWriter out) {
+    private void getVmStatus(String vmName, PrintWriter out) throws IOException {
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
 	      Integer intStatus = 4;
@@ -1590,41 +1591,13 @@ public class VmBix {
 	      out.flush();
     	}
       catch (RuntimeException ex) {
-        LOG.debug("***** RuntimeException ***");
         if (ex.getCause() instanceof java.rmi.RemoteException) {
-          LOG.debug("**** java.rmi.RemoteException ***");
-        }
-        else {
-          LOG.debug("**** NOT java.rmi.RemoteException ***");
-        }
-      }
-      catch (java.net.ConnectException ex) {
-        LOG.debug("***** java.net.ConnectException ***");
-      }
-      catch (java.rmi.RemoteException ex) {
-        LOG.debug("**** java.rmi.RemoteException ***");
-        if (ex.getCause() instanceof java.net.ConnectException) {
-          LOG.debug("**** java.net.ConnectException ***");
-        }
-        else {
-          LOG.debug("**** NOT java.net.ConnectException ***");
+          LOG.debug("There was an error querying the vCenter, pausing requests...");
+          pauseThread = true;
         }
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-        if (ex instanceof RemoteException) {
-          LOG.debug("*** java.rmi.RemoteException ***");
-          if (ex.getCause() instanceof java.net.ConnectException) {
-            LOG.debug("*** java.net.ConnectException ***");
-          }
-          else {
-            LOG.debug("*** NOT java.net.ConnectException ***");
-          }
-        }
-        else {
-          LOG.debug("*** NOT java.rmi.RemoteException ***");
-        }
-        ex.printStackTrace();
       }
     }
 
@@ -4037,47 +4010,58 @@ public class VmBix {
       int reincornate = 1;
       final int lifeTime = 2000;
       int alive = 0;
+      int pauseTimer = 0;
       while (reincornate == 1) {
-        Request request = VmBix.pullConnection();
-        if (request == null) {
+        if (pauseThread == true) {
           VmBix.sleep(10);
-          alive += 10;
-        } else {
-          connected = request.socket;
-          serviceInstance = request.serviceInstance;
-          alive = 0;
-          try {
-            PrintWriter out = new PrintWriter(connected.getOutputStream());
-            BufferedReader in = new BufferedReader(new InputStreamReader(connected.getInputStream()));
-            int continues = 1;
-            while (continues == 1) {
-              String message = in.readLine();
-
-              if (message != null) {
-                checkAllPatterns(message, out);
-              }
-              continues = 0;
-
-            }
-            in.close();
-            out.close();
-            connected.close();
-          } catch (IOException e) {
-            LOG.info("thread I/O error: "
-                + e.toString() + ". closing socket"
-            );
+          pauseTimer += 10;
+        }
+        else {
+          Request request = VmBix.pullConnection();
+          if (request == null) {
+            VmBix.sleep(10);
+            alive += 10;
+          } else {
+            connected = request.socket;
+            serviceInstance = request.serviceInstance;
+            alive = 0;
             try {
+              PrintWriter out = new PrintWriter(connected.getOutputStream());
+              BufferedReader in = new BufferedReader(new InputStreamReader(connected.getInputStream()));
+              int continues = 1;
+              while (continues == 1) {
+                String message = in.readLine();
+
+                if (message != null) {
+                  checkAllPatterns(message, out);
+                }
+                continues = 0;
+
+              }
+              in.close();
+              out.close();
               connected.close();
-            } catch (IOException ee) {
-              LOG.info("thread I/O error, can't close socket: "
-                  + ee.toString()
+            } catch (IOException e) {
+              LOG.info("thread I/O error: "
+                  + e.toString() + ". closing socket"
               );
+              try {
+                connected.close();
+              } catch (IOException ee) {
+                LOG.info("thread I/O error, can't close socket: "
+                    + ee.toString()
+                );
+              }
             }
           }
+          if (alive > lifeTime) {
+            LOG.info("thread  closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
+            reincornate = 0;
+          }
         }
-        if (alive > lifeTime) {
-          LOG.info("thread  closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
-          reincornate = 0;
+        if (pauseTimer > 30000) {
+          LOG.info("Thread if now going out of pause");
+          pauseThread = false;
         }
       }
     }
