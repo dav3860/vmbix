@@ -1615,6 +1615,7 @@ public class VmBix {
         else {
           LOG.debug("*** NOT java.rmi.RemoteException ***");
         }
+        e.printStackTrace();
       }
     }
 
