@@ -42,7 +42,6 @@ import java.util.regex.*;
 import java.util.concurrent.TimeUnit;
 import java.net.URL;
 import com.vmware.vim25.*;
-import com.vmware.vim25.ws.WSClient;
 import com.vmware.vim25.mo.*;
 import com.vmware.vim25.mo.util.*;
 import jargs.gnu.CmdLineParser;
@@ -417,9 +416,6 @@ public class VmBix {
       LOG.error("serviceInstance in null! Connection failed.");
       return;
     }
-    WSClient wsc = serviceInstance.getServerConnection().getVimService().getWsc();
-    wsc.setConnectTimeout(10*1000);
-    wsc.setReadTimeout(5*1000);
 
     Folder rootFolder = serviceInstance.getRootFolder();
     inventoryNavigator = new InventoryNavigator(serviceInstance.getRootFolder());
