@@ -460,7 +460,6 @@ public class VmBix {
   static void server() throws IOException {
     ServerSocket listen;
     updateConnection();
-    LOG.info("VmBix version is : " + getVersion());
     if (ipaddr != null) {
       LOG.info("starting server on " + ipaddr + "/" + port.toString());
       InetAddress addr = InetAddress.getByName(ipaddr);
@@ -635,7 +634,7 @@ public class VmBix {
       }
       found = checkPattern(pVersion, string);
       if (found != null) {
-        getVmBixVersion(out);
+        getVersion(out);
         return;
       }
       found = checkPattern(pClusters, string);
@@ -1288,22 +1287,7 @@ public class VmBix {
     }
 
     /**
-     * Returns VmBix version
-    */
-    private String getVersion() throws IOException {
-      String version = null;
-      Package aPackage = getClass().getPackage();
-      if (aPackage != null) {
-        version = aPackage.getImplementationVersion();
-        if (version == null) {
-          version = aPackage.getSpecificationVersion();
-        }
-      }
-      return version;
-    }
-
-    /**
-     * Always returns "1"
+     * Always return "1"
      */
     private void getPing(PrintWriter out) throws IOException {
       out.print("1");
@@ -1311,11 +1295,24 @@ public class VmBix {
     }
 
     /**
-     * Outputs VmBix version
+     * Returns VmBix version
     */
-    private void getVmBixVersion(PrintWriter out) throws IOException {
-      String version = getVersion();
+    private void getVersion(PrintWriter out) throws IOException {
+      String version = null;
 
+      if (version == null) {
+        Package aPackage = getClass().getPackage();
+        if (aPackage != null) {
+          version = aPackage.getImplementationVersion();
+          if (version == null) {
+            version = aPackage.getSpecificationVersion();
+          }
+        }
+      }
+
+      if (version == null) {
+        // we could not compute the version so use a blank
+      }
       out.print(version);
       out.flush();
     }
