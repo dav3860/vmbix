@@ -68,9 +68,6 @@ public class VmBix {
   static Cache<String, PerfMetricId[]> hostPerfCache;
   static Cache<String, HostRuntimeInfo> hriCache;
 
-  static Integer nbFailures = 0;
-  static Integer connDelay = 60;
-
   static String sdkUrl;
   static String uname;
   static String passwd;
@@ -239,8 +236,6 @@ public class VmBix {
 
   }
 
-  ;
-
   static void createPid(String pidFile, String pid) {
     try {
       // Create pid file
@@ -364,8 +359,6 @@ public class VmBix {
     );
   }
 
-  ;
-
   static void usage(String str) {
     String sname = "{-u|--username} \u001B[4musername\u001B[0m";
     String spass = "{-p|--password} \u001B[4mpassword\u001B[0m";
@@ -392,9 +385,6 @@ public class VmBix {
         + (str != null ? str : "")
     );
   }
-
-  ;
-
 
   public static synchronized void putConnection(Socket socket) throws IOException {
     if (sockets.size() < 150) {
@@ -484,8 +474,6 @@ public class VmBix {
       putConnection(connected);
     }
   }
-
-  ;
 
   static class Request {
 
@@ -1348,7 +1336,7 @@ public class VmBix {
     private void getHostConnection(String hostName, PrintWriter out) throws IOException {
       try {
       	HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      	Integer intStatus = 3;     	
+      	Integer intStatus = 3;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
 	        intStatus = 2;
@@ -1436,7 +1424,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1462,7 +1450,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	    
+      }
     }
 
     /**
@@ -1489,7 +1477,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1515,7 +1503,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1541,7 +1529,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1561,7 +1549,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1602,7 +1590,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1627,7 +1615,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1657,7 +1645,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1707,7 +1695,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1739,7 +1727,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -1766,7 +1754,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1794,7 +1782,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     private void getDatacenterStatus(String dcName, String type, PrintWriter out) throws IOException {
@@ -1834,7 +1822,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1888,7 +1876,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1916,7 +1904,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1943,7 +1931,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1963,7 +1951,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -1988,7 +1976,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2014,7 +2002,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2040,7 +2028,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2066,14 +2054,14 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
      * Returns the virtual machines private memory usage of a host
      */
     private void getHostVmsStatsPrivate(String hostName, PrintWriter out) throws IOException {
-			try {    	
+			try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
 	      Integer amount = 0;
 	      int sum = 0;
@@ -2096,7 +2084,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -2126,14 +2114,14 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
      * Returns the virtual machines swapped memory usage of a host
      */
     private void getHostVmsStatsSwapped(String hostName, PrintWriter out) throws IOException {
-			try {    	
+			try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
 	      Integer amount = 0;
 	      int sum = 0;
@@ -2158,7 +2146,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -2188,7 +2176,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2218,7 +2206,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2248,7 +2236,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -2278,7 +2266,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2308,7 +2296,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -2335,7 +2323,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2364,7 +2352,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2391,7 +2379,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -2412,7 +2400,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -2435,7 +2423,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -2472,7 +2460,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }	      
+      }
     }
 
     /**
@@ -2526,7 +2514,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2611,14 +2599,14 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
      * Processes performance values and calculates sum, avg, max, min,
      * percent.
      */
-    private int getPerfCounterValue(PerfMetricSeries[] vals, String perfCounterName, String perfCounterUnitInfo, String perfCounterStatsType, String perfCounterRollupType) throws IOException {    	
+    private int getPerfCounterValue(PerfMetricSeries[] vals, String perfCounterName, String perfCounterUnitInfo, String perfCounterStatsType, String perfCounterRollupType) throws IOException {
       float value = 0;
       Pattern pattern;
       Matcher matcher;
@@ -2709,7 +2697,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }  
+      }
     }
 
     /**
@@ -2793,7 +2781,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }        
+      }
     }
 
     /**
@@ -2838,7 +2826,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2883,7 +2871,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2897,7 +2885,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2911,7 +2899,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2935,7 +2923,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2963,7 +2951,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -2989,7 +2977,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3015,7 +3003,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3041,7 +3029,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3067,7 +3055,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3093,7 +3081,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3119,7 +3107,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3145,7 +3133,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3171,7 +3159,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3195,7 +3183,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3203,7 +3191,7 @@ public class VmBix {
      * machine Returns false if not
      */
     private void getVmToolsInstallerMounted(String vmName, PrintWriter out) throws IOException {
-			try {    	
+			try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
 	      Boolean is = false;
 	      if (vm == null) {
@@ -3220,7 +3208,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3243,7 +3231,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3269,7 +3257,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3294,7 +3282,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3321,7 +3309,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3402,7 +3390,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }      
+      }
     }
 
     /**
@@ -3440,7 +3428,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }          
+      }
     }
 
     /**
@@ -3466,7 +3454,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }          
+      }
     }
 
     /**
@@ -3488,7 +3476,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }          
+      }
     }
 
     /**
@@ -3510,7 +3498,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }          
+      }
     }
 
     /**
@@ -3532,7 +3520,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }          
+      }
     }
 
     /**
@@ -3594,7 +3582,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3638,7 +3626,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3664,7 +3652,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3684,7 +3672,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3708,7 +3696,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3732,7 +3720,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3760,7 +3748,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3784,7 +3772,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3804,7 +3792,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3824,7 +3812,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3844,7 +3832,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3864,7 +3852,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3884,7 +3872,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3905,7 +3893,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3925,7 +3913,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3946,7 +3934,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3966,7 +3954,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -3986,7 +3974,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     /**
@@ -4006,7 +3994,7 @@ public class VmBix {
     	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-      }         
+      }
     }
 
     public void run() {
