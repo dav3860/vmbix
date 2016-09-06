@@ -1591,8 +1591,9 @@ public class VmBix {
 	      out.flush();
     	}
       catch (RuntimeException ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
         if (ex.getCause() != null && ex.getCause().getCause() instanceof java.net.ConnectException) {
-          LOG.debug("There was an error querying the vCenter, pausing activity");
+          LOG.error("There was an error querying the vCenter, pausing activity");
           pauseThread = true;
         }
       }
@@ -4016,9 +4017,11 @@ public class VmBix {
         Request request = VmBix.pullConnection();
         if (request == null) {
           VmBix.sleep(10);
-          alive += 10;
           if (pauseThread == true) {
             pauseTimer += 10;
+          }
+          else {
+            alive += 10;
           }
         } else {
           connected = request.socket;
