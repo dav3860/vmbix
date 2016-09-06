@@ -1591,8 +1591,8 @@ public class VmBix {
 	      out.flush();
     	}
       catch (RuntimeException ex) {
-        if (ex.getCause() instanceof java.rmi.RemoteException) {
-          LOG.debug("There was an error querying the vCenter, pausing requests...");
+        if (ex.getCause() != null && ex.getCause().getCause() instanceof java.net.ConnectException) {
+          LOG.debug("There was an error querying the vCenter, pausing activity");
           pauseThread = true;
         }
       }
@@ -4009,6 +4009,7 @@ public class VmBix {
       LOG.info("thread created, collecting data in " + (Thread.activeCount() - 1) + " threads");
       int reincornate = 1;
       final int lifeTime = 2000;
+      final int pauseDelay = 60000;
       int alive = 0;
       int pauseTimer = 0;
       while (reincornate == 1) {
@@ -4056,8 +4057,8 @@ public class VmBix {
           LOG.info("thread closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
           reincornate = 0;
         }
-        if (pauseTimer > 30000) {
-          LOG.info("Thread if now going out of pause");
+        if (pauseTimer > pauseDelay) {
+          LOG.info("Thread is now going out of pause");
           pauseThread = false;
           pauseTimer = 0;
         }
