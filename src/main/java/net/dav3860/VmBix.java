@@ -1304,7 +1304,6 @@ public class VmBix {
     private void getPing(PrintWriter out) throws IOException {
       out.print("1");
       out.flush();
-
     }
 
     /**
@@ -1347,30 +1346,35 @@ public class VmBix {
      * Returns the connection state of a host
      */
     private void getHostConnection(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer intStatus = 3;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-        intStatus = 2;
-      } else {
-        HostRuntimeInfo hrti = host.getRuntime();
-        HostSystemConnectionState hscs = hrti.getConnectionState();
-        if (null != hscs.name()) {
-          switch (hscs.name()) {
-            case "connected":
-              intStatus = 0;
-              break;
-            case "disconnected":
-              intStatus = 1;
-              break;
-            default:
-              intStatus = 2;
-              break;
-          }
-        }
+      try {
+      	HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+      	Integer intStatus = 3;     	
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	        intStatus = 2;
+	      } else {
+	        HostRuntimeInfo hrti = host.getRuntime();
+	        HostSystemConnectionState hscs = hrti.getConnectionState();
+	        if (null != hscs.name()) {
+	          switch (hscs.name()) {
+	            case "connected":
+	              intStatus = 0;
+	              break;
+	            case "disconnected":
+	              intStatus = 1;
+	              break;
+	            default:
+	              intStatus = 2;
+	              break;
+	          }
+	        }
+	      }
+	      out.print(intStatus);
+	      out.flush();
       }
-      out.print(intStatus);
-      out.flush();
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }
     }
 
     /**
@@ -1378,207 +1382,252 @@ public class VmBix {
      * red 4 -> unknown
      */
     private void getHostStatus(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer intStatus = 4;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-        intStatus = 4;
-      } else {
-        HostListSummary hsum = host.getSummary();
-        String hs = hsum.getOverallStatus().toString();
-        if (null != hs) {
-          switch (hs) {
-            case "grey":
-              intStatus = 0;
-              break;
-            case "green":
-              intStatus = 1;
-              break;
-            case "yellow":
-              intStatus = 2;
-              break;
-            case "red":
-              intStatus = 3;
-              break;
-            default:
-              intStatus = 4;
-              break;
-          }
-        }
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer intStatus = 4;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	        intStatus = 4;
+	      } else {
+	        HostListSummary hsum = host.getSummary();
+	        String hs = hsum.getOverallStatus().toString();
+	        if (null != hs) {
+	          switch (hs) {
+	            case "grey":
+	              intStatus = 0;
+	              break;
+	            case "green":
+	              intStatus = 1;
+	              break;
+	            case "yellow":
+	              intStatus = 2;
+	              break;
+	            case "red":
+	              intStatus = 3;
+	              break;
+	            default:
+	              intStatus = 4;
+	              break;
+	          }
+	        }
+	      }
+	      out.print(intStatus);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
       }
-      out.print(intStatus);
-      out.flush();
     }
 
     /**
      * Returns the display name of a host
      */
     private void getHostName(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      String name = "";
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        name = host.getName();
-      }
-      out.print(name);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      String name = "";
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        name = host.getName();
+	      }
+	      out.print(name);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the number of dead paths to the storage of a host
      */
     private void getHostDeadPaths(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer nb = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        HostConfigInfo hc = host.getConfig();
-        HostMultipathStateInfoPath[] mp = hc.getMultipathState().getPath();
-        for (int m = 0; m < mp.length; m++) {
-          if ("dead".equals(mp[m].getPathState())) {
-            nb++;
-          }
-        }
-      }
-      out.print(nb);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer nb = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        HostConfigInfo hc = host.getConfig();
+	        HostMultipathStateInfoPath[] mp = hc.getMultipathState().getPath();
+	        for (int m = 0; m < mp.length; m++) {
+	          if ("dead".equals(mp[m].getPathState())) {
+	            nb++;
+	          }
+	        }
+	      }
+	      out.print(nb);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	    
     }
 
     /**
      * Returns the number of active paths to the storage of a host
      */
     private void getHostActivePaths(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer nb = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        //TODO: cache for all HostConfigInfo
-        HostConfigInfo hc = host.getConfig();
-        HostMultipathStateInfoPath[] mp = hc.getMultipathState().getPath();
-        for (int m = 0; m < mp.length; m++) {
-          if ("active".equals(mp[m].getPathState())) {
-            nb++;
-          }
-        }
-      }
-      out.print(nb);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer nb = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        //TODO: cache for all HostConfigInfo
+	        HostConfigInfo hc = host.getConfig();
+	        HostMultipathStateInfoPath[] mp = hc.getMultipathState().getPath();
+	        for (int m = 0; m < mp.length; m++) {
+	          if ("active".equals(mp[m].getPathState())) {
+	            nb++;
+	          }
+	        }
+	      }
+	      out.print(nb);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the number of standby paths to the storage of a host
      */
     private void getHostStandbyPaths(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer nb = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        HostConfigInfo hc = host.getConfig();
-        HostMultipathStateInfoPath[] mp = hc.getMultipathState().getPath();
-        for (int m = 0; m < mp.length; m++) {
-          if ("standby".equals(mp[m].getPathState())) {
-            nb++;
-          }
-        }
-      }
-      out.print(nb);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer nb = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        HostConfigInfo hc = host.getConfig();
+	        HostMultipathStateInfoPath[] mp = hc.getMultipathState().getPath();
+	        for (int m = 0; m < mp.length; m++) {
+	          if ("standby".equals(mp[m].getPathState())) {
+	            nb++;
+	          }
+	        }
+	      }
+	      out.print(nb);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the number of disabled paths to the storage of a host
      */
     private void getHostDisabledPaths(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer nb = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        HostConfigInfo hc = host.getConfig();
-        HostMultipathStateInfoPath[] mp = hc.getMultipathState().getPath();
-        for (int m = 0; m < mp.length; m++) {
-          if ("disabled".equals(mp[m].getPathState())) {
-            nb++;
-          }
-        }
-      }
-      out.print(nb);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer nb = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        HostConfigInfo hc = host.getConfig();
+	        HostMultipathStateInfoPath[] mp = hc.getMultipathState().getPath();
+	        for (int m = 0; m < mp.length; m++) {
+	          if ("disabled".equals(mp[m].getPathState())) {
+	            nb++;
+	          }
+	        }
+	      }
+	      out.print(nb);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the display name of a VM
      */
     private void getVmName(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      String name = "";
-      if (vm == null) {
-        LOG.warn("No VM named '" + vmName + "' found");
-      } else {
-        name = vm.getName();
-      }
-      out.print(name);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      String name = "";
+	      if (vm == null) {
+	        LOG.warn("No VM named '" + vmName + "' found");
+	      } else {
+	        name = vm.getName();
+	      }
+	      out.print(name);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the status of a virtual machine
      */
     private void getVmStatus(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer intStatus = 4;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-        intStatus = 4;
-      } else {
-        VirtualMachineSummary vsum = vm.getSummary();
-        String vs = vsum.getOverallStatus().toString();
-        if (null != vs) {
-          switch (vs) {
-            case "grey":
-              intStatus = 0;
-              break;
-            case "green":
-              intStatus = 1;
-              break;
-            case "yellow":
-              intStatus = 2;
-              break;
-            case "red":
-              intStatus = 3;
-              break;
-            default:
-              intStatus = 4;
-              break;
-          }
-        }
-      }
-      out.print(intStatus);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer intStatus = 4;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	        intStatus = 4;
+	      } else {
+	        VirtualMachineSummary vsum = vm.getSummary();
+	        String vs = vsum.getOverallStatus().toString();
+	        if (null != vs) {
+	          switch (vs) {
+	            case "grey":
+	              intStatus = 0;
+	              break;
+	            case "green":
+	              intStatus = 1;
+	              break;
+	            case "yellow":
+	              intStatus = 2;
+	              break;
+	            case "red":
+	              intStatus = 3;
+	              break;
+	            default:
+	              intStatus = 4;
+	              break;
+	          }
+	        }
+	      }
+	      out.print(intStatus);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the maintenance state of a host
      */
     private void getHostMaintenance(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Boolean is;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-        is = false;
-      } else {
-        HostRuntimeInfo hrti = host.getRuntime();
-        is = hrti.isInMaintenanceMode();
-        if (is == null) {
-          is = false;
-        }
-      }
-      out.print(is ? "1" : "0");
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Boolean is;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	        is = false;
+	      } else {
+	        HostRuntimeInfo hrti = host.getRuntime();
+	        is = hrti.isInMaintenanceMode();
+	        if (is == null) {
+	          is = false;
+	        }
+	      }
+	      out.print(is ? "1" : "0");
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
@@ -1586,24 +1635,29 @@ public class VmBix {
      * with Zabbix low-level discovery
      */
     private void getVMs(PrintWriter out) throws IOException {
-      ManagedEntity[] vms = getManagedEntities("VirtualMachine");
-      JsonArray jArray = new JsonArray();
-      for (int j = 0; j < vms.length; j++) {
-        VirtualMachine vm = (VirtualMachine) vms[j];
-        VirtualMachineConfigInfo vmcfg = vm.getConfig();
-        if (vm != null && vmcfg != null) {
-          JsonObject jObject = new JsonObject();
-          String vmName = vm.getName();
-          String vmUuid = vmcfg.getUuid();
-          jObject.addProperty("{#VIRTUALMACHINE}", vmName);
-          jObject.addProperty("{#UUID}", vmUuid);
-          jArray.add(jObject);
-        }
-      }
-      JsonObject jOutput = new JsonObject();
-      jOutput.add("data", jArray);
-      out.print(jOutput);
-      out.flush();
+    	try {
+	      ManagedEntity[] vms = getManagedEntities("VirtualMachine");
+	      JsonArray jArray = new JsonArray();
+	      for (int j = 0; j < vms.length; j++) {
+	        VirtualMachine vm = (VirtualMachine) vms[j];
+	        VirtualMachineConfigInfo vmcfg = vm.getConfig();
+	        if (vm != null && vmcfg != null) {
+	          JsonObject jObject = new JsonObject();
+	          String vmName = vm.getName();
+	          String vmUuid = vmcfg.getUuid();
+	          jObject.addProperty("{#VIRTUALMACHINE}", vmName);
+	          jObject.addProperty("{#UUID}", vmUuid);
+	          jArray.add(jObject);
+	        }
+	      }
+	      JsonObject jOutput = new JsonObject();
+	      jOutput.add("data", jArray);
+	      out.print(jOutput);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
@@ -1611,44 +1665,49 @@ public class VmBix {
      * with Zabbix low-level discovery
      */
     private void getVMsFullDiscovery(PrintWriter out) throws IOException {
-      ManagedEntity[] vms = getManagedEntities("VirtualMachine");
-      JsonArray jArray = new JsonArray();
-      for (int j = 0; j < vms.length; j++) {
-        VirtualMachine vm = (VirtualMachine) vms[j];
-        VirtualMachineConfigInfo vmcfg = vm.getConfig();
-        if (vm != null && vmcfg != null) {
-          Integer intStatus = 3;
-          JsonObject jObject = new JsonObject();
-          String vmName = vm.getName();
-          String vmUuid = vmcfg.getUuid();
-          jObject.addProperty("{#VIRTUALMACHINE}", vmName);
-          jObject.addProperty("{#UUID}", vmUuid);
-          VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
-          String pState = vmrti.getPowerState().toString();
-          if (null != pState) {
-            switch (pState) {
-              case "poweredOff":
-                intStatus = 0;
-                break;
-              case "poweredOn":
-                intStatus = 1;
-                break;
-              case "suspended":
-                intStatus = 2;
-                break;
-              default:
-                intStatus = 3;
-                break;
-            }
-          }
-          jObject.addProperty("{#POWERSTATE}", intStatus);
-          jArray.add(jObject);
-        }
-      }
-      JsonObject jOutput = new JsonObject();
-      jOutput.add("data", jArray);
-      out.print(jOutput);
-      out.flush();
+    	try {
+	      ManagedEntity[] vms = getManagedEntities("VirtualMachine");
+	      JsonArray jArray = new JsonArray();
+	      for (int j = 0; j < vms.length; j++) {
+	        VirtualMachine vm = (VirtualMachine) vms[j];
+	        VirtualMachineConfigInfo vmcfg = vm.getConfig();
+	        if (vm != null && vmcfg != null) {
+	          Integer intStatus = 3;
+	          JsonObject jObject = new JsonObject();
+	          String vmName = vm.getName();
+	          String vmUuid = vmcfg.getUuid();
+	          jObject.addProperty("{#VIRTUALMACHINE}", vmName);
+	          jObject.addProperty("{#UUID}", vmUuid);
+	          VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
+	          String pState = vmrti.getPowerState().toString();
+	          if (null != pState) {
+	            switch (pState) {
+	              case "poweredOff":
+	                intStatus = 0;
+	                break;
+	              case "poweredOn":
+	                intStatus = 1;
+	                break;
+	              case "suspended":
+	                intStatus = 2;
+	                break;
+	              default:
+	                intStatus = 3;
+	                break;
+	            }
+	          }
+	          jObject.addProperty("{#POWERSTATE}", intStatus);
+	          jArray.add(jObject);
+	        }
+	      }
+	      JsonObject jOutput = new JsonObject();
+	      jOutput.add("data", jArray);
+	      out.print(jOutput);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
@@ -1656,26 +1715,31 @@ public class VmBix {
      * Zabbix low-level discovery
      */
     private void getHosts(PrintWriter out) throws IOException {
-      ManagedEntity[] hs = getManagedEntities("HostSystem");
-      JsonArray jArray = new JsonArray();
-      for (int j = 0; j < hs.length; j++) {
-        HostSystem h = (HostSystem) hs[j];
-        if (h != null) {
-          HostListSummary hsum = h.getSummary();
-          HostHardwareSummary hd = hsum.getHardware();
-          if (hsum != null && hd != null) {
-            JsonObject jObject = new JsonObject();
-            jObject.addProperty("{#ESXHOST}", h.getName());
-            jObject.addProperty("{#UUID}", hd.getUuid());
-            jObject.addProperty("{#CLUSTER}", h.getParent().getName());
-            jArray.add(jObject);
-          }
-        }
-      }
-      JsonObject jOutput = new JsonObject();
-      jOutput.add("data", jArray);
-      out.print(jOutput);
-      out.flush();
+    	try {
+	      ManagedEntity[] hs = getManagedEntities("HostSystem");
+	      JsonArray jArray = new JsonArray();
+	      for (int j = 0; j < hs.length; j++) {
+	        HostSystem h = (HostSystem) hs[j];
+	        if (h != null) {
+	          HostListSummary hsum = h.getSummary();
+	          HostHardwareSummary hd = hsum.getHardware();
+	          if (hsum != null && hd != null) {
+	            JsonObject jObject = new JsonObject();
+	            jObject.addProperty("{#ESXHOST}", h.getName());
+	            jObject.addProperty("{#UUID}", hd.getUuid());
+	            jObject.addProperty("{#CLUSTER}", h.getParent().getName());
+	            jArray.add(jObject);
+	          }
+	        }
+	      }
+	      JsonObject jOutput = new JsonObject();
+	      jOutput.add("data", jArray);
+	      out.print(jOutput);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
@@ -1683,22 +1747,26 @@ public class VmBix {
      * Zabbix low-level discovery
      */
     private void getClusters(PrintWriter out) throws IOException {
-      //throw new UnsupportedOperationException("Not yet implemented");
-      ManagedEntity[] cl = getManagedEntities("ClusterComputeResource");
-      JsonArray jArray = new JsonArray();
-      for (int j = 0; j < cl.length; j++) {
-        ClusterComputeResource c = (ClusterComputeResource) cl[j];
-        String name = c.getName();
+    	try {
+	      ManagedEntity[] cl = getManagedEntities("ClusterComputeResource");
+	      JsonArray jArray = new JsonArray();
+	      for (int j = 0; j < cl.length; j++) {
+	        ClusterComputeResource c = (ClusterComputeResource) cl[j];
+	        String name = c.getName();
 
-        ComputeResourceSummary s = c.getSummary();
-        JsonObject jObject = new JsonObject();
-        jObject.addProperty("{#CLUSTER}", name);
-        jArray.add(jObject);
-      }
-      JsonObject jOutput = new JsonObject();
-      jOutput.add("data", jArray);
-      out.print(jOutput);
-      out.flush();
+	        ComputeResourceSummary s = c.getSummary();
+	        JsonObject jObject = new JsonObject();
+	        jObject.addProperty("{#CLUSTER}", name);
+	        jArray.add(jObject);
+	      }
+	      JsonObject jOutput = new JsonObject();
+	      jOutput.add("data", jArray);
+	      out.print(jOutput);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
@@ -1706,59 +1774,67 @@ public class VmBix {
      * Zabbix low-level discovery
      */
     private void getDatacenters(PrintWriter out) throws IOException {
-      //throw new UnsupportedOperationException("Not yet implemented");
-      ManagedEntity[] dc = getManagedEntities("Datacenter");
-      JsonArray jArray = new JsonArray();
-      for (int j = 0; j < dc.length; j++) {
-        Datacenter d = (Datacenter) dc[j];
-        if (d != null) {
-          ManagedEntityStatus status = d.getOverallStatus();
+    	try {
+	      ManagedEntity[] dc = getManagedEntities("Datacenter");
+	      JsonArray jArray = new JsonArray();
+	      for (int j = 0; j < dc.length; j++) {
+	        Datacenter d = (Datacenter) dc[j];
+	        if (d != null) {
+	          ManagedEntityStatus status = d.getOverallStatus();
 
-          JsonObject jObject = new JsonObject();
-          jObject.addProperty("{#DATACENTER}", d.getName());
-          jArray.add(jObject);
-        }
-      }
-      JsonObject jOutput = new JsonObject();
-      jOutput.add("data", jArray);
-      out.print(jOutput);
-      out.flush();
+	          JsonObject jObject = new JsonObject();
+	          jObject.addProperty("{#DATACENTER}", d.getName());
+	          jArray.add(jObject);
+	        }
+	      }
+	      JsonObject jOutput = new JsonObject();
+	      jOutput.add("data", jArray);
+	      out.print(jOutput);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     private void getDatacenterStatus(String dcName, String type, PrintWriter out) throws IOException {
-      //throw new UnsupportedOperationException("Not yet implemented");
-      ManagedEntity dc = getManagedEntity(dcName, "Datacenter");
-      int intStatus = 4;
-      String status = null;
-      if (dc != null) {
-        if ("overall".equals(type)) {
-          status = dc.getOverallStatus().toString();
-        } else if ("config".equals(type)) {
-          status = dc.getConfigStatus().toString();
-        }
+      try {
+	      ManagedEntity dc = getManagedEntity(dcName, "Datacenter");
+	      int intStatus = 4;
+	      String status = null;
+	      if (dc != null) {
+	        if ("overall".equals(type)) {
+	          status = dc.getOverallStatus().toString();
+	        } else if ("config".equals(type)) {
+	          status = dc.getConfigStatus().toString();
+	        }
 
-        if (null != status) {
-          switch (status) {
-            case "gray":
-              intStatus = 0;
-              break;
-            case "green":
-              intStatus = 1;
-              break;
-            case "yellow":
-              intStatus = 2;
-              break;
-            case "red":
-              intStatus = 3;
-              break;
-            default:
-              intStatus = 4;
-              break;
-          }
-        }
-      }
-      out.print(intStatus);
-      out.flush();
+	        if (null != status) {
+	          switch (status) {
+	            case "gray":
+	              intStatus = 0;
+	              break;
+	            case "green":
+	              intStatus = 1;
+	              break;
+	            case "yellow":
+	              intStatus = 2;
+	              break;
+	            case "red":
+	              intStatus = 3;
+	              break;
+	            default:
+	              intStatus = 4;
+	              break;
+	          }
+	        }
+	      }
+	      out.print(intStatus);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
@@ -1766,529 +1842,637 @@ public class VmBix {
      * Zabbix low-level discovery
      */
     private void getDatastores(PrintWriter out) throws IOException {
-      ManagedEntity[] ds = getManagedEntities("Datastore");
-      JsonArray jArray = new JsonArray();
-      for (int j = 0; j < ds.length; j++) {
-        Datastore d = (Datastore) ds[j];
-        if (d != null) {
-          //Correction by Andrea for trap the NasDatastoreInfo
-          if (d.getInfo() instanceof NasDatastoreInfo)
-          {
-            NasDatastoreInfo dsInfo = (NasDatastoreInfo) d.getInfo();
-            if ( dsInfo != null ) {
-              HostNasVolume naaName = dsInfo.getNas();
-              JsonObject jObject = new JsonObject();
-              jObject.addProperty("{#DATASTORE}", d.getName());
-              //jObject.addProperty("{#UUID}", uuid);
-              jObject.addProperty("{#UUID}", dsInfo.url.substring(19, dsInfo.url.length() - 1) );
-              jObject.addProperty("{#CLUSTER}", d.getParent().getName());
-              jObject.addProperty("{#LOCAL}", !d.getSummary().multipleHostAccess);
-              jObject.addProperty("{#NAA}", naaName.getName());
-              jArray.add(jObject);
-            }
-          }
-          else
-          {
-            VmfsDatastoreInfo dsInfo = (VmfsDatastoreInfo) d.getInfo();
-            if ( dsInfo != null ) {
-              HostScsiDiskPartition[] naaName = dsInfo.getVmfs().extent;
-              JsonObject jObject = new JsonObject();
-              jObject.addProperty("{#DATASTORE}", d.getName());
-              //jObject.addProperty("{#UUID}", uuid);
-              jObject.addProperty("{#UUID}", dsInfo.getVmfs().getUuid());
-              jObject.addProperty("{#CLUSTER}", d.getParent().getName());
-              jObject.addProperty("{#LOCAL}", !d.getSummary().multipleHostAccess);
-              jObject.addProperty("{#NAA}", naaName[0].getDiskName());
-              jArray.add(jObject);
-            }
-          }
-        }
-      }
-      JsonObject jOutput = new JsonObject();
-      jOutput.add("data", jArray);
-      out.print(jOutput);
-      out.flush();
+    	try {
+	      ManagedEntity[] ds = getManagedEntities("Datastore");
+	      JsonArray jArray = new JsonArray();
+	      for (int j = 0; j < ds.length; j++) {
+	        Datastore d = (Datastore) ds[j];
+	        if (d != null) {
+	          //Correction by Andrea for trap the NasDatastoreInfo
+	          if (d.getInfo() instanceof NasDatastoreInfo)
+	          {
+	            NasDatastoreInfo dsInfo = (NasDatastoreInfo) d.getInfo();
+	            if ( dsInfo != null ) {
+	              HostNasVolume naaName = dsInfo.getNas();
+	              JsonObject jObject = new JsonObject();
+	              jObject.addProperty("{#DATASTORE}", d.getName());
+	              //jObject.addProperty("{#UUID}", uuid);
+	              jObject.addProperty("{#UUID}", dsInfo.url.substring(19, dsInfo.url.length() - 1) );
+	              jObject.addProperty("{#CLUSTER}", d.getParent().getName());
+	              jObject.addProperty("{#LOCAL}", !d.getSummary().multipleHostAccess);
+	              jObject.addProperty("{#NAA}", naaName.getName());
+	              jArray.add(jObject);
+	            }
+	          }
+	          else
+	          {
+	            VmfsDatastoreInfo dsInfo = (VmfsDatastoreInfo) d.getInfo();
+	            if ( dsInfo != null ) {
+	              HostScsiDiskPartition[] naaName = dsInfo.getVmfs().extent;
+	              JsonObject jObject = new JsonObject();
+	              jObject.addProperty("{#DATASTORE}", d.getName());
+	              //jObject.addProperty("{#UUID}", uuid);
+	              jObject.addProperty("{#UUID}", dsInfo.getVmfs().getUuid());
+	              jObject.addProperty("{#CLUSTER}", d.getParent().getName());
+	              jObject.addProperty("{#LOCAL}", !d.getSummary().multipleHostAccess);
+	              jObject.addProperty("{#NAA}", naaName[0].getDiskName());
+	              jArray.add(jObject);
+	            }
+	          }
+	        }
+	      }
+	      JsonObject jOutput = new JsonObject();
+	      jOutput.add("data", jArray);
+	      out.print(jOutput);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the uptime of a host in seconds
      */
     private void getHostUptime(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer uptime = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        HostListSummary hostSummary = host.getSummary();
-        HostListSummaryQuickStats hostQuickStats = hostSummary.getQuickStats();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer uptime = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        HostListSummary hostSummary = host.getSummary();
+	        HostListSummaryQuickStats hostQuickStats = hostSummary.getQuickStats();
 
-        if (hostQuickStats != null) {
-          uptime = hostQuickStats.getUptime();
-          if (uptime == null) {
-            uptime = 0;
-          }
-        }
-      }
-      out.print(uptime);
-      out.flush();
+	        if (hostQuickStats != null) {
+	          uptime = hostQuickStats.getUptime();
+	          if (uptime == null) {
+	            uptime = 0;
+	          }
+	        }
+	      }
+	      out.print(uptime);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the CPU usage of a host
      */
     private void getHostCpuUsed(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer usedMhz;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-        usedMhz = 0;
-      } else {
-        HostListSummary hostSummary = host.getSummary();
-        HostListSummaryQuickStats hostQuickStats = hostSummary.getQuickStats();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer usedMhz;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	        usedMhz = 0;
+	      } else {
+	        HostListSummary hostSummary = host.getSummary();
+	        HostListSummaryQuickStats hostQuickStats = hostSummary.getQuickStats();
 
-        usedMhz = hostQuickStats.getOverallCpuUsage();
-        if (usedMhz == null) {
-          usedMhz = 0;
-        }
-      }
-      out.print(usedMhz);
-      out.flush();
+	        usedMhz = hostQuickStats.getOverallCpuUsage();
+	        if (usedMhz == null) {
+	          usedMhz = 0;
+	        }
+	      }
+	      out.print(usedMhz);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the total CPU power of a host
      */
     private void getHostCpuTotal(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer totalMhz = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        totalMhz = getHostMHZ(host);
-      }
-      out.print(totalMhz);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer totalMhz = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        totalMhz = getHostMHZ(host);
+	      }
+	      out.print(totalMhz);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the number of CPU cores of a host
      */
     private void getHostCpuCores(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Short cores = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        HostListSummary hls = host.getSummary();
-        HostHardwareSummary hosthwi = hls.getHardware();
-        cores = hosthwi.getNumCpuCores();
-        if (cores == null) {
-          cores = 0;
-        }
-      }
-      out.print(cores);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Short cores = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        HostListSummary hls = host.getSummary();
+	        HostHardwareSummary hosthwi = hls.getHardware();
+	        cores = hosthwi.getNumCpuCores();
+	        if (cores == null) {
+	          cores = 0;
+	        }
+	      }
+	      out.print(cores);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the memory usage of a host
      */
     private void getHostMemUsed(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer usedMB = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        HostListSummary hostSummary = host.getSummary();
-        HostListSummaryQuickStats hostQuickStats = hostSummary.getQuickStats();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer usedMB = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        HostListSummary hostSummary = host.getSummary();
+	        HostListSummaryQuickStats hostQuickStats = hostSummary.getQuickStats();
 
-        usedMB = hostQuickStats.getOverallMemoryUsage();
-        if (usedMB == null) {
-          usedMB = 0;
-        }
-      }
-      out.print(usedMB);
-      out.flush();
+	        usedMB = hostQuickStats.getOverallMemoryUsage();
+	        if (usedMB == null) {
+	          usedMB = 0;
+	        }
+	      }
+	      out.print(usedMB);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the total memory of a host
      */
     private void getHostMemTotal(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Long totalMemBytes = new Long(0);
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        HostListSummary hls = host.getSummary();
-        HostHardwareSummary hosthwi = hls.getHardware();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Long totalMemBytes = new Long(0);
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        HostListSummary hls = host.getSummary();
+	        HostHardwareSummary hosthwi = hls.getHardware();
 
-        totalMemBytes = hosthwi.getMemorySize();
-        if (totalMemBytes == null) {
-          totalMemBytes = new Long(0);
-        }
-      }
-      out.print(totalMemBytes);
-      out.flush();
+	        totalMemBytes = hosthwi.getMemorySize();
+	        if (totalMemBytes == null) {
+	          totalMemBytes = new Long(0);
+	        }
+	      }
+	      out.print(totalMemBytes);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the number of VMs running on a host
      */
     private void getHostVMs(String hostName, PrintWriter out) throws IOException {
-      long start = System.currentTimeMillis();
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer nbVM = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        VirtualMachine[] vms = host.getVms();
-        for (VirtualMachine vm : vms) {
-          VirtualMachineSummary vmSummary = vm.getSummary();
-          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
-            nbVM++;
-          }
-        }
-      }
-      out.print(nbVM);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer nbVM = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        VirtualMachine[] vms = host.getVms();
+	        for (VirtualMachine vm : vms) {
+	          VirtualMachineSummary vmSummary = vm.getSummary();
+	          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
+	            nbVM++;
+	          }
+	        }
+	      }
+	      out.print(nbVM);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the virtual machines private memory usage of a host
      */
     private void getHostVmsStatsPrivate(String hostName, PrintWriter out) throws IOException {
-      long start = System.currentTimeMillis();
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer amount = 0;
-      int sum = 0;
-      int activeVms = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        VirtualMachine[] vms = (host.getVms());
-        for (VirtualMachine vm : vms) {
-          VirtualMachineSummary vmSummary = vm.getSummary();
-          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
-            sum += vmSummary.getQuickStats().getPrivateMemory() * 100 / vmSummary.getConfig().getMemorySizeMB();
-            activeVms++;
-          }
-        }
-        amount = activeVms == 0 ? 0 : sum / activeVms;
-      }
-      out.print(amount);
-      out.flush();
+			try {    	
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer amount = 0;
+	      int sum = 0;
+	      int activeVms = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        VirtualMachine[] vms = (host.getVms());
+	        for (VirtualMachine vm : vms) {
+	          VirtualMachineSummary vmSummary = vm.getSummary();
+	          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
+	            sum += vmSummary.getQuickStats().getPrivateMemory() * 100 / vmSummary.getConfig().getMemorySizeMB();
+	            activeVms++;
+	          }
+	        }
+	        amount = activeVms == 0 ? 0 : sum / activeVms;
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the virtual machines shared memory usage of a host
      */
     private void getHostVmsStatsShared(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer amount = 0;
-      int sum = 0;
-      int activeVms = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        VirtualMachine[] vms = (host.getVms());
-        for (VirtualMachine vm : vms) {
-          VirtualMachineSummary vmSummary = vm.getSummary();
-          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
-            sum += vmSummary.getQuickStats().getSharedMemory() * 100 / vmSummary.getConfig().getMemorySizeMB();
-            activeVms++;
-          }
-        }
-        amount = activeVms == 0 ? 0 : sum / activeVms;
-      }
-      out.print(amount);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer amount = 0;
+	      int sum = 0;
+	      int activeVms = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        VirtualMachine[] vms = (host.getVms());
+	        for (VirtualMachine vm : vms) {
+	          VirtualMachineSummary vmSummary = vm.getSummary();
+	          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
+	            sum += vmSummary.getQuickStats().getSharedMemory() * 100 / vmSummary.getConfig().getMemorySizeMB();
+	            activeVms++;
+	          }
+	        }
+	        amount = activeVms == 0 ? 0 : sum / activeVms;
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the virtual machines swapped memory usage of a host
      */
     private void getHostVmsStatsSwapped(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer amount = 0;
-      int sum = 0;
-      int activeVms = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        VirtualMachine[] vms = (host.getVms());
-        int sharedMb;
-        for (VirtualMachine vm : vms) {
-          VirtualMachineSummary vmSummary = vm.getSummary();
-          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
-            sharedMb = (int) (vmSummary.getQuickStats().getSwappedMemory() / 1024);
-            sum += sharedMb * 100 / vmSummary.getConfig().getMemorySizeMB();
-            activeVms++;
-          }
-        }
-        amount = activeVms == 0 ? 0 : sum / activeVms;
-      }
-      out.print(amount);
-      out.flush();
+			try {    	
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer amount = 0;
+	      int sum = 0;
+	      int activeVms = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        VirtualMachine[] vms = (host.getVms());
+	        int sharedMb;
+	        for (VirtualMachine vm : vms) {
+	          VirtualMachineSummary vmSummary = vm.getSummary();
+	          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
+	            sharedMb = (int) (vmSummary.getQuickStats().getSwappedMemory() / 1024);
+	            sum += sharedMb * 100 / vmSummary.getConfig().getMemorySizeMB();
+	            activeVms++;
+	          }
+	        }
+	        amount = activeVms == 0 ? 0 : sum / activeVms;
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the virtual machines compressed memory usage of a host
      */
     private void getHostVmsStatsCompressed(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer amount = 0;
-      int sum = 0;
-      int activeVms = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        VirtualMachine[] vms = (host.getVms());
-        for (VirtualMachine vm : vms) {
-          VirtualMachineSummary vmSummary = vm.getSummary();
-          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
-            sum += (vmSummary.getQuickStats().getCompressedMemory() / 1024) * 100 / vmSummary.getConfig().getMemorySizeMB();
-            activeVms++;
-          }
-        }
-        amount = activeVms == 0 ? 0 : sum / activeVms;
-      }
-      out.print(amount);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer amount = 0;
+	      int sum = 0;
+	      int activeVms = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        VirtualMachine[] vms = (host.getVms());
+	        for (VirtualMachine vm : vms) {
+	          VirtualMachineSummary vmSummary = vm.getSummary();
+	          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
+	            sum += (vmSummary.getQuickStats().getCompressedMemory() / 1024) * 100 / vmSummary.getConfig().getMemorySizeMB();
+	            activeVms++;
+	          }
+	        }
+	        amount = activeVms == 0 ? 0 : sum / activeVms;
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the virtual machines overhead memory usage of a host
      */
     private void getHostVmsStatsOverhCons(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer amount = 0;
-      int sum = 0;
-      int activeVms = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        VirtualMachine[] vms = (host.getVms());
-        for (VirtualMachine vm : vms) {
-          VirtualMachineSummary vmSummary = vm.getSummary();
-          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
-            sum += vmSummary.getQuickStats().getConsumedOverheadMemory() * 100 / vmSummary.getConfig().getMemorySizeMB();
-            activeVms++;
-          }
-        }
-        amount = activeVms == 0 ? 0 : sum / activeVms;
-      }
-      out.print(amount);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer amount = 0;
+	      int sum = 0;
+	      int activeVms = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        VirtualMachine[] vms = (host.getVms());
+	        for (VirtualMachine vm : vms) {
+	          VirtualMachineSummary vmSummary = vm.getSummary();
+	          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
+	            sum += vmSummary.getQuickStats().getConsumedOverheadMemory() * 100 / vmSummary.getConfig().getMemorySizeMB();
+	            activeVms++;
+	          }
+	        }
+	        amount = activeVms == 0 ? 0 : sum / activeVms;
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the virtual machines memory usage of a host
      */
     private void getHostVmsStatsConsumed(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer amount = 0;
-      int sum = 0;
-      int activeVms = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        VirtualMachine[] vms = (host.getVms());
-        for (VirtualMachine vm : vms) {
-          VirtualMachineSummary vmSummary = vm.getSummary();
-          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
-            sum += vmSummary.getQuickStats().getHostMemoryUsage() * 100 / vmSummary.getConfig().getMemorySizeMB();
-            activeVms++;
-          }
-        }
-        amount = activeVms == 0 ? 0 : sum / activeVms;
-      }
-      out.print(amount);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer amount = 0;
+	      int sum = 0;
+	      int activeVms = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        VirtualMachine[] vms = (host.getVms());
+	        for (VirtualMachine vm : vms) {
+	          VirtualMachineSummary vmSummary = vm.getSummary();
+	          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
+	            sum += vmSummary.getQuickStats().getHostMemoryUsage() * 100 / vmSummary.getConfig().getMemorySizeMB();
+	            activeVms++;
+	          }
+	        }
+	        amount = activeVms == 0 ? 0 : sum / activeVms;
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the virtual machines ballooned memory usage of a host
      */
     private void getHostVmsStatsBallooned(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer amount = 0;
-      int sum = 0;
-      int activeVms = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        VirtualMachine[] vms = (host.getVms());
-        for (VirtualMachine vm : vms) {
-          VirtualMachineSummary vmSummary = vm.getSummary();
-          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
-            sum += vmSummary.getQuickStats().getBalloonedMemory() * 100 / vmSummary.getConfig().getMemorySizeMB();
-            activeVms++;
-          }
-        }
-        amount = activeVms == 0 ? 0 : sum / activeVms;
-      }
-      out.print(amount);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer amount = 0;
+	      int sum = 0;
+	      int activeVms = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        VirtualMachine[] vms = (host.getVms());
+	        for (VirtualMachine vm : vms) {
+	          VirtualMachineSummary vmSummary = vm.getSummary();
+	          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
+	            sum += vmSummary.getQuickStats().getBalloonedMemory() * 100 / vmSummary.getConfig().getMemorySizeMB();
+	            activeVms++;
+	          }
+	        }
+	        amount = activeVms == 0 ? 0 : sum / activeVms;
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the virtual machines active memory usage of a host
      */
     private void getHostVmsStatsActive(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      Integer amount = 0;
-      int sum = 0;
-      int activeVms = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        VirtualMachine[] vms = (host.getVms());
-        for (VirtualMachine vm : vms) {
-          VirtualMachineSummary vmSummary = vm.getSummary();
-          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
-            sum += vmSummary.getQuickStats().getGuestMemoryUsage() * 100 / vmSummary.getConfig().getMemorySizeMB();
-            activeVms++;
-          }
-        }
-        amount = activeVms == 0 ? 0 : sum / activeVms;
-      }
-      out.print(amount);
-      out.flush();
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      Integer amount = 0;
+	      int sum = 0;
+	      int activeVms = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        VirtualMachine[] vms = (host.getVms());
+	        for (VirtualMachine vm : vms) {
+	          VirtualMachineSummary vmSummary = vm.getSummary();
+	          if ("poweredOn".equals(vm.getRuntime().getPowerState().name())) {
+	            sum += vmSummary.getQuickStats().getGuestMemoryUsage() * 100 / vmSummary.getConfig().getMemorySizeMB();
+	            activeVms++;
+	          }
+	        }
+	        amount = activeVms == 0 ? 0 : sum / activeVms;
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the CPU usage of a virtual machine
      */
     private void getVmCpuUsed(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer usedMhz = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer usedMhz = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
 
-        // vm.getResourcePool();
-        usedMhz = vmQuickStats.getOverallCpuUsage();
-        if (usedMhz == null) {
-          usedMhz = 0;
-        }
-      }
-      out.print(usedMhz);
-      out.flush();
+	        // vm.getResourcePool();
+	        usedMhz = vmQuickStats.getOverallCpuUsage();
+	        if (usedMhz == null) {
+	          usedMhz = 0;
+	        }
+	      }
+	      out.print(usedMhz);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the total CPU of a virtual machine in MHz
      */
     private void getVmCpuTotal(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer mhz = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
-        ManagedObjectReference hostMor = vmrti.getHost();
-        if (hostMor == null) {
-          return;
-        }
-        ManagedEntity me = MorUtil.createExactManagedEntity(serviceInstance.getServerConnection(), hostMor);
-        //HostSystem
-        HostSystem host = (HostSystem) me;
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer mhz = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
+	        ManagedObjectReference hostMor = vmrti.getHost();
+	        if (hostMor == null) {
+	          return;
+	        }
+	        ManagedEntity me = MorUtil.createExactManagedEntity(serviceInstance.getServerConnection(), hostMor);
+	        //HostSystem
+	        HostSystem host = (HostSystem) me;
 
-        mhz = getHostMHZ(host);
-      }
-      out.print(mhz);
-      out.flush();
+	        mhz = getHostMHZ(host);
+	      }
+	      out.print(mhz);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the number of CPU cores of a virtual machine
      */
     private void getVmCpuCores(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer cores = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineConfigInfo vmcfg = vm.getConfig();
-        VirtualHardware vmhd = vmcfg.getHardware();
-        if (vmhd != null) {
-          cores = vmhd.getNumCPU();
-          if (cores == null) {
-            cores = 0;
-          }
-        }
-      }
-      out.print(cores);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer cores = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineConfigInfo vmcfg = vm.getConfig();
+	        VirtualHardware vmhd = vmcfg.getHardware();
+	        if (vmhd != null) {
+	          cores = vmhd.getNumCPU();
+	          if (cores == null) {
+	            cores = 0;
+	          }
+	        }
+	      }
+	      out.print(cores);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the annotation of a virtual machine
      */
     private void getVmAnnotation(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      String an = "";
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineConfigInfo vmcfg = vm.getConfig();
-        an = vmcfg.getAnnotation();
-      }
-      out.print(an);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      String an = "";
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineConfigInfo vmcfg = vm.getConfig();
+	        an = vmcfg.getAnnotation();
+	      }
+	      out.print(an);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns 1 if the virtual machine has at least one snapshot
      */
     private void getVmSnapshot(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer snapshot = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSnapshotInfo vmsi = vm.getSnapshot();
-        if (vmsi != null) {
-          snapshot = 1;
-        }
-      }
-      out.print(snapshot);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer snapshot = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSnapshotInfo vmsi = vm.getSnapshot();
+	        if (vmsi != null) {
+	          snapshot = 1;
+	        }
+	      }
+	      out.print(snapshot);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
      * Returns the power state of a virtual machine
      */
     private void getVmPowerState(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer intStatus = 3;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
-        String pState = vmrti.getPowerState().toString();
-        if (null != pState) {
-          switch (pState) {
-            case "poweredOff":
-              intStatus = 0;
-              break;
-            case "poweredOn":
-              intStatus = 1;
-              break;
-            case "suspended":
-              intStatus = 2;
-              break;
-            default:
-              intStatus = 3;
-              break;
-          }
-        }
-      }
-      out.print(intStatus);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer intStatus = 3;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
+	        String pState = vmrti.getPowerState().toString();
+	        if (null != pState) {
+	          switch (pState) {
+	            case "poweredOff":
+	              intStatus = 0;
+	              break;
+	            case "poweredOn":
+	              intStatus = 1;
+	              break;
+	            case "suspended":
+	              intStatus = 2;
+	              break;
+	            default:
+	              intStatus = 3;
+	              break;
+	          }
+	        }
+	      }
+	      out.print(intStatus);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }	      
     }
 
     /**
@@ -2299,45 +2483,50 @@ public class VmBix {
      * with the "interval" keyword)
      */
     private void getVmPerfCounterDiscovery(String[] params, PrintWriter out) throws IOException {
-      String vmName = params[0];
-      String perfCounterName = params[1];
-      Integer newInterval = interval;
-      if (params[2] != null) {
-        newInterval = Integer.parseInt(params[2]);
-      }
-      JsonArray jArray = new JsonArray();
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      if (vm == null) {
-        LOG.warn("No VM named '" + vmName + "' found");
-      } else {
-        VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
-        String pState = vmrti.getPowerState().toString();
-        if (pState.equals("poweredOn")) {
-          // Check if counter exists
-          List counter = getCounterByName(perfCounterName);
-          if (counter == null) {
-            LOG.info("Metric " + perfCounterName + " doesn't exist for vm " + vmName);
-          } else {
-            // The counter exists
-            Integer perfCounterId = Integer.valueOf((String) counter.get(0));
-            PerfMetricId[] queryAvailablePerfMetric = performanceManager.queryAvailablePerfMetric(vm, null, null, 20);
-            for (int i2 = 0; i2 < queryAvailablePerfMetric.length; i2++) {
-              PerfMetricId pMetricId = queryAvailablePerfMetric[i2];
-              if (perfCounterId == pMetricId.getCounterId()) {
-                JsonObject jObject = new JsonObject();
-                jObject.addProperty("{#METRICINSTANCE}", pMetricId.getInstance());
-                jArray.add(jObject);
-              }
-            }
-          }
-        } else {
-          LOG.info("VM '" + vmName + "' is not powered on. Performance counters unavailable.");
-        }
-      }
-      JsonObject jOutput = new JsonObject();
-      jOutput.add("data", jArray);
-      out.print(jOutput);
-      out.flush();
+    	try {
+	      String vmName = params[0];
+	      String perfCounterName = params[1];
+	      Integer newInterval = interval;
+	      if (params[2] != null) {
+	        newInterval = Integer.parseInt(params[2]);
+	      }
+	      JsonArray jArray = new JsonArray();
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      if (vm == null) {
+	        LOG.warn("No VM named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
+	        String pState = vmrti.getPowerState().toString();
+	        if (pState.equals("poweredOn")) {
+	          // Check if counter exists
+	          List counter = getCounterByName(perfCounterName);
+	          if (counter == null) {
+	            LOG.info("Metric " + perfCounterName + " doesn't exist for vm " + vmName);
+	          } else {
+	            // The counter exists
+	            Integer perfCounterId = Integer.valueOf((String) counter.get(0));
+	            PerfMetricId[] queryAvailablePerfMetric = performanceManager.queryAvailablePerfMetric(vm, null, null, 20);
+	            for (int i2 = 0; i2 < queryAvailablePerfMetric.length; i2++) {
+	              PerfMetricId pMetricId = queryAvailablePerfMetric[i2];
+	              if (perfCounterId == pMetricId.getCounterId()) {
+	                JsonObject jObject = new JsonObject();
+	                jObject.addProperty("{#METRICINSTANCE}", pMetricId.getInstance());
+	                jArray.add(jObject);
+	              }
+	            }
+	          }
+	        } else {
+	          LOG.info("VM '" + vmName + "' is not powered on. Performance counters unavailable.");
+	        }
+	      }
+	      JsonObject jOutput = new JsonObject();
+	      jOutput.add("data", jArray);
+	      out.print(jOutput);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
@@ -2352,79 +2541,84 @@ public class VmBix {
      * delta values, we sum the results.
      */
     private void getVmPerfCounterValue(String[] params, PrintWriter out) throws IOException {
-      String vmName = params[0];
-      String perfCounterName = params[1];
-      String instanceName = "";
-      if (params[2] != null) {
-        instanceName = params[2];
-      }
-      Integer newInterval = interval;
-      if (params[3] != null) {
-        newInterval = Integer.parseInt(params[3]);
-      }
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      int value = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
-        String pState = vmrti.getPowerState().toString();
-        if (pState.equals("poweredOn")) {
-          // Check if counter exists
-          List counter = getCounterByName(perfCounterName);
-          if (counter == null) {
-            LOG.info("Metric " + perfCounterName + " doesn't exist for vm " + vmName);
-          } else {
-            // The counter exists
-            Integer perfCounterId = Integer.valueOf((String) counter.get(0));
-            String perfCounterUnitInfo = (String) counter.get(1);
-            String perfCounterStatsType = (String) counter.get(2);
-            String perfCounterRollupType = (String) counter.get(3);
+    	try {
+	      String vmName = params[0];
+	      String perfCounterName = params[1];
+	      String instanceName = "";
+	      if (params[2] != null) {
+	        instanceName = params[2];
+	      }
+	      Integer newInterval = interval;
+	      if (params[3] != null) {
+	        newInterval = Integer.parseInt(params[3]);
+	      }
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      int value = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
+	        String pState = vmrti.getPowerState().toString();
+	        if (pState.equals("poweredOn")) {
+	          // Check if counter exists
+	          List counter = getCounterByName(perfCounterName);
+	          if (counter == null) {
+	            LOG.info("Metric " + perfCounterName + " doesn't exist for vm " + vmName);
+	          } else {
+	            // The counter exists
+	            Integer perfCounterId = Integer.valueOf((String) counter.get(0));
+	            String perfCounterUnitInfo = (String) counter.get(1);
+	            String perfCounterStatsType = (String) counter.get(2);
+	            String perfCounterRollupType = (String) counter.get(3);
 
-            ArrayList<PerfMetricId> perfMetricIds = new ArrayList<PerfMetricId>();
+	            ArrayList<PerfMetricId> perfMetricIds = new ArrayList<PerfMetricId>();
 
-            PerfMetricId metricId = new PerfMetricId();
-            metricId.setCounterId(perfCounterId);
-            metricId.setInstance(instanceName);
-            perfMetricIds.add(metricId);
-            PerfMetricId[] pmi = perfMetricIds.toArray(new PerfMetricId[perfMetricIds.size()]);
+	            PerfMetricId metricId = new PerfMetricId();
+	            metricId.setCounterId(perfCounterId);
+	            metricId.setInstance(instanceName);
+	            perfMetricIds.add(metricId);
+	            PerfMetricId[] pmi = perfMetricIds.toArray(new PerfMetricId[perfMetricIds.size()]);
 
-            PerfQuerySpec qSpec = new PerfQuerySpec();
-            Calendar previous = Calendar.getInstance();
-            Calendar current = (Calendar) previous.clone();
-            Date old = new Date(previous.getTimeInMillis() - (newInterval * 1000));
-            previous.setTime(old);
+	            PerfQuerySpec qSpec = new PerfQuerySpec();
+	            Calendar previous = Calendar.getInstance();
+	            Calendar current = (Calendar) previous.clone();
+	            Date old = new Date(previous.getTimeInMillis() - (newInterval * 1000));
+	            previous.setTime(old);
 
-            qSpec.setEntity(vm.getMOR());
-            qSpec.setStartTime(previous);
-            qSpec.setEndTime(current);
-            qSpec.setMetricId(pmi);
-            qSpec.setIntervalId(20); // real-time values
+	            qSpec.setEntity(vm.getMOR());
+	            qSpec.setStartTime(previous);
+	            qSpec.setEndTime(current);
+	            qSpec.setMetricId(pmi);
+	            qSpec.setIntervalId(20); // real-time values
 
-            PerfEntityMetricBase[] pValues = performanceManager.queryPerf(new PerfQuerySpec[]{qSpec});
-            if (pValues != null) {
-              for (int i = 0; i < pValues.length; ++i) {
-                if (pValues[i] instanceof PerfEntityMetric) {
-                  PerfEntityMetric pem = (PerfEntityMetric) pValues[i];
-                  PerfMetricSeries[] vals = pem.getValue();
-                  value = getPerfCounterValue(vals, perfCounterName, perfCounterUnitInfo, perfCounterStatsType, perfCounterRollupType);
-                  out.print(value);
-                }
-              }
-            }
-          }
-        } else {
-          LOG.info("VM '" + vmName + "' is not powered on. Performance counters unavailable.");
-        }
-      }
-      out.flush();
+	            PerfEntityMetricBase[] pValues = performanceManager.queryPerf(new PerfQuerySpec[]{qSpec});
+	            if (pValues != null) {
+	              for (int i = 0; i < pValues.length; ++i) {
+	                if (pValues[i] instanceof PerfEntityMetric) {
+	                  PerfEntityMetric pem = (PerfEntityMetric) pValues[i];
+	                  PerfMetricSeries[] vals = pem.getValue();
+	                  value = getPerfCounterValue(vals, perfCounterName, perfCounterUnitInfo, perfCounterStatsType, perfCounterRollupType);
+	                  out.print(value);
+	                }
+	              }
+	              out.flush();
+	            }
+	          }
+	        } else {
+	          LOG.info("VM '" + vmName + "' is not powered on. Performance counters unavailable.");
+	        }
+	      }
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Processes performance values and calculates sum, avg, max, min,
      * percent.
      */
-    private int getPerfCounterValue(PerfMetricSeries[] vals, String perfCounterName, String perfCounterUnitInfo, String perfCounterStatsType, String perfCounterRollupType) throws IOException {
+    private int getPerfCounterValue(PerfMetricSeries[] vals, String perfCounterName, String perfCounterUnitInfo, String perfCounterStatsType, String perfCounterRollupType) throws IOException {    	
       float value = 0;
       Pattern pattern;
       Matcher matcher;
@@ -2468,49 +2662,54 @@ public class VmBix {
      * configuration file with the "interval" keyword)
      */
     private void getHostPerfCounterDiscovery(String[] params, PrintWriter out) throws IOException {
-      String hostName = params[0];
-      String perfCounterName = params[1];
-      Integer newInterval = interval;
-      if (params[2] != null) {
-        newInterval = Integer.parseInt(params[2]);
-      }
-      JsonArray jArray = new JsonArray();
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        HostRuntimeInfo hostrti = host.getRuntime();
-        String pState = hostrti.getPowerState().toString();
-        if (pState.equals("poweredOn")) {
-          // Check if counter exists
-          List counter = getCounterByName(perfCounterName);
-          if (counter == null) {
-            LOG.info("Metric " + perfCounterName + " doesn't exist for host " + hostName);
-          } else {
-            // The counter exists
-            Integer perfCounterId = Integer.valueOf((String) counter.get(0));
-            PerfMetricId[] queryAvailablePerfMetric = getHostPerformanceManager(host, 20);
-            for (int i2 = 0; i2 < queryAvailablePerfMetric.length; i2++) {
-              PerfMetricId pMetricId = queryAvailablePerfMetric[i2];
-              if (perfCounterId == pMetricId.getCounterId()) {
-                JsonObject jObject = new JsonObject();
-                jObject.addProperty("{#METRICINSTANCE}", pMetricId.getInstance());
-                Datastore ds = (Datastore) getManagedEntityByUuid(pMetricId.getInstance(), "Datastore");
-                if (ds != null) {
-                  jObject.addProperty("{#METRICNAME}", ds.getName());
-                }
-                jArray.add(jObject);
-              }
-            }
-          }
-        } else {
-          LOG.info("Host '" + hostName + "' is not powered on. Performance counters unavailable.");
-        }
-      }
-      JsonObject jOutput = new JsonObject();
-      jOutput.add("data", jArray);
-      out.print(jOutput);
-      out.flush();
+    	try {
+	      String hostName = params[0];
+	      String perfCounterName = params[1];
+	      Integer newInterval = interval;
+	      if (params[2] != null) {
+	        newInterval = Integer.parseInt(params[2]);
+	      }
+	      JsonArray jArray = new JsonArray();
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        HostRuntimeInfo hostrti = host.getRuntime();
+	        String pState = hostrti.getPowerState().toString();
+	        if (pState.equals("poweredOn")) {
+	          // Check if counter exists
+	          List counter = getCounterByName(perfCounterName);
+	          if (counter == null) {
+	            LOG.info("Metric " + perfCounterName + " doesn't exist for host " + hostName);
+	          } else {
+	            // The counter exists
+	            Integer perfCounterId = Integer.valueOf((String) counter.get(0));
+	            PerfMetricId[] queryAvailablePerfMetric = getHostPerformanceManager(host, 20);
+	            for (int i2 = 0; i2 < queryAvailablePerfMetric.length; i2++) {
+	              PerfMetricId pMetricId = queryAvailablePerfMetric[i2];
+	              if (perfCounterId == pMetricId.getCounterId()) {
+	                JsonObject jObject = new JsonObject();
+	                jObject.addProperty("{#METRICINSTANCE}", pMetricId.getInstance());
+	                Datastore ds = (Datastore) getManagedEntityByUuid(pMetricId.getInstance(), "Datastore");
+	                if (ds != null) {
+	                  jObject.addProperty("{#METRICNAME}", ds.getName());
+	                }
+	                jArray.add(jObject);
+	              }
+	            }
+	          }
+	        } else {
+	          LOG.info("Host '" + hostName + "' is not powered on. Performance counters unavailable.");
+	        }
+	      }
+	      JsonObject jOutput = new JsonObject();
+	      jOutput.add("data", jArray);
+	      out.print(jOutput);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }  
     }
 
     /**
@@ -2525,398 +2724,478 @@ public class VmBix {
      * delta values, we sum the results.
      */
     private void getHostPerfCounterValue(String[] params, PrintWriter out) throws IOException {
-      String hostName = params[0];
-      String perfCounterName = params[1];
-      String instanceName = "";
-      if (params[2] != null) {
-        instanceName = params[2];
-      }
-      Integer newInterval = interval;
-      if (params[3] != null) {
-        newInterval = Integer.parseInt(params[3]);
-      }
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      int value = 0;
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        HostRuntimeInfo hostrti = getHostRuntimeInfo(hostName, host);
-        String pState = hostrti.getPowerState().toString();
-        if (pState.equals("poweredOn")) {
-          // Check if counter exists
-          List counter = getCounterByName(perfCounterName);
-          if (counter == null) {
-            LOG.info("Metric " + perfCounterName + " doesn't exist for host " + hostName);
-          } else {
-            // The counter exists
-            Integer perfCounterId = Integer.valueOf((String) counter.get(0));
-            String perfCounterUnitInfo = (String) counter.get(1);
-            String perfCounterStatsType = (String) counter.get(2);
-            String perfCounterRollupType = (String) counter.get(3);
-            ArrayList<PerfMetricId> perfMetricIds = new ArrayList<PerfMetricId>();
-            PerfMetricId metricId = new PerfMetricId();
-            metricId.setCounterId(perfCounterId);
-            metricId.setInstance(instanceName);
-            perfMetricIds.add(metricId);
+    	try {
+	      String hostName = params[0];
+	      String perfCounterName = params[1];
+	      String instanceName = "";
+	      if (params[2] != null) {
+	        instanceName = params[2];
+	      }
+	      Integer newInterval = interval;
+	      if (params[3] != null) {
+	        newInterval = Integer.parseInt(params[3]);
+	      }
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      int value = 0;
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        HostRuntimeInfo hostrti = getHostRuntimeInfo(hostName, host);
+	        String pState = hostrti.getPowerState().toString();
+	        if (pState.equals("poweredOn")) {
+	          // Check if counter exists
+	          List counter = getCounterByName(perfCounterName);
+	          if (counter == null) {
+	            LOG.info("Metric " + perfCounterName + " doesn't exist for host " + hostName);
+	          } else {
+	            // The counter exists
+	            Integer perfCounterId = Integer.valueOf((String) counter.get(0));
+	            String perfCounterUnitInfo = (String) counter.get(1);
+	            String perfCounterStatsType = (String) counter.get(2);
+	            String perfCounterRollupType = (String) counter.get(3);
+	            ArrayList<PerfMetricId> perfMetricIds = new ArrayList<PerfMetricId>();
+	            PerfMetricId metricId = new PerfMetricId();
+	            metricId.setCounterId(perfCounterId);
+	            metricId.setInstance(instanceName);
+	            perfMetricIds.add(metricId);
 
-            PerfMetricId[] pmi = perfMetricIds.toArray(new PerfMetricId[perfMetricIds.size()]);
+	            PerfMetricId[] pmi = perfMetricIds.toArray(new PerfMetricId[perfMetricIds.size()]);
 
-            PerfQuerySpec qSpec = new PerfQuerySpec();
-            Calendar previous = Calendar.getInstance();
-            Calendar current = (Calendar) previous.clone();
-            Date old = new Date(previous.getTimeInMillis() - (newInterval * 1000));
-            previous.setTime(old);
+	            PerfQuerySpec qSpec = new PerfQuerySpec();
+	            Calendar previous = Calendar.getInstance();
+	            Calendar current = (Calendar) previous.clone();
+	            Date old = new Date(previous.getTimeInMillis() - (newInterval * 1000));
+	            previous.setTime(old);
 
-            qSpec.setEntity(host.getMOR());
-            qSpec.setStartTime(previous);
-            qSpec.setEndTime(current);
-            qSpec.setMetricId(pmi);
-            qSpec.setIntervalId(20); // real-time values
+	            qSpec.setEntity(host.getMOR());
+	            qSpec.setStartTime(previous);
+	            qSpec.setEndTime(current);
+	            qSpec.setMetricId(pmi);
+	            qSpec.setIntervalId(20); // real-time values
 
-            PerfEntityMetricBase[] pValues = performanceManager.queryPerf(new PerfQuerySpec[]{qSpec});
-            if (pValues != null) {
-              for (int i = 0; i < pValues.length; ++i) {
-                if (pValues[i] instanceof PerfEntityMetric) {
-                  PerfEntityMetric pem = (PerfEntityMetric) pValues[i];
-                  PerfMetricSeries[] vals = pem.getValue();
-                  value = getPerfCounterValue(vals, perfCounterName, perfCounterUnitInfo, perfCounterStatsType, perfCounterRollupType);
-                  out.print(value);
-                }
-              }
-            }
-          }
-        } else {
-          LOG.info("Host '" + hostName + "' is not powered on. Performance counters unavailable.");
-        }
-      }
-      out.flush();
+	            PerfEntityMetricBase[] pValues = performanceManager.queryPerf(new PerfQuerySpec[]{qSpec});
+	            if (pValues != null) {
+	              for (int i = 0; i < pValues.length; ++i) {
+	                if (pValues[i] instanceof PerfEntityMetric) {
+	                  PerfEntityMetric pem = (PerfEntityMetric) pValues[i];
+	                  PerfMetricSeries[] vals = pem.getValue();
+	                  value = getPerfCounterValue(vals, perfCounterName, perfCounterUnitInfo, perfCounterStatsType, perfCounterRollupType);
+	                  out.print(value);
+	                }
+	              }
+	              out.flush();
+	            }
+	          }
+	        } else {
+	          LOG.info("Host '" + hostName + "' is not powered on. Performance counters unavailable.");
+	        }
+	      }
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }        
     }
 
     /**
      * Returns the list of available performance counters of a host
      */
     private void getHostAvailablePerfCounters(String hostName, PrintWriter out) throws IOException {
-      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      if (host == null) {
-        LOG.warn("No host named '" + hostName + "' found");
-      } else {
-        HostRuntimeInfo hostrti = host.getRuntime();
-        String pState = hostrti.getPowerState().toString();
-        if (pState.equals("poweredOn")) {
-          PerfMetricId[] metricIdList = performanceManager.queryAvailablePerfMetric(host, null, null, 20);
+    	try {
+	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
+	      if (host == null) {
+	        LOG.warn("No host named '" + hostName + "' found");
+	      } else {
+	        HostRuntimeInfo hostrti = host.getRuntime();
+	        String pState = hostrti.getPowerState().toString();
+	        if (pState.equals("poweredOn")) {
+	          PerfMetricId[] metricIdList = performanceManager.queryAvailablePerfMetric(host, null, null, 20);
 
-          // Get the counter ids of the available metrics
-          ArrayList<Integer> counterIds = new ArrayList<Integer>();
-          for (int i2 = 0; i2 < metricIdList.length; i2++) {
-            PerfMetricId perfMetricId = metricIdList[i2];
-            if (!counterIds.contains(perfMetricId.getCounterId())) {
-              counterIds.add(perfMetricId.getCounterId());
-            }
-          }
-          int[] cIds = new int[counterIds.size()];
-          for (int i = 0; i < counterIds.size(); i++) {
-            cIds[i] = counterIds.get(i);
-          }
-          Arrays.sort(cIds);
-          PerfCounterInfo[] ciList = performanceManager.queryPerfCounter(cIds);
+	          // Get the counter ids of the available metrics
+	          ArrayList<Integer> counterIds = new ArrayList<Integer>();
+	          for (int i2 = 0; i2 < metricIdList.length; i2++) {
+	            PerfMetricId perfMetricId = metricIdList[i2];
+	            if (!counterIds.contains(perfMetricId.getCounterId())) {
+	              counterIds.add(perfMetricId.getCounterId());
+	            }
+	          }
+	          int[] cIds = new int[counterIds.size()];
+	          for (int i = 0; i < counterIds.size(); i++) {
+	            cIds[i] = counterIds.get(i);
+	          }
+	          Arrays.sort(cIds);
+	          PerfCounterInfo[] ciList = performanceManager.queryPerfCounter(cIds);
 
-          for (int i = 0; i < ciList.length; i++) {
-            PerfCounterInfo perfCounterInfo = ciList[i];
-            String perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + "." + perfCounterInfo.getRollupType().toString() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + ")";
-            out.print(perfCounterString + "\n");
-          }
-          out.flush();
-        } else {
-          LOG.info("Host '" + hostName + "' is not powered on. Performance counters unavailable.");
-        }
-      }
+	          for (int i = 0; i < ciList.length; i++) {
+	            PerfCounterInfo perfCounterInfo = ciList[i];
+	            String perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + "." + perfCounterInfo.getRollupType().toString() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + ")";
+	            out.print(perfCounterString + "\n");
+	          }
+	          out.flush();
+	        } else {
+	          LOG.info("Host '" + hostName + "' is not powered on. Performance counters unavailable.");
+	        }
+	      }
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the list of available performance counters of a vm
      */
     private void getVmAvailablePerfCounters(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
-        String pState = vmrti.getPowerState().toString();
-        if (pState.equals("poweredOn")) {
-          PerfMetricId[] metricIdList = performanceManager.queryAvailablePerfMetric(vm, null, null, 20);
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
+	        String pState = vmrti.getPowerState().toString();
+	        if (pState.equals("poweredOn")) {
+	          PerfMetricId[] metricIdList = performanceManager.queryAvailablePerfMetric(vm, null, null, 20);
 
-          // Get the counter ids of the available metrics
-          ArrayList<Integer> counterIds = new ArrayList<Integer>();
-          for (int i2 = 0; i2 < metricIdList.length; i2++) {
-            PerfMetricId perfMetricId = metricIdList[i2];
-            if (!counterIds.contains(perfMetricId.getCounterId())) {
-              counterIds.add(perfMetricId.getCounterId());
-            }
-          }
-          int[] cIds = new int[counterIds.size()];
-          for (int i = 0; i < counterIds.size(); i++) {
-            cIds[i] = counterIds.get(i);
-          }
-          Arrays.sort(cIds);
-          PerfCounterInfo[] ciList = performanceManager.queryPerfCounter(cIds);
+	          // Get the counter ids of the available metrics
+	          ArrayList<Integer> counterIds = new ArrayList<Integer>();
+	          for (int i2 = 0; i2 < metricIdList.length; i2++) {
+	            PerfMetricId perfMetricId = metricIdList[i2];
+	            if (!counterIds.contains(perfMetricId.getCounterId())) {
+	              counterIds.add(perfMetricId.getCounterId());
+	            }
+	          }
+	          int[] cIds = new int[counterIds.size()];
+	          for (int i = 0; i < counterIds.size(); i++) {
+	            cIds[i] = counterIds.get(i);
+	          }
+	          Arrays.sort(cIds);
+	          PerfCounterInfo[] ciList = performanceManager.queryPerfCounter(cIds);
 
-          for (int i = 0; i < ciList.length; i++) {
-            PerfCounterInfo perfCounterInfo = ciList[i];
-            String perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + "." + perfCounterInfo.getRollupType().toString() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + ")";
-            out.print(perfCounterString + "\n");
-          }
-          out.flush();
-        } else {
-          LOG.info("VM '" + vmName + "' is not powered on. Performance counters unavailable.");
-        }
-      }
+	          for (int i = 0; i < ciList.length; i++) {
+	            PerfCounterInfo perfCounterInfo = ciList[i];
+	            String perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + "." + perfCounterInfo.getRollupType().toString() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + ")";
+	            out.print(perfCounterString + "\n");
+	          }
+	          out.flush();
+	        } else {
+	          LOG.info("VM '" + vmName + "' is not powered on. Performance counters unavailable.");
+	        }
+	      }
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the about info of the VMWare API
      */
     private void getAbout(PrintWriter out) throws IOException {
-      AboutInfo about = serviceInstance.getAboutInfo();
-      out.print(about.getFullName());
-      out.flush();
+    	try {
+	      AboutInfo about = serviceInstance.getAboutInfo();
+	      out.print(about.getFullName());
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the latest event on the vCenter
      */
     private void getLatestEvent(PrintWriter out) throws IOException {
-      EventManager eventManager = serviceInstance.getEventManager();
-      out.print(eventManager.getLatestEvent().getFullFormattedMessage());
-      out.flush();
+    	try {
+	      EventManager eventManager = serviceInstance.getEventManager();
+	      out.print(eventManager.getLatestEvent().getFullFormattedMessage());
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the vCenter folder of a virtual machine
      */
     private void getVmFolder(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      String vmFolder = "";
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        ManagedEntity fd = vm.getParent();
-        while (fd instanceof Folder) {
-          vmFolder = "/" + fd.getName() + vmFolder;
-          fd = fd.getParent();
-        }
-      }
-      out.print(vmFolder);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      String vmFolder = "";
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        ManagedEntity fd = vm.getParent();
+	        while (fd instanceof Folder) {
+	          vmFolder = "/" + fd.getName() + vmFolder;
+	          fd = fd.getParent();
+	        }
+	      }
+	      out.print(vmFolder);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the uptime in seconds of a virtual machine
      */
     private void getVmUptime(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer uptime = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer uptime = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
 
-        if (vmQuickStats != null) {
-          uptime = vmQuickStats.getUptimeSeconds();
-          if (uptime == null) {
-            uptime = 0;
-          }
-        }
-      }
-      out.print(uptime);
-      out.flush();
+	        if (vmQuickStats != null) {
+	          uptime = vmQuickStats.getUptimeSeconds();
+	          if (uptime == null) {
+	            uptime = 0;
+	          }
+	        }
+	      }
+	      out.print(uptime);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the private memory of a virtual machine
      */
     private void getVmMemPrivate(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer amount = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer amount = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
 
-        amount = vmQuickStats.getPrivateMemory();
-        if (amount == null) {
-          amount = 0;
-        }
-      }
-      out.print(amount);
-      out.flush();
+	        amount = vmQuickStats.getPrivateMemory();
+	        if (amount == null) {
+	          amount = 0;
+	        }
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the shared memory of a virtual machine
      */
     private void getVmMemShared(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer amount = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer amount = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
 
-        amount = vmQuickStats.getSharedMemory();
-        if (amount == null) {
-          amount = 0;
-        }
-      }
-      out.print(amount);
-      out.flush();
+	        amount = vmQuickStats.getSharedMemory();
+	        if (amount == null) {
+	          amount = 0;
+	        }
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the swapped memory of a virtual machine
      */
     private void getVmMemSwapped(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer amount = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer amount = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
 
-        amount = vmQuickStats.getSwappedMemory();
-        if (amount == null) {
-          amount = 0;
-        }
-      }
-      out.print(amount);
-      out.flush();
+	        amount = vmQuickStats.getSwappedMemory();
+	        if (amount == null) {
+	          amount = 0;
+	        }
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the compressed memory of a virtual machine
      */
     private void getVmMemCompressed(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Long amount = new Long(0);
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Long amount = new Long(0);
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
 
-        amount = vmQuickStats.getCompressedMemory();
-        if (amount == null) {
-          amount = new Long(0);
-        }
-      }
-      out.print(amount);
-      out.flush();
+	        amount = vmQuickStats.getCompressedMemory();
+	        if (amount == null) {
+	          amount = new Long(0);
+	        }
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the overhead memory of a virtual machine
      */
     private void getVmMemOverheadConsumed(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer amount = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer amount = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
 
-        amount = vmQuickStats.getConsumedOverheadMemory();
-        if (amount == null) {
-          amount = 0;
-        }
-      }
-      out.print(amount);
-      out.flush();
+	        amount = vmQuickStats.getConsumedOverheadMemory();
+	        if (amount == null) {
+	          amount = 0;
+	        }
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the consumed memory of a virtual machine
      */
     private void getVmMemConsumed(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer amount = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer amount = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
 
-        amount = vmQuickStats.getHostMemoryUsage();
-        if (amount == null) {
-          amount = 0;
-        }
-      }
-      out.print(amount);
-      out.flush();
+	        amount = vmQuickStats.getHostMemoryUsage();
+	        if (amount == null) {
+	          amount = 0;
+	        }
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the ballooned memory of a virtual machine
      */
     private void getVmMemBallooned(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer amount = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer amount = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
 
-        amount = vmQuickStats.getBalloonedMemory();
-        if (amount == null) {
-          amount = 0;
-        }
-      }
-      out.print(amount);
-      out.flush();
+	        amount = vmQuickStats.getBalloonedMemory();
+	        if (amount == null) {
+	          amount = 0;
+	        }
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the active memory of a virtual machine
      */
     private void getVmMemActive(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer amount = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer amount = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineQuickStats vmQuickStats = vmSummary.getQuickStats();
 
-        amount = vmQuickStats.getGuestMemoryUsage();
-        if (amount == null) {
-          amount = 0;
-        }
-      }
-      out.print(amount);
-      out.flush();
+	        amount = vmQuickStats.getGuestMemoryUsage();
+	        if (amount == null) {
+	          amount = 0;
+	        }
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the consolidation status of a virtual machine
      */
     private void getVmConsolidationNeeded(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Boolean is = false;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineRuntimeInfo vmRuntime = vm.getRuntime();
-        is = vmRuntime.getConsolidationNeeded();
-        if (is == null) {
-          is = false;
-        }
-      }
-      out.print(is ? "1" : "0");
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Boolean is = false;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineRuntimeInfo vmRuntime = vm.getRuntime();
+	        is = vmRuntime.getConsolidationNeeded();
+	        if (is == null) {
+	          is = false;
+	        }
+	      }
+	      out.print(is ? "1" : "0");
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
@@ -2924,100 +3203,125 @@ public class VmBix {
      * machine Returns false if not
      */
     private void getVmToolsInstallerMounted(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Boolean is = false;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineRuntimeInfo vmRuntime = vm.getRuntime();
-        is = vmRuntime.isToolsInstallerMounted();
-        if (is == null) {
-          is = false;
-        }
-      }
-      out.print(is ? "1" : "0");
-      out.flush();
+			try {    	
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Boolean is = false;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineRuntimeInfo vmRuntime = vm.getRuntime();
+	        is = vmRuntime.isToolsInstallerMounted();
+	        if (is == null) {
+	          is = false;
+	        }
+	      }
+	      out.print(is ? "1" : "0");
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the running host of a virtual machine
      */
     private void getVmHost(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      String vmHost = "";
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineRuntimeInfo vmRuntimeInfo = vm.getRuntime();
-        ManagedObjectReference hmor = vmRuntimeInfo.getHost();
-        HostSystem host = new HostSystem(vm.getServerConnection(), hmor);
-        vmHost = host.getName();
-      }
-      out.print(vmHost);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      String vmHost = "";
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineRuntimeInfo vmRuntimeInfo = vm.getRuntime();
+	        ManagedObjectReference hmor = vmRuntimeInfo.getHost();
+	        HostSystem host = new HostSystem(vm.getServerConnection(), hmor);
+	        vmHost = host.getName();
+	      }
+	      out.print(vmHost);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the guest OS full description of a virtual machine
      */
     private void getVmGuestFullName(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      String guestFullName = "";
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
-        if (vmGuest == null) {
-          LOG.info("Cannot query guest OS for VM '" + vmName);
-        } else {
-          guestFullName = vmGuest.getGuestFullName();
-        }
-      }
-      out.print(guestFullName);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      String guestFullName = "";
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
+	        if (vmGuest == null) {
+	          LOG.info("Cannot query guest OS for VM '" + vmName);
+	        } else {
+	          guestFullName = vmGuest.getGuestFullName();
+	        }
+	      }
+	      out.print(guestFullName);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the guest OS short description of a virtual machine
      */
     private void getVmGuestShortName(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      String guestShortName = "";
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        GuestInfo gInfo = vm.getGuest();
-        if (gInfo == null) {
-          LOG.info("Cannot query guest OS for VM '" + vmName);
-        } else {
-          guestShortName = gInfo.getGuestFamily();
-        }
-      }
-      out.print(guestShortName);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      String guestShortName = "";
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        GuestInfo gInfo = vm.getGuest();
+	        if (gInfo == null) {
+	          LOG.info("Cannot query guest OS for VM '" + vmName);
+	        } else {
+	          guestShortName = gInfo.getGuestFamily();
+	        }
+	      }
+	      out.print(guestShortName);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns the guest OS hostname of a virtual machine
      */
     private void getVmGuestHostName(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      String guestHostName = "";
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
-        if (vmGuest == null) {
-          LOG.info("Cannot query guest OS for VM '" + vmName);
-          guestHostName = "";
-        } else {
-          guestHostName = vmGuest.getHostName();
-        }
-      }
-      out.print(guestHostName);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      String guestHostName = "";
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
+	        if (vmGuest == null) {
+	          LOG.info("Cannot query guest OS for VM '" + vmName);
+	          guestHostName = "";
+	        } else {
+	          guestHostName = vmGuest.getHostName();
+	        }
+	      }
+	      out.print(guestHostName);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
@@ -3025,9 +3329,9 @@ public class VmBix {
      * in JSON for use with Zabbix LLD
      */
     private void getVmGuestDisks(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      JsonArray jArray = new JsonArray();
-      try {
+    	try {
+      	VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+      	JsonArray jArray = new JsonArray();
         if (vm == null) {
           LOG.warn("No vm named '" + vmName + "' found");
         } else {
@@ -3057,10 +3361,9 @@ public class VmBix {
         jOutput.add("data", jArray);
         out.print(jOutput);
         out.flush();
-      }
+    	}
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.getMessage());
-        LOG.debug("Exception : " + ex);
       }
     }
 
@@ -3068,138 +3371,168 @@ public class VmBix {
      * Returns a disk capacity for the guest OS of a virtual machine
      */
     private void getVmGuestDiskCapacity(String vmName, String vmDisk, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Long size = 0L;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        GuestInfo gInfo = vm.getGuest();
-        if (gInfo == null) {
-          LOG.info("Cannot query guest OS for VM '" + vmName);
-        } else {
-          GuestDiskInfo[] vmDisks = gInfo.getDisk();
-          if (vmDisks != null) {
-            if (escapeChars == true && vmDisk.endsWith(" ")) {
-              LOG.debug("The disk '" + vmDisk + "' of the VM '" + vmName + "' ends with a space and will be sanitized");
-              vmDisk = vmDisk.substring(0,vmDisk.length()-1);
-            }
-            for (int j = 0; j < vmDisks.length; j++) {
-              if (vmDisks[j].getDiskPath().equals(vmDisk)) {
-                size = vmDisks[j].getCapacity();
-                out.print(size);
-              }
-            }
-          } else {
-            LOG.info("Cannot query disks for VM '" + vmName);
-          }
-        }
-      }
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Long size = 0L;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        GuestInfo gInfo = vm.getGuest();
+	        if (gInfo == null) {
+	          LOG.info("Cannot query guest OS for VM '" + vmName);
+	        } else {
+	          GuestDiskInfo[] vmDisks = gInfo.getDisk();
+	          if (vmDisks != null) {
+	            if (escapeChars == true && vmDisk.endsWith(" ")) {
+	              LOG.debug("The disk '" + vmDisk + "' of the VM '" + vmName + "' ends with a space and will be sanitized");
+	              vmDisk = vmDisk.substring(0,vmDisk.length()-1);
+	            }
+	            for (int j = 0; j < vmDisks.length; j++) {
+	              if (vmDisks[j].getDiskPath().equals(vmDisk)) {
+	                size = vmDisks[j].getCapacity();
+	                out.print(size);
+	              }
+	            }
+	            out.flush();
+	          } else {
+	            LOG.info("Cannot query disks for VM '" + vmName);
+	          }
+	        }
+	      }
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }      
     }
 
     /**
      * Returns a disk free space for the guest OS of a virtual machine
      */
     private void getVmGuestDiskFreeSpace(String vmName, String vmDisk, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Long size = 0L;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        GuestInfo gInfo = vm.getGuest();
-        if (gInfo == null) {
-          LOG.info("Cannot query guest OS for VM '" + vmName);
-        } else {
-          GuestDiskInfo[] vmDisks = gInfo.getDisk();
-          if (vmDisks != null) {
-            if (escapeChars == true && vmDisk.endsWith(" ")) {
-              LOG.debug("The disk '" + vmDisk + "' of the VM '" + vmName + "' ends with a space and will be sanitized");
-              vmDisk = vmDisk.substring(0,vmDisk.length()-1);
-            }
-            for (int j = 0; j < vmDisks.length; j++) {
-              if (vmDisks[j].getDiskPath().equals(vmDisk)) {
-                size = vmDisks[j].getFreeSpace();
-                out.print(size);
-              }
-            }
-          } else {
-            LOG.info("Cannot query disks for VM '" + vmName);
-          }
-        }
-      }
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Long size = 0L;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        GuestInfo gInfo = vm.getGuest();
+	        if (gInfo == null) {
+	          LOG.info("Cannot query guest OS for VM '" + vmName);
+	        } else {
+	          GuestDiskInfo[] vmDisks = gInfo.getDisk();
+	          if (vmDisks != null) {
+	            if (escapeChars == true && vmDisk.endsWith(" ")) {
+	              LOG.debug("The disk '" + vmDisk + "' of the VM '" + vmName + "' ends with a space and will be sanitized");
+	              vmDisk = vmDisk.substring(0,vmDisk.length()-1);
+	            }
+	            for (int j = 0; j < vmDisks.length; j++) {
+	              if (vmDisks[j].getDiskPath().equals(vmDisk)) {
+	                size = vmDisks[j].getFreeSpace();
+	                out.print(size);
+	              }
+	            }
+	            out.flush();
+	          } else {
+	            LOG.info("Cannot query disks for VM '" + vmName);
+	          }
+	        }
+	      }
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }          
     }
 
     /**
      * Returns the guest OS IP address of a virtual machine
      */
     private void getVmGuestIpAddress(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      String guestIpAddress = "";
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
-        if (vmGuest == null) {
-          LOG.info("Cannot query guest OS for VM '" + vmName);
-        } else {
-          guestIpAddress = vmGuest.getIpAddress();
-        }
-      }
-      out.print(guestIpAddress);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      String guestIpAddress = "";
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
+	        if (vmGuest == null) {
+	          LOG.info("Cannot query guest OS for VM '" + vmName);
+	        } else {
+	          guestIpAddress = vmGuest.getIpAddress();
+	        }
+	      }
+	      out.print(guestIpAddress);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }          
     }
 
     /**
      * Returns the committed storage of a virtual machine
      */
     private void getVmStorageCommitted(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Long size = 0L;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineStorageSummary vmStorage = vmSummary.getStorage();
-        size = vmStorage.getCommitted();
-      }
-      out.print(size);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Long size = 0L;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineStorageSummary vmStorage = vmSummary.getStorage();
+	        size = vmStorage.getCommitted();
+	      }
+	      out.print(size);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }          
     }
 
     /**
      * Returns the uncommitted storage of a virtual machine
      */
     private void getVmStorageUncommitted(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Long size = 0L;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineStorageSummary vmStorage = vmSummary.getStorage();
-        size = vmStorage.getUncommitted();
-      }
-      out.print(size);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Long size = 0L;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineStorageSummary vmStorage = vmSummary.getStorage();
+	        size = vmStorage.getUncommitted();
+	      }
+	      out.print(size);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }          
     }
 
     /**
      * Returns the unshared storage of a virtual machine
      */
     private void getVmStorageUnshared(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Long size = 0L;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineStorageSummary vmStorage = vmSummary.getStorage();
-        size = vmStorage.getUnshared();
-      }
-      out.print(size);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Long size = 0L;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineStorageSummary vmStorage = vmSummary.getStorage();
+	        size = vmStorage.getUnshared();
+	      }
+	      out.print(size);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }          
     }
 
     /**
@@ -3208,55 +3541,60 @@ public class VmBix {
      * guestToolsNeedUpgrade 3 -> guestToolsUnmanaged 4 -> other
      */
     private void getVmGuestToolsVersionStatus(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer intStatus = 9;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
-        if (vmGuest == null) {
-          LOG.info("Cannot query guest OS for VM '" + vmName);
-        } else {
-          String guestToolsVersionStatus = vmGuest.getToolsVersionStatus2();
-          if (null != guestToolsVersionStatus) {
-            switch (guestToolsVersionStatus) {
-              case "guestToolsNotInstalled":
-                intStatus = 0;
-                break;
-              case "guestToolsCurrent":
-                intStatus = 1;
-                break;
-              case "guestToolsNeedUpgrade":
-                intStatus = 2;
-                break;
-              case "guestToolsUnmanaged":
-                intStatus = 3;
-                break;
-              case "guestToolsBlacklisted":
-                intStatus = 4;
-                break;
-              case "guestToolsSupportedNew":
-                intStatus = 5;
-                break;
-              case "guestToolsSupportedOld":
-                intStatus = 6;
-                break;
-              case "guestToolsTooNew":
-                intStatus = 7;
-                break;
-              case "guestToolsTooOld":
-                intStatus = 8;
-                break;
-              default:
-                intStatus = 9;
-                break;
-            }
-          }
-        }
-      }
-      out.print(intStatus);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer intStatus = 9;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
+	        if (vmGuest == null) {
+	          LOG.info("Cannot query guest OS for VM '" + vmName);
+	        } else {
+	          String guestToolsVersionStatus = vmGuest.getToolsVersionStatus2();
+	          if (null != guestToolsVersionStatus) {
+	            switch (guestToolsVersionStatus) {
+	              case "guestToolsNotInstalled":
+	                intStatus = 0;
+	                break;
+	              case "guestToolsCurrent":
+	                intStatus = 1;
+	                break;
+	              case "guestToolsNeedUpgrade":
+	                intStatus = 2;
+	                break;
+	              case "guestToolsUnmanaged":
+	                intStatus = 3;
+	                break;
+	              case "guestToolsBlacklisted":
+	                intStatus = 4;
+	                break;
+	              case "guestToolsSupportedNew":
+	                intStatus = 5;
+	                break;
+	              case "guestToolsSupportedOld":
+	                intStatus = 6;
+	                break;
+	              case "guestToolsTooNew":
+	                intStatus = 7;
+	                break;
+	              case "guestToolsTooOld":
+	                intStatus = 8;
+	                break;
+	              default:
+	                intStatus = 9;
+	                break;
+	            }
+	          }
+	        }
+	      }
+	      out.print(intStatus);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
     }
 
     /**
@@ -3265,153 +3603,410 @@ public class VmBix {
      * guestToolsExecutingScripts 3 -> other
      */
     private void getVmGuestToolsRunningStatus(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer intStatus = 3;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
-        if (vmGuest == null) {
-          LOG.info("Cannot query guest OS for VM '" + vmName);
-        } else {
-          String guestToolsRunningStatus = vmGuest.getToolsRunningStatus();
-          if (null != guestToolsRunningStatus) {
-            switch (guestToolsRunningStatus) {
-              case "guestToolsNotRunning":
-                intStatus = 0;
-                break;
-              case "guestToolsRunning":
-                intStatus = 1;
-                break;
-              case "guestToolsExecutingScripts":
-                intStatus = 2;
-                break;
-              default:
-                intStatus = 3;
-                break;
-            }
-          }
-        }
-      }
-      out.print(intStatus);
-      out.flush();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer intStatus = 3;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineGuestSummary vmGuest = vmSummary.getGuest();
+	        if (vmGuest == null) {
+	          LOG.info("Cannot query guest OS for VM '" + vmName);
+	        } else {
+	          String guestToolsRunningStatus = vmGuest.getToolsRunningStatus();
+	          if (null != guestToolsRunningStatus) {
+	            switch (guestToolsRunningStatus) {
+	              case "guestToolsNotRunning":
+	                intStatus = 0;
+	                break;
+	              case "guestToolsRunning":
+	                intStatus = 1;
+	                break;
+	              case "guestToolsExecutingScripts":
+	                intStatus = 2;
+	                break;
+	              default:
+	                intStatus = 3;
+	                break;
+	            }
+	          }
+	        }
+	      }
+	      out.print(intStatus);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
     }
 
     /**
      * Returns the memory size of a virtual machine
      */
     private void getVmMemSize(String vmName, PrintWriter out) throws IOException {
-      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-      Integer amount = 0;
-      if (vm == null) {
-        LOG.warn("No vm named '" + vmName + "' found");
-      } else {
-        VirtualMachineSummary vmSummary = vm.getSummary();
-        VirtualMachineConfigSummary vmConfigSum = vmSummary.getConfig();
+    	try {
+	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
+	      Integer amount = 0;
+	      if (vm == null) {
+	        LOG.warn("No vm named '" + vmName + "' found");
+	      } else {
+	        VirtualMachineSummary vmSummary = vm.getSummary();
+	        VirtualMachineConfigSummary vmConfigSum = vmSummary.getConfig();
 
-        amount = vmConfigSum.getMemorySizeMB();
-        if (amount == null) {
-          amount = 0;
-        }
-      }
-      out.print(amount);
-      out.flush();
+	        amount = vmConfigSum.getMemorySizeMB();
+	        if (amount == null) {
+	          amount = 0;
+	        }
+	      }
+	      out.print(amount);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
     }
 
     /**
      * Returns 1 if the datastore is local
      */
     private void getDatastoreLocal(String dsName, PrintWriter out) throws IOException {
-      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
-      Integer local = 0;
-      if (ds == null) {
-        LOG.warn("No datastore named '" + dsName + "' found");
-      } else {
-        local = (ds.getSummary().multipleHostAccess == true) ? 0 : 1; // return 1 for local datastores
-      }
-      out.print(local);
-      out.flush();
+    	try {
+	      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
+	      Integer local = 0;
+	      if (ds == null) {
+	        LOG.warn("No datastore named '" + dsName + "' found");
+	      } else {
+	        local = (ds.getSummary().multipleHostAccess == true) ? 0 : 1; // return 1 for local datastores
+	      }
+	      out.print(local);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
     }
 
     /**
      * Returns the free space of a datastore
      */
     private void getDatastoreSizeFree(String dsName, PrintWriter out) throws IOException {
-      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
-      Long freeSpace = new Long(0);
-      if (ds == null) {
-        LOG.warn("No datastore named '" + dsName + "' found");
-      } else {
-        DatastoreSummary dsSum = ds.getSummary();
-        freeSpace = dsSum.getFreeSpace();
-        if (freeSpace == null) {
-          freeSpace = new Long(0);
-        }
-      }
-      out.print(freeSpace);
-      out.flush();
+    	try {
+	      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
+	      Long freeSpace = new Long(0);
+	      if (ds == null) {
+	        LOG.warn("No datastore named '" + dsName + "' found");
+	      } else {
+	        DatastoreSummary dsSum = ds.getSummary();
+	        freeSpace = dsSum.getFreeSpace();
+	        if (freeSpace == null) {
+	          freeSpace = new Long(0);
+	        }
+	      }
+	      out.print(freeSpace);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
     }
 
     /**
      * Returns the size of a datastore
      */
     private void getDatastoreSizeTotal(String dsName, PrintWriter out) throws IOException {
-      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
-      Long capacity = new Long(0);
-      if (ds == null) {
-        LOG.warn("No datastore named '" + dsName + "' found");
-      } else {
-        DatastoreSummary dsSum = ds.getSummary();
-        capacity = dsSum.getCapacity();
-        if (capacity == null) {
-          capacity = new Long(0);
-        }
-      }
-      out.print(capacity);
-      out.flush();
+    	try {
+	      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
+	      Long capacity = new Long(0);
+	      if (ds == null) {
+	        LOG.warn("No datastore named '" + dsName + "' found");
+	      } else {
+	        DatastoreSummary dsSum = ds.getSummary();
+	        capacity = dsSum.getCapacity();
+	        if (capacity == null) {
+	          capacity = new Long(0);
+	        }
+	      }
+	      out.print(capacity);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
     }
 
     /**
      * Returns the provisioned size of a datastore
      */
     private void getDatastoreSizeProvisioned(String dsName, PrintWriter out) throws IOException {
-      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
-      Long provSpace = new Long(0);
-      if (ds == null) {
-        LOG.warn("No datastore named '" + dsName + "' found");
-      } else {
-        DatastoreSummary dsSum = ds.getSummary();
-        long total = dsSum.getCapacity();
-        long free = dsSum.getFreeSpace();
-        long uncom = dsSum.getUncommitted();
-        long temp = total - free + uncom;
-        provSpace = temp;
-        if (provSpace == null) {
-          provSpace = new Long(0);
-        }
-      }
-      out.print(provSpace);
-      out.flush();
+    	try {
+	      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
+	      Long provSpace = new Long(0);
+	      if (ds == null) {
+	        LOG.warn("No datastore named '" + dsName + "' found");
+	      } else {
+	        DatastoreSummary dsSum = ds.getSummary();
+	        long total = dsSum.getCapacity();
+	        long free = dsSum.getFreeSpace();
+	        long uncom = dsSum.getUncommitted();
+	        long temp = total - free + uncom;
+	        provSpace = temp;
+	        if (provSpace == null) {
+	          provSpace = new Long(0);
+	        }
+	      }
+	      out.print(provSpace);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
     }
 
     /**
      * Returns the uncommitted size of a datastore
      */
     private void getDatastoreSizeUncommitted(String dsName, PrintWriter out) throws IOException {
-      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
-      Long freeSpace = new Long(0);
-      if (ds == null) {
-        LOG.warn("No datastore named '" + dsName + "' found");
-      } else {
-        DatastoreSummary dsSum = ds.getSummary();
-        freeSpace = dsSum.getUncommitted();
-        if (freeSpace == null) {
-          freeSpace = new Long(0);
-        }
-      }
-      out.print(freeSpace);
-      out.flush();
+    	try {
+	      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
+	      Long freeSpace = new Long(0);
+	      if (ds == null) {
+	        LOG.warn("No datastore named '" + dsName + "' found");
+	      } else {
+	        DatastoreSummary dsSum = ds.getSummary();
+	        freeSpace = dsSum.getUncommitted();
+	        if (freeSpace == null) {
+	          freeSpace = new Long(0);
+	        }
+	      }
+	      out.print(freeSpace);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
+    }
+
+    /**
+     * Returns the CPU free of a cluster
+     */
+    private void getClusterCpuFree(String name, PrintWriter out) throws IOException {
+    	try {
+	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+	      long cpuFree = 0;
+	      if (cl != null) {
+	        cpuFree = cl.getSummary().effectiveCpu;
+	      } else {
+	        LOG.warn("No cluster named '" + name + "' found");
+	      }
+	      out.print(cpuFree);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
+    }
+
+    /**
+     * Returns the total CPU of a cluster
+     */
+    private void getClusterCpuTotal(String name, PrintWriter out) throws IOException {
+    	try {
+	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+	      long cpuTotal = 0;
+	      if (cl != null) {
+	        cpuTotal = cl.getSummary().totalCpu;
+	      } else {
+	        LOG.warn("No cluster named '" + name + "' found");
+	      }
+	      out.print(cpuTotal);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
+    }
+
+    /**
+     * Returns the CPU usage of a cluster
+     */
+    private void getClusterCpuUsage(String name, PrintWriter out) throws IOException {
+    	try {
+	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+	      long cpuUsage = 0;
+	      if (cl != null) {
+	        cpuUsage = cl.getSummary().totalCpu - cl.getSummary().effectiveCpu;
+	      } else {
+	        LOG.warn("No cluster named '" + name + "' found");
+	      }
+	      out.print(cpuUsage);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
+    }
+
+    /**
+     * Returns the number of CPU threads of a cluster
+     */
+    private void getClusterCpuThreads(String name, PrintWriter out) throws IOException {
+    	try {
+	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+	      short numCpuThreads = 0;
+	      if (cl != null) {
+	        numCpuThreads = cl.getSummary().numCpuThreads;
+	      } else {
+	        LOG.warn("No cluster named '" + name + "' found");
+	      }
+	      out.print(numCpuThreads);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
+    }
+
+    /**
+     * Returns the number of CPU cores of a cluster
+     */
+    private void getClusterCpuCores(String name, PrintWriter out) throws IOException {
+    	try {
+	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+	      short numCpuCores = 0;
+	      if (cl != null) {
+	        numCpuCores = cl.getSummary().numCpuCores;
+	      } else {
+	        LOG.warn("No cluster named '" + name + "' found");
+	      }
+	      out.print(numCpuCores);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
+    }
+
+    /**
+     * Returns the free memory of a cluster
+     */
+    private void getClusterMemFree(String name, PrintWriter out) throws IOException {
+    	try {
+	      //effectiveMemory returned in MB
+	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+	      long memFree = 0;
+	      if (cl != null) {
+	        memFree = cl.getSummary().effectiveMemory * 1024 * 1024;
+	      } else {
+	        LOG.warn("No cluster named '" + name + "' found");
+	      }
+	      out.print(memFree);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
+    }
+
+    /**
+     * Returns the total memory of a cluster
+     */
+    private void getClusterMemTotal(String name, PrintWriter out) throws IOException {
+    	try {
+	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+	      long memTotal = 0;
+	      if (cl != null) {
+	        memTotal = cl.getSummary().totalMemory;
+	      } else {
+	        LOG.warn("No cluster named '" + name + "' found");
+	      }
+	      out.print(memTotal);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
+    }
+
+    /**
+     * Returns the memory usage of a cluster
+     */
+    private void getClusterMemUsage(String name, PrintWriter out) throws IOException {
+    	try {
+	      //effectiveMemory returned in MB
+	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+	      long memUsage = 0;
+	      if (cl != null) {
+	        memUsage = cl.getSummary().totalMemory - (cl.getSummary().effectiveMemory * 1024 * 1024);
+	      } else {
+	        LOG.warn("No cluster named '" + name + "' found");
+	      }
+	      out.print(memUsage);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
+    }
+
+    /**
+     * Returns the number of online ESX hosts of a cluster
+     */
+    private void getClusterHostsOnline(String name, PrintWriter out) throws IOException {
+    	try {
+	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+	      int hostOnline = 0;
+	      if (cl != null) {
+	        hostOnline = cl.getSummary().numEffectiveHosts;
+	      } else {
+	        LOG.warn("No cluster named '" + name + "' found");
+	      }
+	      out.print(hostOnline);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
+    }
+
+    /**
+     * Returns the number of ESX hosts in maintenance of a cluster
+     */
+    private void getClusterHostsMaint(String name, PrintWriter out) throws IOException {
+    	try {
+	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+	      int hostMaint = 0;
+	      if (cl != null) {
+	        hostMaint = cl.getSummary().numHosts - cl.getSummary().numEffectiveHosts;
+	      } else {
+	        LOG.warn("No cluster named '" + name + "' found");
+	      }
+	      out.print(hostMaint);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
+    }
+
+    /**
+     * Returns the number of ESX hosts of a cluster
+     */
+    private void getClusterHostsTotal(String name, PrintWriter out) throws IOException {
+    	try {
+	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
+	      int hostTotal = 0;
+	      if (cl != null) {
+	        hostTotal = cl.getSummary().numHosts;
+	      } else {
+	        LOG.warn("No cluster named '" + name + "' found");
+	      }
+	      out.print(hostTotal);
+	      out.flush();
+    	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.getMessage());
+      }         
     }
 
     public void run() {
@@ -3462,140 +4057,6 @@ public class VmBix {
           reincornate = 0;
         }
       }
-    }
-
-    private void getClusterCpuFree(String name, PrintWriter out) throws IOException {
-      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-      long cpuFree = 0;
-      if (cl != null) {
-        cpuFree = cl.getSummary().effectiveCpu;
-      } else {
-        LOG.warn("No cluster named '" + name + "' found");
-      }
-      out.print(cpuFree);
-      out.flush();
-    }
-
-    private void getClusterCpuTotal(String name, PrintWriter out) throws IOException {
-      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-      long cpuTotal = 0;
-      if (cl != null) {
-        cpuTotal = cl.getSummary().totalCpu;
-      } else {
-        LOG.warn("No cluster named '" + name + "' found");
-      }
-      out.print(cpuTotal);
-      out.flush();
-    }
-
-    private void getClusterCpuUsage(String name, PrintWriter out) throws IOException {
-      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-      long cpuUsage = 0;
-      if (cl != null) {
-        cpuUsage = cl.getSummary().totalCpu - cl.getSummary().effectiveCpu;
-      } else {
-        LOG.warn("No cluster named '" + name + "' found");
-      }
-      out.print(cpuUsage);
-      out.flush();
-    }
-
-    private void getClusterCpuThreads(String name, PrintWriter out) throws IOException {
-      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-      short numCpuThreads = 0;
-      if (cl != null) {
-        numCpuThreads = cl.getSummary().numCpuThreads;
-      } else {
-        LOG.warn("No cluster named '" + name + "' found");
-      }
-      out.print(numCpuThreads);
-      out.flush();
-    }
-
-    private void getClusterCpuCores(String name, PrintWriter out) throws IOException {
-      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-      short numCpuCores = 0;
-      if (cl != null) {
-        numCpuCores = cl.getSummary().numCpuCores;
-      } else {
-        LOG.warn("No cluster named '" + name + "' found");
-      }
-      out.print(numCpuCores);
-      out.flush();
-    }
-
-    private void getClusterMemFree(String name, PrintWriter out) throws IOException {
-      //effectiveMemory returned in MB
-      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-      long memFree = 0;
-      if (cl != null) {
-        memFree = cl.getSummary().effectiveMemory * 1024 * 1024;
-      } else {
-        LOG.warn("No cluster named '" + name + "' found");
-      }
-      out.print(memFree);
-      out.flush();
-    }
-
-    private void getClusterMemTotal(String name, PrintWriter out) throws IOException {
-      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-      long memTotal = 0;
-      if (cl != null) {
-        memTotal = cl.getSummary().totalMemory;
-      } else {
-        LOG.warn("No cluster named '" + name + "' found");
-      }
-      out.print(memTotal);
-      out.flush();
-    }
-
-    private void getClusterMemUsage(String name, PrintWriter out) throws IOException {
-      //effectiveMemory returned in MB
-      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-      long memUsage = 0;
-      if (cl != null) {
-        memUsage = cl.getSummary().totalMemory - (cl.getSummary().effectiveMemory * 1024 * 1024);
-      } else {
-        LOG.warn("No cluster named '" + name + "' found");
-      }
-      out.print(memUsage);
-      out.flush();
-    }
-
-    private void getClusterHostsOnline(String name, PrintWriter out) throws IOException {
-      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-      int hostOnline = 0;
-      if (cl != null) {
-        hostOnline = cl.getSummary().numEffectiveHosts;
-      } else {
-        LOG.warn("No cluster named '" + name + "' found");
-      }
-      out.print(hostOnline);
-      out.flush();
-    }
-
-    private void getClusterHostsMaint(String name, PrintWriter out) throws IOException {
-      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-      int hostMaint = 0;
-      if (cl != null) {
-        hostMaint = cl.getSummary().numHosts - cl.getSummary().numEffectiveHosts;
-      } else {
-        LOG.warn("No cluster named '" + name + "' found");
-      }
-      out.print(hostMaint);
-      out.flush();
-    }
-
-    private void getClusterHostsTotal(String name, PrintWriter out) throws IOException {
-      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-      int hostTotal = 0;
-      if (cl != null) {
-        hostTotal = cl.getSummary().numHosts;
-      } else {
-        LOG.warn("No cluster named '" + name + "' found");
-      }
-      out.print(hostTotal);
-      out.flush();
     }
   }
 
