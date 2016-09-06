@@ -4016,7 +4016,7 @@ public class VmBix {
         if (request == null) {
           VmBix.sleep(10);
           alive += 10;
-          if (pauseThread = true) {
+          if (pauseThread == true) {
             pauseTimer += 10;
           }
         } else {
@@ -4030,7 +4030,7 @@ public class VmBix {
             while (continues == 1) {
               String message = in.readLine();
 
-              if (message != null && pauseThread = false) {
+              if (message != null && pauseThread == false) {
                 checkAllPatterns(message, out);
               }
               continues = 0;
@@ -4052,7 +4052,7 @@ public class VmBix {
             }
           }
         }
-        if (alive > lifeTime && pauseThread = false) {
+        if (alive > lifeTime && pauseThread == false) {
           LOG.info("thread closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
           reincornate = 0;
         }
