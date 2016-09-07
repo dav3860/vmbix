@@ -434,7 +434,7 @@ public class VmBix {
       PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
     }
     catch (Exception ex) {
-      ex.printStackTrace()
+      ex.printStackTrace();
     }
   }
 
