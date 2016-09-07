@@ -78,6 +78,7 @@ public class VmBix {
   static Boolean useUuid = false; // Use object name by default
   static Integer maxConnections = 150; // Default maximum number of worker threads
   static Integer connectTimeout = 5;
+  static Integer readTimeout = 5;
   static Boolean escapeChars = false;
   static Integer vmCacheTtl = 15;        // in minutes
   static Integer vmCacheSize = 1000;       // in items (1 vm = 1 item)
@@ -113,6 +114,7 @@ public class VmBix {
       CmdLineParser.Option oUseUuid = parser.addStringOption('U', "uuid");
       CmdLineParser.Option omaxConnections = parser.addIntegerOption('m', "maxconnections");
       CmdLineParser.Option oconnectTimeout = parser.addIntegerOption('C', "connectTimeout");
+      CmdLineParser.Option oreadTimeout = parser.addIntegerOption('R', "readTimeout");
       /*CmdLineParser.Option oEsxiCacheTtl = parser.addIntegerOption( 'E', "esxicachettl");
       CmdLineParser.Option oDsCacheTtl = parser.addIntegerOption( 'D', "dscachettl");
       CmdLineParser.Option oPerfIdCacheTtl = parser.addIntegerOption( 'I', "perfidcachettl");
@@ -139,6 +141,7 @@ public class VmBix {
       interval = (Integer) parser.getOptionValue(oInterval);
       maxConnections = (Integer) parser.getOptionValue(omaxConnections);
       connectTimeout = (Integer) parser.getOptionValue(oconnectTimeout);
+      readTimeout = (Integer) parser.getOptionValue(oreadTimeout);
 
       /*esxiCacheTtl    = (Integer)parser.getOptionValue(oEsxiCacheTtl   );
       dsCacheTtl      = (Integer)parser.getOptionValue(oDsCacheTtl     );
@@ -175,6 +178,7 @@ public class VmBix {
           interval = Integer.parseInt(prop.getProperty("interval"));
           maxConnections = Integer.parseInt(prop.getProperty("maxconnections"));
           connectTimeout = Integer.parseInt(prop.getProperty("connecttimeout"));
+          readTimeout = Integer.parseInt(prop.getProperty("readtimeout"));
           useUuid = Boolean.parseBoolean(prop.getProperty("useuuid"));
           escapeChars = Boolean.parseBoolean(prop.getProperty("escapechars"));
 
@@ -422,7 +426,7 @@ public class VmBix {
 
   public static synchronized void updateConnection() throws IOException {
     try {
-      serviceInstance = new ServiceInstance(new URL(sdkUrl), uname, passwd, true, connectTimeout);
+      serviceInstance = new ServiceInstance(new URL(sdkUrl), uname, passwd, true, connectTimeout, readTimeout);
       if (serviceInstance == null) {
         LOG.error("serviceInstance in null! Connection failed.");
         return;
