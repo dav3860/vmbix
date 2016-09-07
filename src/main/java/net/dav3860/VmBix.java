@@ -531,7 +531,7 @@ public class VmBix {
       Pattern pPing = Pattern.compile("^(?:\\s*ZBXD.)?.*(ping)");        //
       Pattern pAbout = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)");        //
       Pattern pVersion = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.version)");        //
-      Pattern pThreadCount = Pattern.compile("^(?:\\s*ZBXD.)?.*vmbix\\.stats\\[threads\\]");        //
+      Pattern pThreadCount = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[threads\\])");        //
       Pattern pClusters = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.(discovery)");        //
       Pattern pClusterCpuFree = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),free\\]");        //
       Pattern pClusterCpuTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),total\\]");        //
@@ -545,7 +545,6 @@ public class VmBix {
       Pattern pClusterHostsMaint = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.hosts\\[(.+),maint\\]");        //
       Pattern pClusterHostsTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.hosts\\[(.+),total\\]");        //
       Pattern pDatacenters = Pattern.compile("^(?:\\s*ZBXD.)?.*datacenter\\.(discovery)");        //
-      //TODO: split into two metods
       Pattern pDatacenterStatus = Pattern.compile("^(?:\\s*ZBXD.)?.*datacenter\\.status\\[(.+),(overall|config)\\]");      //
       Pattern pLatestEvent = Pattern.compile("^(?:\\s*ZBXD.)?.*(event\\.latest)");        //
       Pattern pVMsFullDiscovery = Pattern.compile("^(?:\\s*ZBXD.)?.*vm\\.(discovery)\\.(full)");       //
