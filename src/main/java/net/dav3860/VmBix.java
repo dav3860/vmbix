@@ -397,7 +397,7 @@ public class VmBix {
         thread.start();
       }
     } else {
-      LOG.info("Maximum socket count reached, closing connection")
+      LOG.info("Maximum socket count reached, closing connection");
       socket.close();
     }
   }
