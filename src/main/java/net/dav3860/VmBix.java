@@ -269,6 +269,7 @@ public class VmBix {
         "Available methods :                                           \n"
         + "vmbix.ping                                                  \n"
         + "vmbix.version                                               \n"
+        + "vmbix.stats[threads]                                        \n"
         + "about                                                       \n"
         + "cluster.discovery                                           \n"
         + "cluster.cpu[name,free]                                      \n"
@@ -530,6 +531,7 @@ public class VmBix {
       Pattern pPing = Pattern.compile("^(?:\\s*ZBXD.)?.*(ping)");        //
       Pattern pAbout = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)");        //
       Pattern pVersion = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.version)");        //
+      Pattern pThreadCount = Pattern.compile("^(?:\\s*ZBXD.)?.*vmbix\\.stats\\[threads\\]");        //
       Pattern pClusters = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.(discovery)");        //
       Pattern pClusterCpuFree = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),free\\]");        //
       Pattern pClusterCpuTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),total\\]");        //
@@ -635,6 +637,11 @@ public class VmBix {
       found = checkPattern(pVersion, string);
       if (found != null) {
         getVersion(out);
+        return;
+      }
+      found = checkPattern(pThreadCount, string);
+      if (found != null) {
+        getThreadCount(out);
         return;
       }
       found = checkPattern(pClusters, string);
@@ -1314,6 +1321,14 @@ public class VmBix {
         // we could not compute the version so use a blank
       }
       out.print(version);
+      out.flush();
+    }
+
+    /**
+     * Returns the number of worker threads
+     */
+    private void getThreadCount(PrintWriter out) throws IOException {
+      out.print(Thread.activeCount() - 1);
       out.flush();
     }
 
@@ -3998,7 +4013,7 @@ public class VmBix {
     }
 
     public void run() {
-      LOG.info("thread created, collecting data in " + (Thread.activeCount() - 1) + " threads");
+      LOG.debug("thread created, collecting data in " + (Thread.activeCount() - 1) + " threads");
       int reincornate = 1;
       final int lifeTime = 2000;
       int alive = 0;
@@ -4041,7 +4056,7 @@ public class VmBix {
           }
         }
         if (alive > lifeTime) {
-          LOG.info("thread  closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
+          LOG.debug("thread  closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
           reincornate = 0;
         }
       }
