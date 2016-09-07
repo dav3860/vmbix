@@ -77,6 +77,7 @@ public class VmBix {
   static Integer interval = 300; // Default interval of 300s for performance metrics queries
   static Boolean useUuid = false; // Use object name by default
   static Integer maxConnections = 150; // Default maximum number of worker threads
+  static Integer connectTimeout = 5;
   static Boolean escapeChars = false;
   static Integer vmCacheTtl = 15;        // in minutes
   static Integer vmCacheSize = 1000;       // in items (1 vm = 1 item)
@@ -111,6 +112,7 @@ public class VmBix {
       CmdLineParser.Option oConfig = parser.addStringOption('c', "config");
       CmdLineParser.Option oUseUuid = parser.addStringOption('U', "uuid");
       CmdLineParser.Option omaxConnections = parser.addIntegerOption('m', "maxconnections");
+      CmdLineParser.Option oconnectTimeout = parser.addIntegerOption('C', "connectTimeout");
       /*CmdLineParser.Option oEsxiCacheTtl = parser.addIntegerOption( 'E', "esxicachettl");
       CmdLineParser.Option oDsCacheTtl = parser.addIntegerOption( 'D', "dscachettl");
       CmdLineParser.Option oPerfIdCacheTtl = parser.addIntegerOption( 'I', "perfidcachettl");
@@ -136,6 +138,7 @@ public class VmBix {
       }
       interval = (Integer) parser.getOptionValue(oInterval);
       maxConnections = (Integer) parser.getOptionValue(omaxConnections);
+      connectTimeout = (Integer) parser.getOptionValue(oconnectTimeout);
 
       /*esxiCacheTtl    = (Integer)parser.getOptionValue(oEsxiCacheTtl   );
       dsCacheTtl      = (Integer)parser.getOptionValue(oDsCacheTtl     );
@@ -171,6 +174,7 @@ public class VmBix {
 
           interval = Integer.parseInt(prop.getProperty("interval"));
           maxConnections = Integer.parseInt(prop.getProperty("maxconnections"));
+          connectTimeout = Integer.parseInt(prop.getProperty("connecttimeout"));
           useUuid = Boolean.parseBoolean(prop.getProperty("useuuid"));
           escapeChars = Boolean.parseBoolean(prop.getProperty("escapechars"));
 
@@ -417,17 +421,21 @@ public class VmBix {
   }
 
   public static synchronized void updateConnection() throws IOException {
-    long start = System.currentTimeMillis();
-    serviceInstance = new ServiceInstance(new URL(sdkUrl), uname, passwd, true);
-    if (serviceInstance == null) {
-      LOG.error("serviceInstance in null! Connection failed.");
-      return;
+    try {
+      serviceInstance = new ServiceInstance(new URL(sdkUrl), uname, passwd, true, connectTimeout);
+      if (serviceInstance == null) {
+        LOG.error("serviceInstance in null! Connection failed.");
+        return;
+      }
+      Folder rootFolder = serviceInstance.getRootFolder();
+      inventoryNavigator = new InventoryNavigator(serviceInstance.getRootFolder());
+      performanceManager = serviceInstance.getPerformanceManager();
+      // retrieve all the available performance counters
+      PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
     }
-    Folder rootFolder = serviceInstance.getRootFolder();
-    inventoryNavigator = new InventoryNavigator(serviceInstance.getRootFolder());
-    performanceManager = serviceInstance.getPerformanceManager();
-    // retrieve all the available performance counters
-    PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
+    catch (Exception ex) {
+      ex.printStackTrace()
+    }
   }
 
   public static synchronized void shutdown() {
@@ -4054,7 +4062,9 @@ public class VmBix {
 
               if (message != null) {
                 long timerStart = System.currentTimeMillis();
+
                 checkAllPatterns(message, out);
+
                 long timerEnd = System.currentTimeMillis();
                 LOG.debug("Request took " + (timerEnd - timerStart) + " ms");
               }
