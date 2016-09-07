@@ -76,6 +76,7 @@ public class VmBix {
   static String pidFile;
   static Integer interval = 300; // Default interval of 300s for performance metrics queries
   static Boolean useUuid = false; // Use object name by default
+  static Integer maxConnections = 150; // Default maximum number of worker threads
   static Boolean escapeChars = false;
   static Integer vmCacheTtl = 15;        // in minutes
   static Integer vmCacheSize = 1000;       // in items (1 vm = 1 item)
@@ -109,6 +110,7 @@ public class VmBix {
       CmdLineParser.Option oInterval = parser.addIntegerOption('i', "interval"); // Default interval for performance manager
       CmdLineParser.Option oConfig = parser.addStringOption('c', "config");
       CmdLineParser.Option oUseUuid = parser.addStringOption('U', "uuid");
+      CmdLineParser.Option omaxConnections = parser.addIntegerOption('m', "maxconnections");
       /*CmdLineParser.Option oEsxiCacheTtl = parser.addIntegerOption( 'E', "esxicachettl");
       CmdLineParser.Option oDsCacheTtl = parser.addIntegerOption( 'D', "dscachettl");
       CmdLineParser.Option oPerfIdCacheTtl = parser.addIntegerOption( 'I', "perfidcachettl");
@@ -133,6 +135,7 @@ public class VmBix {
         useUuid = true;
       }
       interval = (Integer) parser.getOptionValue(oInterval);
+      maxConnections = (Integer) parser.getOptionValue(omaxConnections);
 
       /*esxiCacheTtl    = (Integer)parser.getOptionValue(oEsxiCacheTtl   );
       dsCacheTtl      = (Integer)parser.getOptionValue(oDsCacheTtl     );
@@ -167,6 +170,7 @@ public class VmBix {
           }
 
           interval = Integer.parseInt(prop.getProperty("interval"));
+          maxConnections = Integer.parseInt(prop.getProperty("maxconnections"));
           useUuid = Boolean.parseBoolean(prop.getProperty("useuuid"));
           escapeChars = Boolean.parseBoolean(prop.getProperty("escapechars"));
 
@@ -270,7 +274,7 @@ public class VmBix {
         + "vmbix.ping                                                  \n"
         + "vmbix.version                                               \n"
         + "vmbix.stats[threads]                                        \n"
-        + "vmbix.stats[sockets]                                        \n"
+        + "vmbix.stats[queue]                                          \n"
         + "about                                                       \n"
         + "cluster.discovery                                           \n"
         + "cluster.cpu[name,free]                                      \n"
@@ -389,7 +393,7 @@ public class VmBix {
   }
 
   public static synchronized void putConnection(Socket socket) throws IOException {
-    if (sockets.size() < 150) {
+    if (sockets.size() < maxConnections) {
       sockets.add(socket);
       if (sockets.size() > (Thread.activeCount() - 2)) {
         Request request = new Request(serviceInstance, null, inventoryNavigator, performanceManager);
@@ -397,7 +401,7 @@ public class VmBix {
         thread.start();
       }
     } else {
-      LOG.info("Maximum socket count reached, closing connection");
+      LOG.warn("Maximum concurrent connections reached, closing connection");
       socket.close();
     }
   }
@@ -534,7 +538,7 @@ public class VmBix {
       Pattern pAbout = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)");        //
       Pattern pVersion = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.version)");        //
       Pattern pThreadCount = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[threads\\])");        //
-      Pattern pSocketCount = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[sockets\\])");        //
+      Pattern pConnectionQueue = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[queue\\])");        //
       Pattern pClusters = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.(discovery)");        //
       Pattern pClusterCpuFree = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),free\\]");        //
       Pattern pClusterCpuTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),total\\]");        //
@@ -646,9 +650,9 @@ public class VmBix {
         getThreadCount(out);
         return;
       }
-      found = checkPattern(pSocketCount, string);
+      found = checkPattern(pConnectionQueue, string);
       if (found != null) {
-        getSocketCount(out);
+        getConnectionQueue(out);
         return;
       }
       found = checkPattern(pClusters, string);
@@ -1340,9 +1344,9 @@ public class VmBix {
     }
 
     /**
-     * Returns the number of active sockets
+     * Returns the number of connections waiting for a worker thread
      */
-    private void getSocketCount(PrintWriter out) throws IOException {
+    private void getConnectionQueue(PrintWriter out) throws IOException {
       out.print(sockets.size());
       out.flush();
     }
@@ -4028,7 +4032,7 @@ public class VmBix {
     }
 
     public void run() {
-      LOG.debug("thread created, collecting data in " + (Thread.activeCount() - 1) + " threads");
+      LOG.debug("Thread created, collecting data in " + (Thread.activeCount() - 1) + " threads");
       int reincornate = 1;
       final int lifeTime = 2000;
       int alive = 0;
@@ -4049,7 +4053,10 @@ public class VmBix {
               String message = in.readLine();
 
               if (message != null) {
+                long timerStart = System.currentTimeMillis();
                 checkAllPatterns(message, out);
+                long timerEnd = System.currentTimeMillis();
+                LOG.debug("Request took " + (timerEnd - timerStart) + " ms");
               }
               continues = 0;
 
@@ -4071,7 +4078,7 @@ public class VmBix {
           }
         }
         if (alive > lifeTime) {
-          LOG.debug("thread  closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
+          LOG.debug("Thread closed, collecting data in " + (Thread.activeCount() - 2) + " threads");
           reincornate = 0;
         }
       }
