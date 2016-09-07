@@ -643,12 +643,12 @@ public class VmBix {
       }
       found = checkPattern(pThreadCount, string);
       if (found != null) {
-        getSocketCount(out);
+        getThreadCount(out);
         return;
       }
       found = checkPattern(pSocketCount, string);
       if (found != null) {
-        getThreadCount(out);
+        getSocketCount(out);
         return;
       }
       found = checkPattern(pClusters, string);
