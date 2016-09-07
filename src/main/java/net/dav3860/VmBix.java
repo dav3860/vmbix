@@ -270,6 +270,7 @@ public class VmBix {
         + "vmbix.ping                                                  \n"
         + "vmbix.version                                               \n"
         + "vmbix.stats[threads]                                        \n"
+        + "vmbix.stats[sockets]                                        \n"
         + "about                                                       \n"
         + "cluster.discovery                                           \n"
         + "cluster.cpu[name,free]                                      \n"
@@ -396,6 +397,7 @@ public class VmBix {
         thread.start();
       }
     } else {
+      LOG.info("Maximum socket count reached, closing connection")
       socket.close();
     }
   }
@@ -532,6 +534,7 @@ public class VmBix {
       Pattern pAbout = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)");        //
       Pattern pVersion = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.version)");        //
       Pattern pThreadCount = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[threads\\])");        //
+      Pattern pSocketCount = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[sockets\\])");        //
       Pattern pClusters = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.(discovery)");        //
       Pattern pClusterCpuFree = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),free\\]");        //
       Pattern pClusterCpuTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),total\\]");        //
@@ -639,6 +642,11 @@ public class VmBix {
         return;
       }
       found = checkPattern(pThreadCount, string);
+      if (found != null) {
+        getSocketCount(out);
+        return;
+      }
+      found = checkPattern(pSocketCount, string);
       if (found != null) {
         getThreadCount(out);
         return;
@@ -1328,6 +1336,14 @@ public class VmBix {
      */
     private void getThreadCount(PrintWriter out) throws IOException {
       out.print(Thread.activeCount() - 1);
+      out.flush();
+    }
+
+    /**
+     * Returns the number of active sockets
+     */
+    private void getSocketCount(PrintWriter out) throws IOException {
+      out.print(sockets.size());
       out.flush();
     }
 
