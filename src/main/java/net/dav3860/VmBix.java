@@ -207,34 +207,8 @@ public class VmBix {
         }
       }
 
-      LOG.debug("Args: " + sdkUrl);
-      LOG.debug("Args: " + uname);
-      LOG.debug("Args: " + passwd);
-      LOG.debug("Args: " + ipaddr);
-      LOG.debug("Args: " + port);
-      LOG.debug("Args: " + pidFile);
-      LOG.debug("Args: " +  interval);
-      LOG.debug("Args: " +  useUuid);
-      LOG.debug("Args: " +  maxConnections);
-      LOG.debug("Args: " +  connectTimeout);
-      LOG.debug("Args: " +  readTimeout);
-      LOG.debug("Args: " +  escapeChars);
-      LOG.debug("Args: " +  vmCacheTtl);
-      LOG.debug("Args: " +  vmCacheSize);
-      LOG.debug("Args: " +  esxiCacheTtl);
-      LOG.debug("Args: " +  esxiCacheSize);
-      LOG.debug("Args: " +  dsCacheTtl);
-      LOG.debug("Args: " +  dsCacheSize);
-      LOG.debug("Args: " +  perfIdCacheTtl);
-      LOG.debug("Args: " +  perfIdCacheSize);
-      LOG.debug("Args: " +  counterCacheTtl);
-      LOG.debug("Args: " +  counterCacheSize);
-      LOG.debug("Args: " +  hriCacheTtl);
-      LOG.debug("Args: " +  hriCacheSize);
-      LOG.debug("Args: " +  clCacheTtl);
-      LOG.debug("Args: " +  clCacheSize);
-
       if (sdkUrl == null || uname == null || passwd == null || port == null) {
+        System.out.println("There was a problem with the configuration parameters.");
         usage("");
         methods();
         System.exit(2);
