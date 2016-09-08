@@ -79,7 +79,7 @@ public class VmBix {
 
 
   static ArrayList<Socket> sockets;
-  static int requests;
+  static long requests;
   static ServiceInstance serviceInstance;
   static InventoryNavigator inventoryNavigator;
   static PerformanceManager performanceManager;
