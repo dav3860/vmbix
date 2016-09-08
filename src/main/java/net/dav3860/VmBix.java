@@ -150,7 +150,7 @@ public class VmBix {
       port = (Integer) parser.getOptionValue(oPort);
       pidFile = (String) parser.getOptionValue(oPid);
 
-      String config = (String) parser.getOptionValue(oConfig, CONFIG);
+      String config = (String) parser.getOptionValue(oConfig);
       if (config != null) {       // If a configuration file is specified
         Properties prop = new Properties();
         try {
@@ -191,6 +191,7 @@ public class VmBix {
           counterCacheTtl = Integer.parseInt(prop.getProperty("countercachettl", COUNTERCACHETTL));
           hriCacheTtl = Integer.parseInt(prop.getProperty("hricachettl", HRICACHETTL));
           clCacheTtl = Integer.parseInt(prop.getProperty("clcachettl", CLCACHETTL));
+
           vmCacheSize = Integer.parseInt(prop.getProperty("vmcachesize", VMCACHESIZE));
           esxiCacheSize = Integer.parseInt(prop.getProperty("esxicachesize", ESXICACHESIZE));
           dsCacheSize = Integer.parseInt(prop.getProperty("dscachesize", DSCACHESIZE));
