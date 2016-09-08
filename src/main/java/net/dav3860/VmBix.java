@@ -286,6 +286,7 @@ public class VmBix {
         + "vmbix.stats[threads]                                        \n"
         + "vmbix.stats[queue]                                          \n"
         + "vmbix.stats[cachesize,(vm|esxi|ds|perf|counter|hri|cluster)]\n"
+        + "vmbix.stats[hitrate,(vm|esxi|ds|perf|counter|hri|cluster)]  \n"
         + "about                                                       \n"
         + "cluster.discovery                                           \n"
         + "cluster.cpu[name,free]                                      \n"
@@ -555,7 +556,7 @@ public class VmBix {
       Pattern pThreadCount = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[threads\\])");        //
       Pattern pConnectionQueue = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[queue\\])");        //
       Pattern pCacheSize = Pattern.compile("^(?:\\s*ZBXD.)?.*vmbix\\.stats\\[cachesize,(.+)\\]");        //
-//      Pattern pCacheHitRate = Pattern.compile("^(?:\\s*ZBXD.)?.*vmbix\\.stats\\[hitrate,(.+)\\]");        //
+      Pattern pCacheHitRate = Pattern.compile("^(?:\\s*ZBXD.)?.*vmbix\\.stats\\[hitrate,(.+)\\]");        //
       Pattern pClusters = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.(discovery)");        //
       Pattern pClusterCpuFree = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),free\\]");        //
       Pattern pClusterCpuTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),total\\]");        //
@@ -677,11 +678,11 @@ public class VmBix {
         getCacheSize(found, out);
         return;
       }
-//      found = checkPattern(pCacheHitRate, string);
-//      if (found != null) {
-//        getCacheHitRate(found, out);
-//        return;
-//      }
+      found = checkPattern(pCacheHitRate, string);
+      if (found != null) {
+        getCacheHitRate(found, out);
+        return;
+      }
       found = checkPattern(pClusters, string);
       if (found != null) {
         getClusters(out);
@@ -1379,17 +1380,10 @@ public class VmBix {
     }
 
     /**
-     * Returns the number of connections waiting for a worker thread
+     * Returns the size of a VmBix cache
      */
     private void getCacheSize(String cacheName, PrintWriter out) throws IOException {
       long size = 0;
-      vmCache       = CacheBuilder.newBuilder().maximumSize(vmCacheSize).expireAfterWrite(vmCacheTtl, TimeUnit.MINUTES).recordStats().build();
-      esxiCache     = CacheBuilder.newBuilder().maximumSize(esxiCacheSize).expireAfterWrite(esxiCacheTtl, TimeUnit.MINUTES).recordStats().build();
-      dsCache       = CacheBuilder.newBuilder().maximumSize(dsCacheSize).expireAfterWrite(dsCacheTtl, TimeUnit.MINUTES).recordStats().build();
-      hostPerfCache = CacheBuilder.newBuilder().maximumSize(perfIdCacheSize).expireAfterWrite(perfIdCacheTtl, TimeUnit.MINUTES).recordStats().build();
-      counterCache  = CacheBuilder.newBuilder().maximumSize(counterCacheSize).expireAfterWrite(counterCacheTtl, TimeUnit.MINUTES).recordStats().build();
-      hriCache      = CacheBuilder.newBuilder().maximumSize(hriCacheSize).expireAfterWrite(hriCacheTtl, TimeUnit.MINUTES).recordStats().build();
-      clCache       = CacheBuilder.newBuilder().maximumSize(clCacheSize).expireAfterWrite(clCacheTtl, TimeUnit.MINUTES).recordStats().build();
 
       switch (cacheName) {
         case "vm":
@@ -1418,6 +1412,42 @@ public class VmBix {
           break;
       }
       out.print(size);
+      out.flush();
+    }
+
+    /**
+     * Returns the hit rate of a VmBix cache
+     */
+    private void getCacheHitRate(String cacheName, PrintWriter out) throws IOException {
+      double hitrate = 0;
+
+      switch (cacheName) {
+        case "vm":
+          hitrate = vmCache.stats().hitRate();
+          break;
+        case "esxi":
+          hitrate = esxiCache.stats().hitRate();
+          break;
+        case "ds":
+          hitrate = dsCache.stats().hitRate();
+          break;
+        case "perf":
+          hitrate = hostPerfCache.stats().hitRate();
+          break;
+        case "counter":
+          hitrate = counterCache.stats().hitRate();
+          break;
+        case "hri":
+          hitrate = hriCache.stats().hitRate();
+          break;
+        case "cluster":
+          hitrate = clCache.stats().hitRate();
+          break;
+        default:
+          LOG.error("Cache " + cacheName + "does not exist");
+          break;
+      }
+      out.print(hitrate);
       out.flush();
     }
 
