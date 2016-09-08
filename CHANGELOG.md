@@ -1,4 +1,5 @@
 2.5
+* **BREAKING CHANGE** : all parameters in the configuration file vmbix.conf and on the command line must now be in lowercase. The possible arguments in command line have also changed. See the "usage" output.
 * Improved the script vmbix-object-sync
 * Hacked the vm.guest.disk.* methods with a workaround for ZBX-10590. If a disk name ends with *\*, a space will be added at the end of the disk name. This is controlled by the parameter *escapechars* in the configuration file. It is set to false by default.
 * Fixed the ESX usage item in the template.
