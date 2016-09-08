@@ -1382,7 +1382,7 @@ public class VmBix {
      * Returns the number of connections waiting for a worker thread
      */
     private void getCacheSize(String cacheName, PrintWriter out) throws IOException {
-      Integer size;
+      long size = 0;
       vmCache       = CacheBuilder.newBuilder().maximumSize(vmCacheSize).expireAfterWrite(vmCacheTtl, TimeUnit.MINUTES).recordStats().build();
       esxiCache     = CacheBuilder.newBuilder().maximumSize(esxiCacheSize).expireAfterWrite(esxiCacheTtl, TimeUnit.MINUTES).recordStats().build();
       dsCache       = CacheBuilder.newBuilder().maximumSize(dsCacheSize).expireAfterWrite(dsCacheTtl, TimeUnit.MINUTES).recordStats().build();
@@ -1415,7 +1415,6 @@ public class VmBix {
           break;
         default:
           LOG.error("Cache " + cacheName + "does not exist");
-          size = 0;
           break;
       }
       out.print(size);
