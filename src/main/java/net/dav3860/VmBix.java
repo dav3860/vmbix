@@ -207,16 +207,6 @@ public class VmBix {
         }
       }
 
-      if (sdkUrl == null || uname == null || passwd == null || port == null) {
-        usage("");
-        methods();
-        System.exit(2);
-      }
-
-      if (pidFile != null && pid != null) {
-        createPid(pidFile, pid);
-      }
-
       LOG.debug(sdkUrl);
       LOG.debug(uname);
       LOG.debug(passwd);
@@ -243,6 +233,16 @@ public class VmBix {
       LOG.debug( hriCacheSize);
       LOG.debug( clCacheTtl);
       LOG.debug( clCacheSize);
+
+      if (sdkUrl == null || uname == null || passwd == null || port == null) {
+        usage("");
+        methods();
+        System.exit(2);
+      }
+
+      if (pidFile != null && pid != null) {
+        createPid(pidFile, pid);
+      }
 
       Shutdown sh = new Shutdown();
       Runtime.getRuntime().addShutdownHook(sh);
