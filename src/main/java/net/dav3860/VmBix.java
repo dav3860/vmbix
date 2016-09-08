@@ -55,6 +55,29 @@ import org.slf4j.LoggerFactory;
 
 public class VmBix {
 
+  // Constants
+  public static final String INTERVAL = "300";
+  public static final String USEUUID = "false";
+  public static final String MAXCONNECTIONS = "150";
+  public static final String CONNECTTIMEOUT = "5";
+  public static final String READTIMEOUT = "5";
+  public static final String ESCAPECHARS = "false";
+  public static final String VMCACHETTL = "15";
+  public static final String VMCACHESIZE = "1000";
+  public static final String ESXICACHETTL = "15";
+  public static final String ESXICACHESIZE = "100";
+  public static final String DSCACHETTL = "15";
+  public static final String DSCACHESIZE = "100";
+  public static final String PERFIDCACHETTL = "5";
+  public static final String PERFIDCACHESIZE = "1000";
+  public static final String COUNTERCACHETTL = "5";
+  public static final String COUNTERCACHESIZE = "1000";
+  public static final String HRICACHETTL = "15";
+  public static final String HRICACHESIZE = "100";
+  public static final String CLCACHETTL = "15";
+  public static final String CLCACHESIZE = "100";
+
+
   static ArrayList<Socket> sockets;
   static ServiceInstance serviceInstance;
   static InventoryNavigator inventoryNavigator;
@@ -74,26 +97,26 @@ public class VmBix {
   static String ipaddr;
   static Integer port;
   static String pidFile;
-  static Integer interval = 300; // Default interval of 300s for performance metrics queries
-  static Boolean useUuid = false; // Use object name by default
-  static Integer maxConnections = 150; // Default maximum number of worker threads
-  static Integer connectTimeout = 5;
-  static Integer readTimeout = 5;
-  static Boolean escapeChars = false;
-  static Integer vmCacheTtl = 15;        // in minutes
-  static Integer vmCacheSize = 1000;       // in items (1 vm = 1 item)
-  static Integer esxiCacheTtl = 15;      // in minutes
-  static Integer esxiCacheSize = 100;     // in items (1 esxi = 1 item)
-  static Integer dsCacheTtl = 15;        // in minutes
-  static Integer dsCacheSize = 100;       // in items
-  static Integer perfIdCacheTtl = 5;    // in minutes
-  static Integer perfIdCacheSize = 1000;   // in items
-  static Integer counterCacheTtl = 5;   // in minutes
-  static Integer counterCacheSize = 1000;  // in items
-  static Integer hriCacheTtl = 15;       // in minutes
-  static Integer hriCacheSize = 100;      // in items (1 esxi = 1 item)
-  static Integer clCacheTtl = 15;       // in minutes
-  static Integer clCacheSize = 100;      // in items
+  static Integer interval;
+  static Boolean useUuid;
+  static Integer maxConnections;
+  static Integer connectTimeout;
+  static Integer readTimeout;
+  static Boolean escapeChars;
+  static Integer vmCacheTtl;
+  static Integer vmCacheSize;
+  static Integer esxiCacheTtl;
+  static Integer esxiCacheSize;
+  static Integer dsCacheTtl;
+  static Integer dsCacheSize;
+  static Integer perfIdCacheTtl;
+  static Integer perfIdCacheSize;
+  static Integer counterCacheTtl;
+  static Integer counterCacheSize;
+  static Integer hriCacheTtl;
+  static Integer hriCacheSize;
+  static Integer clCacheTtl;
+  static Integer clCacheSize;
 
   static final Logger LOG = LoggerFactory.getLogger(VmBix.class);
 
@@ -103,24 +126,15 @@ public class VmBix {
       String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
 
       CmdLineParser parser = new CmdLineParser();
+      // These parameters don't have a default value
       CmdLineParser.Option oUname = parser.addStringOption('u', "username");
       CmdLineParser.Option oPasswd = parser.addStringOption('p', "password");
       CmdLineParser.Option oSurl = parser.addStringOption('s', "serviceurl");
       CmdLineParser.Option oIpAddr = parser.addStringOption('b', "bindaddress");
       CmdLineParser.Option oPort = parser.addIntegerOption('P', "port");
       CmdLineParser.Option oPid = parser.addStringOption('f', "pid");
-      CmdLineParser.Option oInterval = parser.addIntegerOption('i', "interval"); // Default interval for performance manager
       CmdLineParser.Option oConfig = parser.addStringOption('c', "config");
-      CmdLineParser.Option oUseUuid = parser.addStringOption('U', "uuid");
-      CmdLineParser.Option omaxConnections = parser.addIntegerOption('m', "maxconnections");
-      CmdLineParser.Option oconnectTimeout = parser.addIntegerOption('C', "connectTimeout");
-      CmdLineParser.Option oreadTimeout = parser.addIntegerOption('R', "readTimeout");
-      /*CmdLineParser.Option oEsxiCacheTtl = parser.addIntegerOption( 'E', "esxicachettl");
-      CmdLineParser.Option oDsCacheTtl = parser.addIntegerOption( 'D', "dscachettl");
-      CmdLineParser.Option oPerfIdCacheTtl = parser.addIntegerOption( 'I', "perfidcachettl");
-      CmdLineParser.Option oCounterCacheTtl = parser.addIntegerOption( 'O', "countercachettl");
-      CmdLineParser.Option ohriCacheTtl = parser.addIntegerOption( 'H', "hricachettl");
-      * */
+
       try {
         parser.parse(args);
       } catch (CmdLineParser.OptionException e) {
@@ -135,27 +149,13 @@ public class VmBix {
       ipaddr = (String) parser.getOptionValue(oIpAddr);
       port = (Integer) parser.getOptionValue(oPort);
       pidFile = (String) parser.getOptionValue(oPid);
-      if (oUseUuid != null) {
-        useUuid = true;
-      }
-      interval = (Integer) parser.getOptionValue(oInterval);
-      maxConnections = (Integer) parser.getOptionValue(omaxConnections);
-      connectTimeout = (Integer) parser.getOptionValue(oconnectTimeout);
-      readTimeout = (Integer) parser.getOptionValue(oreadTimeout);
 
-      /*esxiCacheTtl    = (Integer)parser.getOptionValue(oEsxiCacheTtl   );
-      dsCacheTtl      = (Integer)parser.getOptionValue(oDsCacheTtl     );
-      perfIdCacheTtl  = (Integer)parser.getOptionValue(oPerfIdCacheTtl );
-      counterCacheTtl = (Integer)parser.getOptionValue(oCounterCacheTtl);
-      hriCacheTtl     = (Integer)parser.getOptionValue(ohriCacheTtl    );
-       */
-      String config = (String) parser.getOptionValue(oConfig);
-      if (config != null) {
+      String config = (String) parser.getOptionValue(oConfig, CONFIG);
+      if (config != null) {       // If a configuration file is specified
         Properties prop = new Properties();
         try {
           InputStream is = new FileInputStream(config);
           prop.load(is);
-          //TODO: fix parameters to have default values
           if (uname == null) {
             uname = prop.getProperty("username");
           }
@@ -175,28 +175,29 @@ public class VmBix {
             pidFile = prop.getProperty("pidfile");
           }
 
-          interval = Integer.parseInt(prop.getProperty("interval"));
-          maxConnections = Integer.parseInt(prop.getProperty("maxconnections"));
-          connectTimeout = Integer.parseInt(prop.getProperty("connecttimeout"));
-          readTimeout = Integer.parseInt(prop.getProperty("readtimeout"));
-          useUuid = Boolean.parseBoolean(prop.getProperty("useuuid"));
-          escapeChars = Boolean.parseBoolean(prop.getProperty("escapechars"));
+          // Common parameters
+          interval = Integer.parseInt(prop.getProperty("interval", INTERVAL));
+          maxConnections = Integer.parseInt(prop.getProperty("maxconnections", MAXCONNECTIONS));
+          connectTimeout = Integer.parseInt(prop.getProperty("connecttimeout", CONNECTTIMEOUT));
+          readTimeout = Integer.parseInt(prop.getProperty("readtimeout", READTIMEOUT));
+          useUuid = Boolean.parseBoolean(prop.getProperty("useuuid", USEUUID));
+          escapeChars = Boolean.parseBoolean(prop.getProperty("escapechars", ESCAPECHARS));
 
-          vmCacheTtl = Integer.parseInt(prop.getProperty("vmCacheTtl"));
-          esxiCacheTtl = Integer.parseInt(prop.getProperty("esxiCacheTtl"));
-          dsCacheTtl = Integer.parseInt(prop.getProperty("dsCacheTtl"));
-          perfIdCacheTtl = Integer.parseInt(prop.getProperty("perfIdCacheTtl"));
-          counterCacheTtl = Integer.parseInt(prop.getProperty("counterCacheTtl"));
-          hriCacheTtl = Integer.parseInt(prop.getProperty("hriCacheTtl"));
-          clCacheTtl = Integer.parseInt(prop.getProperty("clCacheTtl"));
-
-          vmCacheSize = Integer.parseInt(prop.getProperty("vmCacheSize"));
-          esxiCacheSize = Integer.parseInt(prop.getProperty("esxiCacheSize"));
-          dsCacheSize = Integer.parseInt(prop.getProperty("dsCacheSize"));
-          perfIdCacheSize = Integer.parseInt(prop.getProperty("perfIdCacheSize"));
-          counterCacheSize = Integer.parseInt(prop.getProperty("counterCacheSize"));
-          hriCacheSize = Integer.parseInt(prop.getProperty("hriCacheSize"));
-          clCacheSize = Integer.parseInt(prop.getProperty("clCacheSize"));
+          // Caching parameters
+          vmCacheTtl = Integer.parseInt(prop.getProperty("vmcachettl", VMCACHETTL));
+          esxiCacheTtl = Integer.parseInt(prop.getProperty("esxicachettl", ESXICACHETTL));
+          dsCacheTtl = Integer.parseInt(prop.getProperty("dscachettl", DSCACHETTL));
+          perfIdCacheTtl = Integer.parseInt(prop.getProperty("perfidcachettl", PERFIDCACHETTL));
+          counterCacheTtl = Integer.parseInt(prop.getProperty("countercachettl", COUNTERCACHETTL));
+          hriCacheTtl = Integer.parseInt(prop.getProperty("hricachettl", HRICACHETTL));
+          clCacheTtl = Integer.parseInt(prop.getProperty("clcachettl", CLCACHETTL));
+          vmCacheSize = Integer.parseInt(prop.getProperty("vmcachesize", VMCACHESIZE));
+          esxiCacheSize = Integer.parseInt(prop.getProperty("esxicachesize", ESXICACHESIZE));
+          dsCacheSize = Integer.parseInt(prop.getProperty("dscachesize", DSCACHESIZE));
+          perfIdCacheSize = Integer.parseInt(prop.getProperty("perfidcachesize", PERFIDCACHESIZE));
+          counterCacheSize = Integer.parseInt(prop.getProperty("countercachesize", COUNTERCACHESIZE));
+          hriCacheSize = Integer.parseInt(prop.getProperty("hricachesize", HRICACHESIZE));
+          clCacheSize = Integer.parseInt(prop.getProperty("clcachesize", CLCACHESIZE));
 
         } catch (IOException e) {
           LOG.info("There was a problem with the configuration parameters.");
@@ -394,8 +395,8 @@ public class VmBix {
 
     System.out.println(
         "Usage:\nvmbix "
-        + sport + " " + ssurl + " " + sname + " " + spass + " [-f|--pid pidfile] [-i|--interval interval] [-U|--useuuid (true|false)]" + "\n"
-        + "or\nvmbix [-c|--config] config_file  [-f|--pid pidfile] [-i|--interval interval] [-U|--useuuid (true|false)]\n"
+        + sport + " " + ssurl + " " + sname + " " + spass + " [-f|--pid pidfile]" + "\n"
+        + "or\nvmbix [-c|--config] config_file  [-f|--pid pidfile]\n"
         + (str != null ? str : "")
     );
   }
