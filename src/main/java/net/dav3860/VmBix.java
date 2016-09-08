@@ -168,7 +168,7 @@ public class VmBix {
           if (ipaddr == null) {
             ipaddr = prop.getProperty("bindaddress");
           }
-          if (port == null) {
+          if (port == null && prop.getProperty("listenport")) {
             port = Integer.parseInt(prop.getProperty("listenport"));
           }
           if (pidFile == null) {
