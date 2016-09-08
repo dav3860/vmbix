@@ -220,13 +220,13 @@ public class VmBix {
       Shutdown sh = new Shutdown();
       Runtime.getRuntime().addShutdownHook(sh);
 
-      vmCache       = CacheBuilder.newBuilder().maximumSize(vmCacheSize).expireAfterWrite(vmCacheTtl, TimeUnit.MINUTES).build();
-      esxiCache     = CacheBuilder.newBuilder().maximumSize(esxiCacheSize).expireAfterWrite(esxiCacheTtl, TimeUnit.MINUTES).build();
-      dsCache       = CacheBuilder.newBuilder().maximumSize(dsCacheSize).expireAfterWrite(dsCacheTtl, TimeUnit.MINUTES).build();
-      hostPerfCache = CacheBuilder.newBuilder().maximumSize(perfIdCacheSize).expireAfterWrite(perfIdCacheTtl, TimeUnit.MINUTES).build();
-      counterCache  = CacheBuilder.newBuilder().maximumSize(counterCacheSize).expireAfterWrite(counterCacheTtl, TimeUnit.MINUTES).build();
-      hriCache      = CacheBuilder.newBuilder().maximumSize(hriCacheSize).expireAfterWrite(hriCacheTtl, TimeUnit.MINUTES).build();
-      clCache       = CacheBuilder.newBuilder().maximumSize(clCacheSize).expireAfterWrite(clCacheTtl, TimeUnit.MINUTES).build();
+      vmCache       = CacheBuilder.newBuilder().maximumSize(vmCacheSize).expireAfterWrite(vmCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      esxiCache     = CacheBuilder.newBuilder().maximumSize(esxiCacheSize).expireAfterWrite(esxiCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      dsCache       = CacheBuilder.newBuilder().maximumSize(dsCacheSize).expireAfterWrite(dsCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      hostPerfCache = CacheBuilder.newBuilder().maximumSize(perfIdCacheSize).expireAfterWrite(perfIdCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      counterCache  = CacheBuilder.newBuilder().maximumSize(counterCacheSize).expireAfterWrite(counterCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      hriCache      = CacheBuilder.newBuilder().maximumSize(hriCacheSize).expireAfterWrite(hriCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      clCache       = CacheBuilder.newBuilder().maximumSize(clCacheSize).expireAfterWrite(clCacheTtl, TimeUnit.MINUTES).recordStats().build();
 
       while (true) {
         try {
@@ -285,6 +285,7 @@ public class VmBix {
         + "vmbix.version                                               \n"
         + "vmbix.stats[threads]                                        \n"
         + "vmbix.stats[queue]                                          \n"
+        + "vmbix.stats[cachesize,(vm|esxi|ds|perf|counter|hri|cluster)]\n"
         + "about                                                       \n"
         + "cluster.discovery                                           \n"
         + "cluster.cpu[name,free]                                      \n"
@@ -553,6 +554,8 @@ public class VmBix {
       Pattern pVersion = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.version)");        //
       Pattern pThreadCount = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[threads\\])");        //
       Pattern pConnectionQueue = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[queue\\])");        //
+      Pattern pCacheSize = Pattern.compile("^(?:\\s*ZBXD.)?.*vmbix\\.stats\\[cachesize,(.+)\\]");        //
+//      Pattern pCacheHitRate = Pattern.compile("^(?:\\s*ZBXD.)?.*vmbix\\.stats\\[hitrate,(.+)\\]");        //
       Pattern pClusters = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.(discovery)");        //
       Pattern pClusterCpuFree = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),free\\]");        //
       Pattern pClusterCpuTotal = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.cpu\\[(.+),total\\]");        //
@@ -669,6 +672,16 @@ public class VmBix {
         getConnectionQueue(out);
         return;
       }
+      found = checkPattern(pCacheSize, string);
+      if (found != null) {
+        getCacheSize(found, out);
+        return;
+      }
+//      found = checkPattern(pCacheHitRate, string);
+//      if (found != null) {
+//        getCacheHitRate(found, out);
+//        return;
+//      }
       found = checkPattern(pClusters, string);
       if (found != null) {
         getClusters(out);
@@ -1362,6 +1375,50 @@ public class VmBix {
      */
     private void getConnectionQueue(PrintWriter out) throws IOException {
       out.print(sockets.size());
+      out.flush();
+    }
+
+    /**
+     * Returns the number of connections waiting for a worker thread
+     */
+    private void getCacheSize(String cacheName, PrintWriter out) throws IOException {
+      Integer size;
+      vmCache       = CacheBuilder.newBuilder().maximumSize(vmCacheSize).expireAfterWrite(vmCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      esxiCache     = CacheBuilder.newBuilder().maximumSize(esxiCacheSize).expireAfterWrite(esxiCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      dsCache       = CacheBuilder.newBuilder().maximumSize(dsCacheSize).expireAfterWrite(dsCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      hostPerfCache = CacheBuilder.newBuilder().maximumSize(perfIdCacheSize).expireAfterWrite(perfIdCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      counterCache  = CacheBuilder.newBuilder().maximumSize(counterCacheSize).expireAfterWrite(counterCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      hriCache      = CacheBuilder.newBuilder().maximumSize(hriCacheSize).expireAfterWrite(hriCacheTtl, TimeUnit.MINUTES).recordStats().build();
+      clCache       = CacheBuilder.newBuilder().maximumSize(clCacheSize).expireAfterWrite(clCacheTtl, TimeUnit.MINUTES).recordStats().build();
+
+      switch (cacheName) {
+        case "vm":
+          size = vmCache.size();
+          break;
+        case "esxi":
+          size = esxiCache.size();
+          break;
+        case "ds":
+          size = dsCache.size();
+          break;
+        case "perf":
+          size = hostPerfCache.size();
+          break;
+        case "counter":
+          size = counterCache.size();
+          break;
+        case "hri":
+          size = hriCache.size();
+          break;
+        case "cluster":
+          size = clCache.size();
+          break;
+        default:
+          LOG.error("Cache " + cacheName + "does not exist");
+          size = 0;
+          break;
+      }
+      out.print(size);
       out.flush();
     }
 
