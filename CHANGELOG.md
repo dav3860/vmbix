@@ -4,7 +4,11 @@
 * Hacked the vm.guest.disk.* methods with a workaround for ZBX-10590. If a disk name ends with *\*, a space will be added at the end of the disk name. This is controlled by the parameter *escapechars* in the configuration file. It is set to false by default.
 * Fixed the ESX usage item in the template.
 * Code cleanup and better error handling
-* Added the vm.stats methods
+* Added the vm.stats methods :
+  - vm.stats[threads] indicates the number of working threads
+  - vm.stats[queue] indicates the size of the connection queue
+  - vmbix.stats[cachesize,(vm|esxi|ds|perf|counter|hri|cluster)] indicates the size of each of each cache
+  - vmbix.stats[hitrate,(vm|esxi|ds|perf|counter|hri|cluster)] indicates the hit rate of each cache (1.0 = 100% hits)
 * Exposed the following parameters in the configuration
   - connecttimeout
   - readtimeout
