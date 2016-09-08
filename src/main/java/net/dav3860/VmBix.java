@@ -79,6 +79,7 @@ public class VmBix {
 
 
   static ArrayList<Socket> sockets;
+  static int requests;
   static ServiceInstance serviceInstance;
   static InventoryNavigator inventoryNavigator;
   static PerformanceManager performanceManager;
@@ -285,6 +286,7 @@ public class VmBix {
         + "vmbix.version                                               \n"
         + "vmbix.stats[threads]                                        \n"
         + "vmbix.stats[queue]                                          \n"
+        + "vmbix.stats[requests]                                       \n"
         + "vmbix.stats[cachesize,(vm|esxi|ds|perf|counter|hri|cluster)]\n"
         + "vmbix.stats[hitrate,(vm|esxi|ds|perf|counter|hri|cluster)]  \n"
         + "about                                                       \n"
@@ -494,6 +496,7 @@ public class VmBix {
     LOG.info("server started");
     while (true) {
       Socket connected = listen.accept();
+      requests++;
       putConnection(connected);
     }
   }
@@ -555,6 +558,7 @@ public class VmBix {
       Pattern pVersion = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.version)");        //
       Pattern pThreadCount = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[threads\\])");        //
       Pattern pConnectionQueue = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[queue\\])");        //
+      Pattern pRequestCount = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.stats\\[requests\\])");        //
       Pattern pCacheSize = Pattern.compile("^(?:\\s*ZBXD.)?.*vmbix\\.stats\\[cachesize,(.+)\\]");        //
       Pattern pCacheHitRate = Pattern.compile("^(?:\\s*ZBXD.)?.*vmbix\\.stats\\[hitrate,(.+)\\]");        //
       Pattern pClusters = Pattern.compile("^(?:\\s*ZBXD.)?.*cluster\\.(discovery)");        //
@@ -671,6 +675,11 @@ public class VmBix {
       found = checkPattern(pConnectionQueue, string);
       if (found != null) {
         getConnectionQueue(out);
+        return;
+      }
+      found = checkPattern(pRequestCount, string);
+      if (found != null) {
+        getRequestCount(out);
         return;
       }
       found = checkPattern(pCacheSize, string);
@@ -1376,6 +1385,14 @@ public class VmBix {
      */
     private void getConnectionQueue(PrintWriter out) throws IOException {
       out.print(sockets.size());
+      out.flush();
+    }
+
+    /**
+     * Returns the number of requests accepted by VmBix
+     */
+    private void getRequestCount(PrintWriter out) throws IOException {
+      out.print(requests);
       out.flush();
     }
 
