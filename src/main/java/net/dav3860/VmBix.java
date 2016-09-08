@@ -217,6 +217,33 @@ public class VmBix {
         createPid(pidFile, pid);
       }
 
+      LOG.debug(sdkUrl);
+      LOG.debug(uname);
+      LOG.debug(passwd);
+      LOG.debug(ipaddr);
+      LOG.debug(port);
+      LOG.debug(pidFile);
+      LOG.debug( interval);
+      LOG.debug( useUuid);
+      LOG.debug( maxConnections);
+      LOG.debug( connectTimeout);
+      LOG.debug( readTimeout);
+      LOG.debug( escapeChars);
+      LOG.debug( vmCacheTtl);
+      LOG.debug( vmCacheSize);
+      LOG.debug( esxiCacheTtl);
+      LOG.debug( esxiCacheSize);
+      LOG.debug( dsCacheTtl);
+      LOG.debug( dsCacheSize);
+      LOG.debug( perfIdCacheTtl);
+      LOG.debug( perfIdCacheSize);
+      LOG.debug( counterCacheTtl);
+      LOG.debug( counterCacheSize);
+      LOG.debug( hriCacheTtl);
+      LOG.debug( hriCacheSize);
+      LOG.debug( clCacheTtl);
+      LOG.debug( clCacheSize);
+
       Shutdown sh = new Shutdown();
       Runtime.getRuntime().addShutdownHook(sh);
 
