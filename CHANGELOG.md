@@ -7,12 +7,13 @@
 * Added the vm.stats methods :
   - vm.stats[threads] indicates the number of working threads
   - vm.stats[queue] indicates the size of the connection queue
-  - vmbix.stats[cachesize,(vm|esxi|ds|perf|counter|hri|cluster)] indicates the size of each of each cache
+  - vm.stats[requests] indicates the number of requests received by VmBix
+  - vmbix.stats[cachesize,(vm|esxi|ds|perf|counter|hri|cluster)] indicates the size of each cache
   - vmbix.stats[hitrate,(vm|esxi|ds|perf|counter|hri|cluster)] indicates the hit rate of each cache (1.0 = 100% hits)
 * Exposed the following parameters in the configuration
-  - connecttimeout
-  - readtimeout
-  - maxconnections
+  - connecttimeout : the VmWare API connect timeout
+  - readtimeout : the VmWare API read timeout
+  - maxconnections : the maximum number of concurrent connections accepted by Vmbix
 
 2.4
 * Fixed the UUID in the discovery of NAS datastores
