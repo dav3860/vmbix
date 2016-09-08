@@ -56,26 +56,26 @@ import org.slf4j.LoggerFactory;
 public class VmBix {
 
   // Constants
-  public static final String INTERVAL = "300";
-  public static final String USEUUID = "false";
-  public static final String MAXCONNECTIONS = "150";
-  public static final String CONNECTTIMEOUT = "5";
-  public static final String READTIMEOUT = "5";
-  public static final String ESCAPECHARS = "false";
-  public static final String VMCACHETTL = "15";
-  public static final String VMCACHESIZE = "1000";
-  public static final String ESXICACHETTL = "15";
-  public static final String ESXICACHESIZE = "100";
-  public static final String DSCACHETTL = "15";
-  public static final String DSCACHESIZE = "100";
-  public static final String PERFIDCACHETTL = "5";
-  public static final String PERFIDCACHESIZE = "1000";
-  public static final String COUNTERCACHETTL = "5";
+  public static final String INTERVAL         = "300";
+  public static final String USEUUID          = "false";
+  public static final String MAXCONNECTIONS   = "150";
+  public static final String CONNECTTIMEOUT   = "5";
+  public static final String READTIMEOUT      = "5";
+  public static final String ESCAPECHARS      = "false";
+  public static final String VMCACHETTL       = "15";
+  public static final String VMCACHESIZE      = "1000";
+  public static final String ESXICACHETTL     = "15";
+  public static final String ESXICACHESIZE    = "100";
+  public static final String DSCACHETTL       = "15";
+  public static final String DSCACHESIZE      = "100";
+  public static final String PERFIDCACHETTL   = "5";
+  public static final String PERFIDCACHESIZE  = "1000";
+  public static final String COUNTERCACHETTL  = "5";
   public static final String COUNTERCACHESIZE = "1000";
-  public static final String HRICACHETTL = "15";
-  public static final String HRICACHESIZE = "100";
-  public static final String CLCACHETTL = "15";
-  public static final String CLCACHESIZE = "100";
+  public static final String HRICACHETTL      = "15";
+  public static final String HRICACHESIZE     = "100";
+  public static final String CLCACHETTL       = "15";
+  public static final String CLCACHESIZE      = "100";
 
 
   static ArrayList<Socket> sockets;
@@ -91,12 +91,12 @@ public class VmBix {
   static Cache<String, PerfMetricId[]> hostPerfCache;
   static Cache<String, HostRuntimeInfo> hriCache;
 
-  static String sdkUrl;
-  static String uname;
-  static String passwd;
-  static String ipaddr;
+  static String  sdkUrl;
+  static String  uname;
+  static String  passwd;
+  static String  ipaddr;
   static Integer port;
-  static String pidFile;
+  static String  pidFile;
   static Integer interval;
   static Boolean useUuid;
   static Integer maxConnections;
@@ -168,7 +168,7 @@ public class VmBix {
           if (ipaddr == null) {
             ipaddr = prop.getProperty("bindaddress");
           }
-          if (port == null && prop.getProperty("listenport")) {
+          if (port == null && prop.getProperty("listenport") != null) {
             port = Integer.parseInt(prop.getProperty("listenport"));
           }
           if (pidFile == null) {
@@ -176,29 +176,29 @@ public class VmBix {
           }
 
           // Common parameters
-          interval = Integer.parseInt(prop.getProperty("interval", INTERVAL));
-          maxConnections = Integer.parseInt(prop.getProperty("maxconnections", MAXCONNECTIONS));
-          connectTimeout = Integer.parseInt(prop.getProperty("connecttimeout", CONNECTTIMEOUT));
-          readTimeout = Integer.parseInt(prop.getProperty("readtimeout", READTIMEOUT));
-          useUuid = Boolean.parseBoolean(prop.getProperty("useuuid", USEUUID));
-          escapeChars = Boolean.parseBoolean(prop.getProperty("escapechars", ESCAPECHARS));
+          interval         = Integer.parseInt(prop.getProperty("interval", INTERVAL));
+          maxConnections   = Integer.parseInt(prop.getProperty("maxconnections", MAXCONNECTIONS));
+          connectTimeout   = Integer.parseInt(prop.getProperty("connecttimeout", CONNECTTIMEOUT));
+          readTimeout      = Integer.parseInt(prop.getProperty("readtimeout", READTIMEOUT));
+          useUuid          = Boolean.parseBoolean(prop.getProperty("useuuid", USEUUID));
+          escapeChars      = Boolean.parseBoolean(prop.getProperty("escapechars", ESCAPECHARS));
 
           // Caching parameters
-          vmCacheTtl = Integer.parseInt(prop.getProperty("vmcachettl", VMCACHETTL));
-          esxiCacheTtl = Integer.parseInt(prop.getProperty("esxicachettl", ESXICACHETTL));
-          dsCacheTtl = Integer.parseInt(prop.getProperty("dscachettl", DSCACHETTL));
-          perfIdCacheTtl = Integer.parseInt(prop.getProperty("perfidcachettl", PERFIDCACHETTL));
-          counterCacheTtl = Integer.parseInt(prop.getProperty("countercachettl", COUNTERCACHETTL));
-          hriCacheTtl = Integer.parseInt(prop.getProperty("hricachettl", HRICACHETTL));
-          clCacheTtl = Integer.parseInt(prop.getProperty("clcachettl", CLCACHETTL));
+          vmCacheTtl       = Integer.parseInt(prop.getProperty("vmcachettl", VMCACHETTL));
+          esxiCacheTtl     = Integer.parseInt(prop.getProperty("esxicachettl", ESXICACHETTL));
+          dsCacheTtl       = Integer.parseInt(prop.getProperty("dscachettl", DSCACHETTL));
+          perfIdCacheTtl   = Integer.parseInt(prop.getProperty("perfidcachettl", PERFIDCACHETTL));
+          counterCacheTtl  = Integer.parseInt(prop.getProperty("countercachettl", COUNTERCACHETTL));
+          hriCacheTtl      = Integer.parseInt(prop.getProperty("hricachettl", HRICACHETTL));
+          clCacheTtl       = Integer.parseInt(prop.getProperty("clcachettl", CLCACHETTL));
 
-          vmCacheSize = Integer.parseInt(prop.getProperty("vmcachesize", VMCACHESIZE));
-          esxiCacheSize = Integer.parseInt(prop.getProperty("esxicachesize", ESXICACHESIZE));
-          dsCacheSize = Integer.parseInt(prop.getProperty("dscachesize", DSCACHESIZE));
-          perfIdCacheSize = Integer.parseInt(prop.getProperty("perfidcachesize", PERFIDCACHESIZE));
+          vmCacheSize      = Integer.parseInt(prop.getProperty("vmcachesize", VMCACHESIZE));
+          esxiCacheSize    = Integer.parseInt(prop.getProperty("esxicachesize", ESXICACHESIZE));
+          dsCacheSize      = Integer.parseInt(prop.getProperty("dscachesize", DSCACHESIZE));
+          perfIdCacheSize  = Integer.parseInt(prop.getProperty("perfidcachesize", PERFIDCACHESIZE));
           counterCacheSize = Integer.parseInt(prop.getProperty("countercachesize", COUNTERCACHESIZE));
-          hriCacheSize = Integer.parseInt(prop.getProperty("hricachesize", HRICACHESIZE));
-          clCacheSize = Integer.parseInt(prop.getProperty("clcachesize", CLCACHESIZE));
+          hriCacheSize     = Integer.parseInt(prop.getProperty("hricachesize", HRICACHESIZE));
+          clCacheSize      = Integer.parseInt(prop.getProperty("clcachesize", CLCACHESIZE));
 
         } catch (IOException e) {
           LOG.info("There was a problem with the configuration parameters.");
@@ -247,13 +247,13 @@ public class VmBix {
       Shutdown sh = new Shutdown();
       Runtime.getRuntime().addShutdownHook(sh);
 
-      vmCache = CacheBuilder.newBuilder().maximumSize(vmCacheSize).expireAfterWrite(vmCacheTtl, TimeUnit.MINUTES).build();
-      esxiCache = CacheBuilder.newBuilder().maximumSize(esxiCacheSize).expireAfterWrite(esxiCacheTtl, TimeUnit.MINUTES).build();
-      dsCache = CacheBuilder.newBuilder().maximumSize(dsCacheSize).expireAfterWrite(dsCacheTtl, TimeUnit.MINUTES).build();
+      vmCache       = CacheBuilder.newBuilder().maximumSize(vmCacheSize).expireAfterWrite(vmCacheTtl, TimeUnit.MINUTES).build();
+      esxiCache     = CacheBuilder.newBuilder().maximumSize(esxiCacheSize).expireAfterWrite(esxiCacheTtl, TimeUnit.MINUTES).build();
+      dsCache       = CacheBuilder.newBuilder().maximumSize(dsCacheSize).expireAfterWrite(dsCacheTtl, TimeUnit.MINUTES).build();
       hostPerfCache = CacheBuilder.newBuilder().maximumSize(perfIdCacheSize).expireAfterWrite(perfIdCacheTtl, TimeUnit.MINUTES).build();
-      counterCache = CacheBuilder.newBuilder().maximumSize(counterCacheSize).expireAfterWrite(counterCacheTtl, TimeUnit.MINUTES).build();
-      hriCache = CacheBuilder.newBuilder().maximumSize(hriCacheSize).expireAfterWrite(hriCacheTtl, TimeUnit.MINUTES).build();
-      clCache = CacheBuilder.newBuilder().maximumSize(clCacheSize).expireAfterWrite(clCacheTtl, TimeUnit.MINUTES).build();
+      counterCache  = CacheBuilder.newBuilder().maximumSize(counterCacheSize).expireAfterWrite(counterCacheTtl, TimeUnit.MINUTES).build();
+      hriCache      = CacheBuilder.newBuilder().maximumSize(hriCacheSize).expireAfterWrite(hriCacheTtl, TimeUnit.MINUTES).build();
+      clCache       = CacheBuilder.newBuilder().maximumSize(clCacheSize).expireAfterWrite(clCacheTtl, TimeUnit.MINUTES).build();
 
       while (true) {
         try {
