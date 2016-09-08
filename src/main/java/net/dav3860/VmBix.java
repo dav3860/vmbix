@@ -208,7 +208,7 @@ public class VmBix {
       }
 
       if (sdkUrl == null || uname == null || passwd == null || port == null) {
-        System.out.println("There was a problem with the configuration parameters.");
+        System.out.println("Missing parameters.");
         usage("");
         methods();
         System.exit(2);
