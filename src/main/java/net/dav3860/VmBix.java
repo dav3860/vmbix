@@ -59,8 +59,8 @@ public class VmBix {
   public static final String INTERVAL         = "300";
   public static final String USEUUID          = "false";
   public static final String MAXCONNECTIONS   = "150";
-  public static final String CONNECTTIMEOUT   = "30";
-  public static final String READTIMEOUT      = "30";
+  public static final String CONNECTTIMEOUT   = "30000";
+  public static final String READTIMEOUT      = "30000";
   public static final String ESCAPECHARS      = "false";
   public static final String VMCACHETTL       = "15";
   public static final String VMCACHESIZE      = "1000";
