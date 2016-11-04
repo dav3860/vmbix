@@ -446,8 +446,8 @@ public class VmBix {
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      return false;
     }
+    return false;
   }
 
   public static synchronized void shutdown() {
