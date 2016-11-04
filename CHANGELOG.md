@@ -1,6 +1,7 @@
 2.6
 * Fixed a bug that crashed VmBix if it was started on command line without specifiying a configuration file.
 * Fixed the default timeout values (set them in ms)
+* Fail the daemon startup if the VMWare SDK is not available
 
 2.5
 * **BREAKING CHANGE** : all parameters in the configuration file vmbix.conf and on the command line must now be in lowercase. The possible arguments in command line have also changed. See the "usage" output.
