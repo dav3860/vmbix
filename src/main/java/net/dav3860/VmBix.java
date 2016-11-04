@@ -442,11 +442,11 @@ public class VmBix {
       performanceManager = serviceInstance.getPerformanceManager();
       // retrieve all the available performance counters
       PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
-      Return true;
+      return true;
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      Return false;
+      return false;
     }
   }
 
