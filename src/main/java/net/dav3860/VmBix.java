@@ -435,7 +435,7 @@ public class VmBix {
       serviceInstance = new ServiceInstance(new URL(sdkUrl), uname, passwd, true, connectTimeout, readTimeout);
       if (serviceInstance == null) {
         LOG.error("serviceInstance in null! Connection failed.");
-        return;
+        return false;
       }
       Folder rootFolder = serviceInstance.getRootFolder();
       inventoryNavigator = new InventoryNavigator(serviceInstance.getRootFolder());
