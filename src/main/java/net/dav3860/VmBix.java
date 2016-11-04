@@ -430,7 +430,7 @@ public class VmBix {
     }
   }
 
-  public static synchronized void updateConnection() throws IOException {
+  public static synchronized Boolean updateConnection() throws IOException {
     try {
       serviceInstance = new ServiceInstance(new URL(sdkUrl), uname, passwd, true, connectTimeout, readTimeout);
       if (serviceInstance == null) {
@@ -442,9 +442,11 @@ public class VmBix {
       performanceManager = serviceInstance.getPerformanceManager();
       // retrieve all the available performance counters
       PerfCounterInfo[] pcis = performanceManager.getPerfCounter();
+      Return true;
     }
     catch (Exception ex) {
       ex.printStackTrace();
+      Return false;
     }
   }
 
@@ -484,7 +486,10 @@ public class VmBix {
 
   static void server() throws IOException {
     ServerSocket listen;
-    updateConnection();
+    if (updateConnection() == false) {
+      LOG.error("Cannot connect to the VMWare SDK URL");
+      System.exit(3);
+    }
     if (ipaddr != null) {
       LOG.info("starting server on " + ipaddr + "/" + port.toString());
       InetAddress addr = InetAddress.getByName(ipaddr);
