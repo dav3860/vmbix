@@ -731,7 +731,7 @@
                     <snmp_community/>
                     <multiplier>0</multiplier>
                     <snmp_oid/>
-                    <key>vmbix[vm.guest.tools.status,{HOST.HOST}]</key>
+                    <key>vmbix[vm.guest.tools.version,{HOST.HOST}]</key>
                     <delay>300</delay>
                     <history>90</history>
                     <trends>365</trends>
