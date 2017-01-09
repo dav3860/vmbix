@@ -376,6 +376,10 @@ public class VmBix {
         + "vm.storage.uncommitted[(uuid|name)]                         \n"
         + "vm.storage.unshared[(uuid|name)]                            \n"
         + "vm.snapshot[(uuid|name)]                                    \n"
+        + "pool.discovery                                              \n"
+        + "pool.cpu[(uuid|name),usage]                                 \n"
+        + "pool.mem[(uuid|name),usage]                                 \n"
+
     );
   }
 
@@ -553,6 +557,9 @@ public class VmBix {
     private void checkAllPatterns(String string, PrintWriter out) throws IOException {
       LOG.debug("Parsing this request : " + string);
 
+      Pattern pPoolDiscovery             = Pattern.compile("^(?:\\s*ZBXD.)?.*pool\\.(discovery)");
+      Pattern pPoolMemUsage              = Pattern.compile("^(?:\\s*ZBXD.)?.*pool\\.mem\\[(.+),usage\\]");
+      Pattern pPoolCpuUsage              = Pattern.compile("^(?:\\s*ZBXD.)?.*pool\\.cpu\\[(.+),usage\\]");
       Pattern pPing                      = Pattern.compile("^(?:\\s*ZBXD.)?.*(ping)");
       Pattern pAbout                     = Pattern.compile("^(?:\\s*ZBXD.)?.*(about)");
       Pattern pVersion                   = Pattern.compile("^(?:\\s*ZBXD.)?.*(vmbix\\.version)");
@@ -652,6 +659,23 @@ public class VmBix {
 
       String found;
       String[] founds;
+      
+
+      found = checkPattern(pPoolCpuUsage, string);
+      if (found != null) {
+        getPoolCpuUsage(found, out);
+        return;
+      }
+      found = checkPattern(pPoolMemUsage, string);
+      if (found != null) {
+        getPoolMemUsage(found, out);
+        return;
+      }
+      found = checkPattern(pPoolDiscovery, string);
+      if (found != null){
+        getPools(out);
+        return;
+      }
       found = checkPattern(pPing, string);
       if (found != null) {
         getPing(out);
@@ -4032,6 +4056,90 @@ public class VmBix {
 	      out.print(memFree);
 	      out.flush();
     	}
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.toString());
+      }
+    }
+
+    
+    /*private void getClusterMemoryFree(String name, PrintWriter out) throws IOException {
+      try {
+        ResourcePool rp = (ResourcePool) getManagedEntity(name, "ResourcePool");
+        long memUsage;
+        if (rp != null) {
+          ResourcePool rpRuntime = rp.getRuntime();
+          memUsage = rpRuntime.getMemory();
+        } else {
+          LOG.warn("No ResourcePool named '" + rp + "' found");
+          } 
+          //memUsage = rpMemory;
+          //out.print(memUsage);
+          out.print(memUsage);
+          out.flush();
+      }
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.toString());
+      }
+    }*/
+
+    private void getPools(PrintWriter out) throws IOException {
+      try {
+        ManagedEntity[] cl = getManagedEntities("ResourcePool");
+        JsonArray jArray = new JsonArray();
+        for (int j = 0; j < cl.length; j++) {
+          ResourcePool c = (ResourcePool) cl[j];
+          String name = c.getName();
+
+          ResourcePoolSummary s = c.getSummary();
+          JsonObject jObject = new JsonObject();
+          jObject.addProperty("{#POOL}", name);
+          jArray.add(jObject);
+        }
+        JsonObject jOutput = new JsonObject();
+        jOutput.add("data", jArray);
+        out.print(jOutput);
+        out.flush();
+      }
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.toString());
+      }
+    }
+
+    private void getPoolMemUsage(String name, PrintWriter out) throws IOException {
+      try {
+        ResourcePool rp = (ResourcePool) getManagedEntityByName(name, "ResourcePool");
+        long memUsage = 0;
+        if (rp != null) {
+          ResourcePoolSummary rpSummary = rp.getSummary();
+          ResourcePoolRuntimeInfo rpInfo = rpSummary.getRuntime();
+          ResourcePoolResourceUsage rpMemory = rpInfo.getMemory();
+          memUsage = rpMemory.overallUsage;
+        } else {
+          LOG.warn("No ResourcePool named '" + name + "' found");
+        }
+        out.print(memUsage);
+        out.flush();
+      }
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.toString());
+      }
+    }
+
+    private void getPoolCpuUsage(String name, PrintWriter out) throws IOException {
+      try {
+        ResourcePool rp = (ResourcePool) getManagedEntityByName(name, "ResourcePool");
+        long CpuUsage = 0;
+        if (rp != null) {
+          ResourcePoolSummary rpSummary = rp.getSummary();
+          ResourcePoolRuntimeInfo rpInfo = rpSummary.getRuntime();
+          ResourcePoolResourceUsage rpCpu = rpInfo.getCpu();
+          CpuUsage = rpCpu.overallUsage;
+        } else {
+          LOG.warn("No ResourcePool named '" + name + "' found");
+        }
+        out.print(CpuUsage);
+        out.flush();
+      }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
