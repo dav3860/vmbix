@@ -46,6 +46,6 @@ script:
   -n ${PROJECT_NAME} -v ${VERSION} --iteration 1 -C ${DEPLOY_ROOT} --description "${PROJECT_NAME}
   ${VERSION}" -d "${JAVA_PACKAGE}" usr etc
 after_success:
-- curl -T $TRAVIS_BUILD_DIR/${TAR_FILE_NAME} -udav3860:${BINTRAY_KEY} https://api.bintray.com/content/dav3860/generic/${PROJECT_NAME}/sources/${MAJOR_VERSION}/${TAR_FILE_NAME}
+- curl -T $TRAVIS_BUILD_DIR/${TAR_FILE_NAME} -udav3860:${BINTRAY_KEY} https://api.bintray.com/content/dav3860/generic/${PROJECT_NAME}/${MAJOR_VERSION}/${TAR_FILE_NAME}
 - curl -T $TRAVIS_BUILD_DIR/${FILE_NAME}.${TARGET_PLATFORM} -udav3860:${BINTRAY_KEY}
   https://api.bintray.com/content/dav3860/generic/${PROJECT_NAME}/${MAJOR_VERSION}/${FILE_NAME}.${TARGET_PLATFORM}
