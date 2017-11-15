@@ -1,0 +1,17 @@
+[Unit]
+Description=vmbixd
+After=network.target
+Before=zabbix-server.service
+
+[Service]
+ExecStart=/usr/bin/java -Dlogback.configurationFile=/etc/vmbix/logback.xml -jar /usr/local/vmbix/vmbix.jar -c /etc/vmbix/vmbix.conf -f /var/run/zabbix/vmbix.pid
+Type=simple
+User=zabbix
+SuccessExitStatus=143
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=5
+PIDFile=/var/run/zabbix/vmbix.pid
+
+[Install]
+WantedBy=multi-user.target
