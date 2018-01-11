@@ -1149,6 +1149,17 @@ public class VmBix {
         ManagedEntity[] mes = inventoryNavigator.searchManagedEntities("HostSystem");
         if (mes == null || mes.length == 0) {
           LOG.warn("No hosts found, connection seems to be broken, attempting reconnect");
+
+          // Clear all caches
+          vmCache.invalidateAll()      
+          esxiCache.invalidateAll()    
+          dsCache.invalidateAll()      
+          hostPerfCache.invalidateAll()
+          counterCache.invalidateAll() 
+          hriCache.invalidateAll()     
+          clCache.invalidateAll()      
+
+          // Reconnect to vCenter
           Request request    = VmBix.updateConnectionSafe();
           serviceInstance    = request.serviceInstance;
           inventoryNavigator = request.inventoryNavigator;
