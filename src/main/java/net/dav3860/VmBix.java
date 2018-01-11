@@ -1151,13 +1151,13 @@ public class VmBix {
           LOG.warn("No hosts found, connection seems to be broken, attempting reconnect");
 
           // Clear all caches
-          vmCache.invalidateAll()      
-          esxiCache.invalidateAll()    
-          dsCache.invalidateAll()      
-          hostPerfCache.invalidateAll()
-          counterCache.invalidateAll() 
-          hriCache.invalidateAll()     
-          clCache.invalidateAll()      
+          vmCache.invalidateAll();      
+          esxiCache.invalidateAll();    
+          dsCache.invalidateAll();      
+          hostPerfCache.invalidateAll();
+          counterCache.invalidateAll(); 
+          hriCache.invalidateAll();     
+          clCache.invalidateAll();     
 
           // Reconnect to vCenter
           Request request    = VmBix.updateConnectionSafe();
