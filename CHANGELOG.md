@@ -1,6 +1,7 @@
 2.7
 * Clear all caches on reconnect (in case of a vCenter HA failover)
 * Fix pattern matching of sync script
+* Added resource pool discovery and related cpu/memory usage items (thanks to Spuun1)
 
 2.6
 * Fixed a bug that crashed VmBix if it was started on command line without specifiying a configuration file.
