@@ -1,3 +1,7 @@
+2.7
+* Clear all caches on reconnect (in case of a vCenter HA failover)
+* Fix pattern matching of sync script
+
 2.6
 * Fixed a bug that crashed VmBix if it was started on command line without specifiying a configuration file.
 * Fixed the default timeout values (set them in ms)
