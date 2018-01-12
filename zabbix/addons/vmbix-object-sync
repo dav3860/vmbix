@@ -566,7 +566,7 @@ class ZabbixConnector(object):
               try:
                 for test in params['include']:
                   result = zg.get("%s[%s]" % (test['method'], host))
-                  reg = re.compile(test['pattern'], re.IGNORECASE)
+                  reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                   if not reg.match(result):
                     logging.debug("[%s] Host '%s' did not match inclusion rule '%s'", type, name, test)
                     raise ZabbixException
@@ -582,7 +582,7 @@ class ZabbixConnector(object):
               try:
                 for test in params['exclude']:
                   result = zg.get("%s[%s]" % (test['method'], host))
-                  reg = re.compile(test['pattern'], re.IGNORECASE)
+                  reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
                   if reg.match(result):
                     logging.debug("[%s] Host '%s' matched exclusion rule '%s'", type, name, test)
                     raise ZabbixException
