@@ -4077,27 +4077,6 @@ public class VmBix {
       }
     }
 
-    
-    /*private void getClusterMemoryFree(String name, PrintWriter out) throws IOException {
-      try {
-        ResourcePool rp = (ResourcePool) getManagedEntity(name, "ResourcePool");
-        long memUsage;
-        if (rp != null) {
-          ResourcePool rpRuntime = rp.getRuntime();
-          memUsage = rpRuntime.getMemory();
-        } else {
-          LOG.warn("No ResourcePool named '" + rp + "' found");
-          } 
-          //memUsage = rpMemory;
-          //out.print(memUsage);
-          out.print(memUsage);
-          out.flush();
-      }
-      catch (Exception ex) {
-        LOG.error("An error occurred : " + ex.toString());
-      }
-    }*/
-
     private void getPools(PrintWriter out) throws IOException {
       try {
         ManagedEntity[] cl = getManagedEntities("ResourcePool");
