@@ -347,7 +347,7 @@ class ZabbixConnector(object):
             #raise ZabbixException, "There is no '%s' entry in the config file" % name
             return
 
-        # Get the Zabbix Proxy if set
+        # Get the default Zabbix Proxy if set
         proxy_id = None
         if self.options['zabbix'][name].has_key('proxy'):
             proxy_name = self.options['zabbix'][name]['proxy']
@@ -415,11 +415,23 @@ class ZabbixConnector(object):
           for test in self.options['zabbix'][name]['optional_templates']:
               template_id = self.get_template_by_name(test['value'])
               if not template_id:
-                  logging.warning("[%s] Template '%s' was not found on the Zabbix server", name, template)
+                  logging.warning("[%s] Template '%s' was not found on the Zabbix server", name, test['value'])
                   continue
               optional_templates.append({'method': test['method'], 'pattern': test['pattern'], 'value': template_id})
           r['optional_templates'] = optional_templates
 
+        # Get the conditional Zabbix Proxes if set
+        if self.options['zabbix'][name].has_key('override_proxy'):
+            conditional_proxies = []
+            for test in self.options['zabbix'][name]['override_proxy']:
+                proxy_id = self.get_proxy_host_by_name((test['value']))
+                if not proxy_id:
+                    logging.warning("[%s] Unable to find Zabbix proxy '%s'", name, test['value'])
+                    continue
+                    
+                conditional_proxies.append({'method': test['method'], 'pattern': test['pattern'], 'value': proxy_id})
+            r['conditional_proxies'] = conditional_proxies       
+                
         # Get conditions to include the host
         if self.options['zabbix'][name].has_key('include'):
           r['include'] = self.options['zabbix'][name]['include']
@@ -625,6 +637,18 @@ class ZabbixConnector(object):
 
               del params['optional_templates']
 
+            # Checking conditional proxies
+            logging.debug("[%s] Checking Zabbix proxy rules for host '%s'", type, name)
+            if params.has_key('conditional_proxies'):
+              for test in params['conditional_proxies']:
+                result = zg.get("%s[%s]" % (test['method'], host))
+                reg = re.compile(".*%s.*" % test['pattern'], re.IGNORECASE)
+                if reg.match(result):
+                  logging.debug("[%s] Host '%s' matched Zabbix proxy rule '%s'", type, name, test)
+                  params['proxy_hostid']  = test['value']
+                  
+              del params['conditional_proxies']              
+              
             # Try to create the host in Zabbix
             logging.info("[%s] Creating Zabbix host '%s'", type, name)
             try:

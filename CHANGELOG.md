@@ -1,6 +1,7 @@
 2.7
 * Clear all caches on reconnect (in case of a vCenter HA failover)
 * Fix pattern matching of sync script
+* Added conditional Zabbix proxy assignment in sync script
 * Added resource pool discovery and related cpu/memory usage items (thanks to Spuun1)
 
 2.6
