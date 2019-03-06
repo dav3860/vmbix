@@ -50,7 +50,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.Cache;
-import com.google.common.io.ByteStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -560,7 +559,7 @@ public class VmBix {
       return null;
     }
     
-    private void checkAllPatterns(String string, PrintWriter out) throws IOException {
+    private void checkAllPatterns(String string, String out) throws IOException {
       LOG.debug("Parsing this request : " + string);
       
       Pattern pPoolDiscovery             = Pattern.compile("^(?:\\s*ZBXD.)?.*pool\\.(discovery)");
@@ -689,7 +688,15 @@ public class VmBix {
       }
       found = checkPattern(pAbout, string);
       if (found != null) {
-        getAbout(out);
+        /*
+         * Ultimately refactor this so that we just return the value, and move
+         * formatting and outputting the data into a seperate dedicated
+         * function. 
+         *
+         * Commennting out the sending function here temporarily so that we can
+         * call `about` as a test.
+         */
+        //getAbout(out);
         return;
       }
       found = checkPattern(pVersion, string);
@@ -3069,6 +3076,69 @@ public class VmBix {
         LOG.error("An error occurred : " + ex.toString());
       }
     }
+    /**
+     * Returns about info of the VMware API as a string
+     */
+    /* WHOSGONNA:
+     * Only a test method. Ultimately all of the methods that retrieve data
+     * from vmware should return a string(?).
+     *
+     * How to handle exceptions here, though?
+     */
+    public String getAbout2() throws IOException {
+        try {
+            AboutInfo about = serviceInstance.getAboutInfo();
+            return about.getFullName();
+        }
+        catch (Exception ex) {
+            LOG.error("An error occurred : " + ex.toString());
+            /* WHOSGONNA:
+             * Is this the best way to handle the exception?
+             */
+            return null;
+        }
+    }
+
+    /**
+     * Returns a byte[] array of the zabbix header and data.
+     */
+    /*
+     * Again:  How to handle exceptions here?
+     */
+    private byte[] makeZabbix4Packet(String message) {
+        byte[] data = message.getBytes();
+
+        byte[] header = new byte[] {
+            'Z', 'B', 'X', 'D', '\1',
+                (byte)(data.length & 0xFF),
+                (byte)((data.length >> 8) & 0xFF),
+                (byte)((data.length >> 16) & 0xFF),
+                (byte)((data.length >> 24) & 0xFF),
+                '\0', '\0', '\0', '\0'
+        };
+
+        byte[] packet = new byte[header.length + data.length];
+        System.arraycopy(header, 0, packet, 0, header.length);
+        System.arraycopy(data, 0, packet, header.length, data.length);
+
+        return packet;
+    }
+
+    /**
+     * Sends the formated Zabbix 4 packet to the zabbix server
+     */
+    private void sendZabbix4Packet(byte[] packet, OutputStream out) throws IOException {
+       try {
+           out.write(packet);
+           out.flush();   // WHOSGONNA:  Is it necessary to flush a stream?
+       }
+       catch (Exception ex) {
+           LOG.error("An error occurred : " + ex.toString());
+       }
+    }
+
+
+
     
     /**
       * Returns the latest event on the vCenter
@@ -4247,6 +4317,7 @@ public class VmBix {
       int reincornate = 1;
       final int lifeTime = 2000;
       int alive = 0;
+      
       while (reincornate == 1) {
         Request request = VmBix.pullConnection();
         if (request == null) {
@@ -4257,33 +4328,92 @@ public class VmBix {
           serviceInstance = request.serviceInstance;
           alive = 0;
           try {
-            PrintWriter out = new PrintWriter(connected.getOutputStream());
-            // BufferedReader in = new BufferedReader(new InputStreamReader(connected.getInputStream()));
-            InputStream initialStream = ByteSource.wrap(new byte[13]).openStream();
-            byte[] targetArray = ByteStreams.toByteArray(initialStream);
-            is = new ByteArrayInputStream(targetArray);
-            bfReader = new BufferedReader(new InputStreamReader(is));
-            String temp = null;
-            while((temp = bfReader.readLine()) != null){
-              System.out.println(temp);
-            }            
-                        
-            //int continues = 1;
-            //while (continues == 1) {
-            //  String message = in.readLine();
-            //  
-            //  if (message != null) {
-            //    long timerStart = System.currentTimeMillis();
-            //    
-            //    checkAllPatterns(message, out);
-            //    
-            //    long timerEnd = System.currentTimeMillis();
-            //    LOG.debug("Request took " + (timerEnd - timerStart) + " ms");
-            //  }
-            //  continues = 0;
-            //  
-            //}
-            //in.close();
+            /* WHOSGONNA:
+             * The output will need to be just the outputStream, not PrintWriter.
+             * Here, 'outputStream' is temporary until 'out' can be refactored
+             */
+            //PrintWriter out = new PrintWriter(connected.getOutputStream());
+            OutputStream outputStream = connected.getOutputStream();
+
+            /* WHOSGONNA:
+             * Input of BufferedReader hangs because there is no end of line/ EOF.
+             * Use a DataInputStream instead.  
+             */
+            /* BufferedReader in = new BufferedReader(new InputStreamReader(connected.getInputStream())); */
+            DataInputStream in = new DataInputStream( connected.getInputStream());
+
+            /* WHOSGONNA:
+             * Start reading in the request here.  Grabbing just the first four
+             * bytes should let us know if it is zabbix 4 (first four bytes
+             * will be "ZBXD".
+             */
+            byte[] protoCheck = new byte[4];
+            in.read(protoCheck, 0, protoCheck.length);
+            String headerStr = new String(protoCheck, "UTF-8"); // need better variable name than 'proto'?
+
+            String msgBodyStr = "";
+            LOG.debug("headerStr : " + headerStr);
+
+            /* WHOSGONNA:
+             * Possibly a way to handle back compatibility?  I'm not sure how
+             * much this condition is needed. (though the actions in it are 
+             * needed for 4.0)
+             */
+            if (Objects.equals(headerStr, new String("ZBXD"))) {
+              LOG.debug("Is using zabbix 4.0 header");
+
+              byte[] zbxFlags = new byte[1];
+              in.read(zbxFlags);
+
+              byte[] msgLenBin = new byte[4];
+              in.read(msgLenBin);
+              int msgLen = java.nio.ByteBuffer.wrap(msgLenBin).order(java.nio.ByteOrder.LITTLE_ENDIAN).getInt();
+
+              byte[] reservedBin = new byte[4];
+              in.read(reservedBin);
+
+              byte[] msgBodyBin = new byte[msgLen];
+              in.read(msgBodyBin);
+              msgBodyStr = new String(msgBodyBin);
+              LOG.debug("Message is " + msgBodyStr);
+            }
+            else { // Zabbix pre-4.0
+              BufferedReader next = new BufferedReader(new InputStreamReader(connected.getInputStream()));
+              String nextBodyStr = next.readLine();
+              msgBodyStr = headerStr + nextBodyStr;
+            }
+            LOG.debug("msgBodyStr : " + msgBodyStr);            
+
+            int continues = 1;
+            while (continues == 1) {            
+              if (msgBodyStr != null) {
+                long timerStart = System.currentTimeMillis();
+                
+                /* WHOSGONNA:
+                 * In this (test) build, we won't try to parse and handle the
+                 * request, because all of the checks expect the printWriter
+                 * `out`, which will generate incorrect output.
+                 *
+                 * Instead we're just statically calling the new (test) 
+                 * getAbout2() function for everything (this will change)
+                 */
+                String value = checkAllPatterns(msgBodyStr);
+                //String value = getAbout2();
+
+                /* Get the byte array for the packet */
+                //byte[] packet = makeZabbix4Packet(value);
+
+                /* Send the packet */
+                //sendZabbix4Packet(packet, outputStream);
+
+                
+                long timerEnd = System.currentTimeMillis();
+                LOG.debug("Request took " + (timerEnd - timerStart) + " ms");
+              }
+              continues = 0;
+              
+            }
+            in.close();
             out.close();
             connected.close();
             } catch (IOException e) {
