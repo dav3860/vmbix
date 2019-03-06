@@ -50,6 +50,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.Cache;
+import com.google.common.io.ByteStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -4257,23 +4258,32 @@ public class VmBix {
           alive = 0;
           try {
             PrintWriter out = new PrintWriter(connected.getOutputStream());
-            BufferedReader in = new BufferedReader(new InputStreamReader(connected.getInputStream()));
-            int continues = 1;
-            while (continues == 1) {
-              String message = in.readLine();
-              
-              if (message != null) {
-                long timerStart = System.currentTimeMillis();
-                
-                checkAllPatterns(message, out);
-                
-                long timerEnd = System.currentTimeMillis();
-                LOG.debug("Request took " + (timerEnd - timerStart) + " ms");
-              }
-              continues = 0;
-              
-            }
-            in.close();
+            // BufferedReader in = new BufferedReader(new InputStreamReader(connected.getInputStream()));
+            InputStream initialStream = ByteSource.wrap(new byte[13]).openStream();
+            byte[] targetArray = ByteStreams.toByteArray(initialStream);
+            is = new ByteArrayInputStream(targetArray);
+            bfReader = new BufferedReader(new InputStreamReader(is));
+            String temp = null;
+            while((temp = bfReader.readLine()) != null){
+              System.out.println(temp);
+            }            
+                        
+            //int continues = 1;
+            //while (continues == 1) {
+            //  String message = in.readLine();
+            //  
+            //  if (message != null) {
+            //    long timerStart = System.currentTimeMillis();
+            //    
+            //    checkAllPatterns(message, out);
+            //    
+            //    long timerEnd = System.currentTimeMillis();
+            //    LOG.debug("Request took " + (timerEnd - timerStart) + " ms");
+            //  }
+            //  continues = 0;
+            //  
+            //}
+            //in.close();
             out.close();
             connected.close();
             } catch (IOException e) {
