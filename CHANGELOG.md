@@ -1,3 +1,6 @@
+2.8-beta
+* First attempt to support Zabbix 4+ message header
+
 2.7
 * Clear all caches on reconnect (in case of a vCenter HA failover)
 * Fix pattern matching of sync script

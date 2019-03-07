@@ -559,7 +559,7 @@ public class VmBix {
       return null;
     }
     
-    private void checkAllPatterns(String string, String out) throws IOException {
+    private String checkAllPatterns(String string) throws IOException {
       LOG.debug("Parsing this request : " + string);
       
       Pattern pPoolDiscovery             = Pattern.compile("^(?:\\s*ZBXD.)?.*pool\\.(discovery)");
@@ -664,515 +664,411 @@ public class VmBix {
       
       String found;
       String[] founds;
-      
+      String value = null;
       
       found = checkPattern(pPoolCpuUsage, string);
       if (found != null) {
-        getPoolCpuUsage(found, out);
-        return;
+        value = getPoolCpuUsage(found);
       }
       found = checkPattern(pPoolMemUsage, string);
       if (found != null) {
-        getPoolMemUsage(found, out);
-        return;
+        value = getPoolMemUsage(found);
       }
       found = checkPattern(pPoolDiscovery, string);
       if (found != null){
-        getPools(out);
-        return;
+        value = getPools();
       }
       found = checkPattern(pPing, string);
       if (found != null) {
-        getPing(out);
-        return;
+        value = getPing();
       }
       found = checkPattern(pAbout, string);
       if (found != null) {
-        /*
-         * Ultimately refactor this so that we just return the value, and move
-         * formatting and outputting the data into a seperate dedicated
-         * function. 
-         *
-         * Commennting out the sending function here temporarily so that we can
-         * call `about` as a test.
-         */
-        //getAbout(out);
-        return;
+        value = getAbout();
       }
       found = checkPattern(pVersion, string);
       if (found != null) {
-        getVersion(out);
-        return;
+        value = getVersion();
       }
       found = checkPattern(pThreadCount, string);
       if (found != null) {
-        getThreadCount(out);
-        return;
+        value = getThreadCount();
       }
       found = checkPattern(pConnectionQueue, string);
       if (found != null) {
-        getConnectionQueue(out);
-        return;
+        value = getConnectionQueue();
       }
       found = checkPattern(pRequestCount, string);
       if (found != null) {
-        getRequestCount(out);
-        return;
+        value = getRequestCount();
       }
       found = checkPattern(pCacheSize, string);
       if (found != null) {
-        getCacheSize(found, out);
-        return;
+        value = getCacheSize(found);
       }
       found = checkPattern(pCacheHitRate, string);
       if (found != null) {
-        getCacheHitRate(found, out);
-        return;
+        value = getCacheHitRate(found);
       }
       found = checkPattern(pClusters, string);
       if (found != null) {
-        getClusters(out);
-        return;
+        value = getClusters();
       }
       found = checkPattern(pClusterCpuFree, string);
       if (found != null) {
-        getClusterCpuFree(found, out);
-        return;
+        value = getClusterCpuFree(found);
       }
       found = checkPattern(pClusterCpuTotal, string);
       if (found != null) {
-        getClusterCpuTotal(found, out);
-        return;
+        value = getClusterCpuTotal(found);
       }
       found = checkPattern(pClusterCpuUsage, string);
       if (found != null) {
-        getClusterCpuUsage(found, out);
-        return;
+        value = getClusterCpuUsage(found);
       }
       found = checkPattern(pClusterCpuThreads, string);
       if (found != null) {
-        getClusterCpuThreads(found, out);
-        return;
+        value = getClusterCpuThreads(found);
       }
       found = checkPattern(pClusterCpuCores, string);
       if (found != null) {
-        getClusterCpuCores(found, out);
-        return;
+        value = getClusterCpuCores(found);
       }
       found = checkPattern(pClusterMemFree, string);
       if (found != null) {
-        getClusterMemFree(found, out);
-        return;
+        value = getClusterMemFree(found);
       }
       found = checkPattern(pClusterMemTotal, string);
       if (found != null) {
-        getClusterMemTotal(found, out);
-        return;
+        value = getClusterMemTotal(found);
       }
       found = checkPattern(pClusterMemUsage, string);
       if (found != null) {
-        getClusterMemUsage(found, out);
-        return;
+        value = getClusterMemUsage(found);
       }
       found = checkPattern(pClusterHostsOnline, string);
       if (found != null) {
-        getClusterHostsOnline(found, out);
-        return;
+        value = getClusterHostsOnline(found);
       }
       found = checkPattern(pClusterHostsMaint, string);
       if (found != null) {
-        getClusterHostsMaint(found, out);
-        return;
+        value = getClusterHostsMaint(found);
       }
       found = checkPattern(pClusterHostsTotal, string);
       if (found != null) {
-        getClusterHostsTotal(found, out);
-        return;
+        value = getClusterHostsTotal(found);
       }
       found = checkPattern(pDatacenters, string);
       if (found != null) {
-        getDatacenters(out);
-        return;
+        value = getDatacenters();
       }
       founds = checkMultiplePattern(pDatacenterStatus, string);
       if (founds != null) {
-        getDatacenterStatus(founds[0], founds[1], out);
-        return;
+        value = getDatacenterStatus(founds[0], founds[1]);
       }
       found = checkPattern(pLatestEvent, string);
       if (found != null) {
-        getLatestEvent(out);
-        return;
+        value = getLatestEvent();
       }
       found = checkPattern(pVMsFullDiscovery, string);
       if (found != null) {
-        getVMsFullDiscovery(out);
-        return;
+        value = getVMsFullDiscovery();
       }
       found = checkPattern(pVMs, string);
       if (found != null) {
-        getVMs(out);
-        return;
+        value = getVMs();
       }
       found = checkPattern(pHosts, string);
       if (found != null) {
-        getHosts(out);
-        return;
+        value = getHosts();
       }
       found = checkPattern(pDatastores, string);
       if (found != null) {
-        getDatastores(out);
-        return;
+        value = getDatastores();
       }
       found = checkPattern(pHostConnection, string);
       if (found != null) {
-        getHostConnection(found, out);
-        return;
+        value = getHostConnection(found);
       }
       found = checkPattern(pHostUptime, string);
       if (found != null) {
-        getHostUptime(found, out);
-        return;
+        value = getHostUptime(found);
       }
       found = checkPattern(pHostStatus, string);
       if (found != null) {
-        getHostStatus(found, out);
-        return;
+        value = getHostStatus(found);
       }
       found = checkPattern(pHostName, string);
       if (found != null) {
-        getHostName(found, out);
-        return;
+        value = getHostName(found);
       }
       found = checkPattern(pVmStatus, string);
       if (found != null) {
-        getVmStatus(found, out);
-        return;
+        value = getVmStatus(found);
       }
       found = checkPattern(pVmName, string);
       if (found != null) {
-        getVmName(found, out);
-        return;
+        value = getVmName(found);
       }
       found = checkPattern(pHostMaintenance, string);
       if (found != null) {
-        getHostMaintenance(found, out);
-        return;
+        value = getHostMaintenance(found);
       }
       found = checkPattern(pHostCpuUsed, string);
       if (found != null) {
-        getHostCpuUsed(found, out);
-        return;
+        value = getHostCpuUsed(found);
       }
       found = checkPattern(pHostCpuTotal, string);
       if (found != null) {
-        getHostCpuTotal(found, out);
-        return;
+        value = getHostCpuTotal(found);
       }
       found = checkPattern(pHostVMs, string);
       if (found != null) {
-        getHostVMs(found, out);
-        return;
+        value = getHostVMs(found);
       }
       found = checkPattern(pHostDisabledPaths, string);
       if (found != null) {
-        getHostDisabledPaths(found, out);
-        return;
+        value = getHostDisabledPaths(found);
       }
       found = checkPattern(pHostActivePaths, string);
       if (found != null) {
-        getHostActivePaths(found, out);
-        return;
+        value = getHostActivePaths(found);
       }
       found = checkPattern(pHostStandbyPaths, string);
       if (found != null) {
-        getHostStandbyPaths(found, out);
-        return;
+        value = getHostStandbyPaths(found);
       }
       found = checkPattern(pHostDeadPaths, string);
       if (found != null) {
-        getHostDeadPaths(found, out);
-        return;
+        value = getHostDeadPaths(found);
       }
       found = checkPattern(pHostMemUsed, string);
       if (found != null) {
-        getHostMemUsed(found, out);
-        return;
+        value = getHostMemUsed(found);
       }
       found = checkPattern(pHostMemTotal, string);
       if (found != null) {
-        getHostMemTotal(found, out);
-        return;
+        value = getHostMemTotal(found);
       }
       found = checkPattern(pHostMemStatsPrivate, string);
       if (found != null) {
-        getHostVmsStatsPrivate(found, out);
-        return;
+        value = getHostVmsStatsPrivate(found);
       }
       found = checkPattern(pHostMemStatsShared, string);
       if (found != null) {
-        getHostVmsStatsShared(found, out);
-        return;
+        value = getHostVmsStatsShared(found);
       }
       found = checkPattern(pHostMemStatsSwapped, string);
       if (found != null) {
-        getHostVmsStatsSwapped(found, out);
-        return;
+        value = getHostVmsStatsSwapped(found);
       }
       found = checkPattern(pHostMemStatsCompressed, string);
       if (found != null) {
-        getHostVmsStatsCompressed(found, out);
-        return;
+        value = getHostVmsStatsCompressed(found);
       }
       found = checkPattern(pHostMemStatsOverhCons, string);
       if (found != null) {
-        getHostVmsStatsOverhCons(found, out);
-        return;
+        value = getHostVmsStatsOverhCons(found);
       }
       found = checkPattern(pHostMemStatsConsumed, string);
       if (found != null) {
-        getHostVmsStatsConsumed(found, out);
-        return;
+        value = getHostVmsStatsConsumed(found);
       }
       found = checkPattern(pHostMemStatsBallooned, string);
       if (found != null) {
-        getHostVmsStatsBallooned(found, out);
-        return;
+        value = getHostVmsStatsBallooned(found);
       }
       found = checkPattern(pHostMemStatsActive, string);
       if (found != null) {
-        getHostVmsStatsActive(found, out);
-        return;
+        value = getHostVmsStatsActive(found);
       }
       found = checkPattern(pHostAvailablePerfCounters, string);
       if (found != null) {
-        getHostAvailablePerfCounters(found, out);
-        return;
+        value = getHostAvailablePerfCounters(found);
       }
       founds = checkMultiplePattern(pHostPerfCounterValue, string);
       if (founds != null) {
-        getHostPerfCounterValue(founds, out);
-        return;
+        value = getHostPerfCounterValue(founds);
       }
       founds = checkMultiplePattern(pHostPerfCounterDiscovery, string);
       if (founds != null) {
-        getHostPerfCounterDiscovery(founds, out);
-        return;
+        value = getHostPerfCounterDiscovery(founds);
       }
       found = checkPattern(pVmCpuUsed, string);
       if (found != null) {
-        getVmCpuUsed(found, out);
-        return;
+        value = getVmCpuUsed(found);
       }
       found = checkPattern(pVmCpuTotal, string);
       if (found != null) {
-        getVmCpuTotal(found, out);
-        return;
+        value = getVmCpuTotal(found);
       }
       found = checkPattern(pVmCpuCores, string);
       if (found != null) {
-        getVmCpuCores(found, out);
-        return;
+        value = getVmCpuCores(found);
       }
       found = checkPattern(pVmMemPrivate, string);
       if (found != null) {
-        getVmMemPrivate(found, out);
-        return;
+        value = getVmMemPrivate(found);
       }
       found = checkPattern(pVmMemShared, string);
       if (found != null) {
-        getVmMemShared(found, out);
-        return;
+        value = getVmMemShared(found);
       }
       found = checkPattern(pVmMemSwapped, string);
       if (found != null) {
-        getVmMemSwapped(found, out);
-        return;
+        value = getVmMemSwapped(found);
       }
       found = checkPattern(pVmMemCompressed, string);
       if (found != null) {
-        getVmMemCompressed(found, out);
-        return;
+        value = getVmMemCompressed(found);
       }
       found = checkPattern(pVmMemOverheadConsumed, string);
       if (found != null) {
-        getVmMemOverheadConsumed(found, out);
-        return;
+        value = getVmMemOverheadConsumed(found);
       }
       found = checkPattern(pVmMemConsumed, string);
       if (found != null) {
-        getVmMemConsumed(found, out);
-        return;
+        value = getVmMemConsumed(found);
       }
       found = checkPattern(pVmMemBallooned, string);
       if (found != null) {
-        getVmMemBallooned(found, out);
-        return;
+        value = getVmMemBallooned(found);
       }
       found = checkPattern(pVmMemActive, string);
       if (found != null) {
-        getVmMemActive(found, out);
-        return;
+        value = getVmMemActive(found);
       }
       found = checkPattern(pVmMemSize, string);
       if (found != null) {
-        getVmMemSize(found, out);
-        return;
+        value = getVmMemSize(found);
       }
       found = checkPattern(pVmHost, string);
       if (found != null) {
-        getVmHost(found, out);
-        return;
+        value = getVmHost(found);
       }
       found = checkPattern(pVmPowerState, string);
       if (found != null) {
-        getVmPowerState(found, out);
-        return;
+        value = getVmPowerState(found);
       }
       found = checkPattern(pVmFolder, string);
       if (found != null) {
-        getVmFolder(found, out);
-        return;
+        value = getVmFolder(found);
       }
       found = checkPattern(pVmUptime, string);
       if (found != null) {
-        getVmUptime(found, out);
-        return;
+        value = getVmUptime(found);
       }
       found = checkPattern(pVmAnnotation, string);
       if (found != null) {
-        getVmAnnotation(found, out);
-        return;
+        value = getVmAnnotation(found);
       }
       found = checkPattern(pVmSnapshot, string);
       if (found != null) {
-        getVmSnapshot(found, out);
-        return;
+        value = getVmSnapshot(found);
       }
       found = checkPattern(pVmStorageCommitted, string);
       if (found != null) {
-        getVmStorageCommitted(found, out);
-        return;
+        value = getVmStorageCommitted(found);
       }
       found = checkPattern(pVmStorageUncommitted, string);
       if (found != null) {
-        getVmStorageUncommitted(found, out);
-        return;
+        value = getVmStorageUncommitted(found);
       }
       found = checkPattern(pVmStorageUnshared, string);
       if (found != null) {
-        getVmStorageUnshared(found, out);
-        return;
+        value = getVmStorageUnshared(found);
       }
       found = checkPattern(pVmGuestShortName, string);
       if (found != null) {
-        getVmGuestShortName(found, out);
-        return;
+        value = getVmGuestShortName(found);
       }
       found = checkPattern(pVmGuestFullName, string);
       if (found != null) {
-        getVmGuestFullName(found, out);
-        return;
+        value = getVmGuestFullName(found);
       }
       found = checkPattern(pVmGuestHostName, string);
       if (found != null) {
-        getVmGuestHostName(found, out);
-        return;
+        value = getVmGuestHostName(found);
       }
       found = checkPattern(pVmGuestIpAddress, string);
       if (found != null) {
-        getVmGuestIpAddress(found, out);
-        return;
+        value = getVmGuestIpAddress(found);
       }
       found = checkPattern(pVmGuestDisks, string);
       if (found != null) {
-        getVmGuestDisks(found, out);
-        return;
+        value = getVmGuestDisks(found);
       }
       found = checkPattern(pVmGuestDisksDiscovery, string);
       if (found != null) {
-        getVmGuestDisks(found, out);
-        return;
+        value = getVmGuestDisks(found);
       }
       founds = checkMultiplePattern(pVmGuestDiskCapacity, string);
       if (founds != null) {
-        getVmGuestDiskCapacity(founds[0], founds[1], out);
-        return;
+        value = getVmGuestDiskCapacity(founds[0], founds[1]);
       }
       founds = checkMultiplePattern(pVmGuestDiskFreeSpace, string);
       if (founds != null) {
-        getVmGuestDiskFreeSpace(founds[0], founds[1], out);
-        return;
+        value = getVmGuestDiskFreeSpace(founds[0], founds[1]);
       }
       found = checkPattern(pVmAvailablePerfCounters, string);
       if (found != null) {
-        getVmAvailablePerfCounters(found, out);
-        return;
+        value = getVmAvailablePerfCounters(found);
       }
       founds = checkMultiplePattern(pVmPerfCounterValue, string);
       if (founds != null) {
-        getVmPerfCounterValue(founds, out);
-        return;
+        value = getVmPerfCounterValue(founds);
       }
       founds = checkMultiplePattern(pVmPerfCounterDiscovery, string);
       if (founds != null) {
-        getVmPerfCounterDiscovery(founds, out);
-        return;
+        value = getVmPerfCounterDiscovery(founds);
       }
       found = checkPattern(pVmGuestToolsRunningStatus, string);
       if (found != null) {
-        getVmGuestToolsRunningStatus(found, out);
-        return;
+        value = getVmGuestToolsRunningStatus(found);
       }
       found = checkPattern(pVmGuestToolsVersionStatus, string);
       if (found != null) {
-        getVmGuestToolsVersionStatus(found, out);
-        return;
+        value = getVmGuestToolsVersionStatus(found);
       }
       found = checkPattern(pVmToolsInstallerMounted, string);
       if (found != null) {
-        getVmToolsInstallerMounted(found, out);
-        return;
+        value = getVmToolsInstallerMounted(found);
       }
       found = checkPattern(pVmConsolidationNeeded, string);
       if (found != null) {
-        getVmConsolidationNeeded(found, out);
-        return;
+        value = getVmConsolidationNeeded(found);
       }
       found = checkPattern(pHostCpuCores, string);
       if (found != null) {
-        getHostCpuCores(found, out);
-        return;
+        value = getHostCpuCores(found);
       }
       found = checkPattern(pDatastoreLocal, string);
       if (found != null) {
-        getDatastoreLocal(found, out);
-        return;
+        value = getDatastoreLocal(found);
       }
       found = checkPattern(pDatastoreFree, string);
       if (found != null) {
-        getDatastoreSizeFree(found, out);
-        return;
+        value = getDatastoreSizeFree(found);
       }
       found = checkPattern(pDatastoreTotal, string);
       if (found != null) {
-        getDatastoreSizeTotal(found, out);
-        return;
+        value = getDatastoreSizeTotal(found);
       }
       found = checkPattern(pDatastoreProvisioned, string);
       if (found != null) {
-        getDatastoreSizeProvisioned(found, out);
-        return;
+        value = getDatastoreSizeProvisioned(found);
       }
       found = checkPattern(pDatastoreUncommitted, string);
       if (found != null) {
-        getDatastoreSizeUncommitted(found, out);
-        return;
+        value = getDatastoreSizeUncommitted(found);
       }
       
-      LOG.info("String '" + string + "' not supported");
-      out.print("ZBX_NOTSUPPORTED\n");
-      out.flush();
+      if (value != null) {
+        return value;
+      } else {
+        LOG.info("String '" + string + "' not supported");
+        return "ZBX_NOTSUPPORTED";
+      }
     }
     
     private Boolean reconnectRequred(ManagedEntity me) throws IOException {
@@ -1388,15 +1284,14 @@ public class VmBix {
     /**
       * Always return "1"
     */
-    private void getPing(PrintWriter out) throws IOException {
-      out.print("1");
-      out.flush();
+    private String getPing() throws IOException {
+      return "1";
     }
     
     /**
       * Returns VmBix version
     */
-    private void getVersion(PrintWriter out) throws IOException {
+    private String getVersion() throws IOException {
       String version = null;
       
       if (version == null) {
@@ -1412,38 +1307,36 @@ public class VmBix {
       if (version == null) {
         // we could not compute the version so use a blank
       }
-      out.print(version);
-      out.flush();
+      return version;
     }
     
     /**
       * Returns the number of worker threads
     */
-    private void getThreadCount(PrintWriter out) throws IOException {
-      out.print(Thread.activeCount() - 1);
-      out.flush();
+    private String getThreadCount() throws IOException {
+      Integer activeThreads = (Thread.activeCount() - 1);
+      return activeThreads.toString();
     }
     
     /**
       * Returns the number of connections waiting for a worker thread
     */
-    private void getConnectionQueue(PrintWriter out) throws IOException {
-      out.print(sockets.size());
-      out.flush();
+    private String getConnectionQueue() throws IOException {
+      Integer size = sockets.size();
+      return Integer.toString(size);
     }
     
     /**
       * Returns the number of requests accepted by VmBix
     */
-    private void getRequestCount(PrintWriter out) throws IOException {
-      out.print(requests);
-      out.flush();
+    private String getRequestCount() throws IOException {
+      return Long.toString(requests);
     }
     
     /**
       * Returns the size of a VmBix cache
     */
-    private void getCacheSize(String cacheName, PrintWriter out) throws IOException {
+    private String getCacheSize(String cacheName) throws IOException {
       long size = 0;
       
       switch (cacheName) {
@@ -1472,14 +1365,13 @@ public class VmBix {
         LOG.error("Cache " + cacheName + "does not exist");
         break;
       }
-      out.print(size);
-      out.flush();
+      return Long.toString(size);
     }
     
     /**
       * Returns the hit rate of a VmBix cache
     */
-    private void getCacheHitRate(String cacheName, PrintWriter out) throws IOException {
+    private String getCacheHitRate(String cacheName) throws IOException {
       double hitrate = 0;
       
       switch (cacheName) {
@@ -1508,14 +1400,13 @@ public class VmBix {
         LOG.error("Cache " + cacheName + "does not exist");
         break;
       }
-      out.print(hitrate);
-      out.flush();
+      return Double.toString(hitrate);
     }
     
     /**
       * Returns the CPU power of a host in MHz
     */
-    private Integer getHostMHZ(HostSystem host) throws IOException {
+    private int getHostMHZ(HostSystem host) throws IOException {
       HostListSummary hls = host.getSummary();
       HostHardwareSummary hosthwi = hls.getHardware();
       Integer mhz = hosthwi.getCpuMhz();
@@ -1528,10 +1419,10 @@ public class VmBix {
     /**
       * Returns the connection state of a host
     */
-    private void getHostConnection(String hostName, PrintWriter out) throws IOException {
+    private String getHostConnection(String hostName) throws IOException {
+      Integer intStatus = 3;
       try {
       	HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-      	Integer intStatus = 3;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
 	        intStatus = 2;
@@ -1549,25 +1440,25 @@ public class VmBix {
 	            default:
               intStatus = 2;
               break;
+              }
             }
           }
-        }
-	      out.print(intStatus);
-	      out.flush();
-      }
+	      }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+	    return intStatus.toString();      
     }
     
     /**
       * Returns the status of a host 0 -> grey 1 -> green 2 -> yellow 3 ->
       * red 4 -> unknown
     */
-    private void getHostStatus(String hostName, PrintWriter out) throws IOException {
+    private String getHostStatus(String hostName) throws IOException {
+	    Integer intStatus = 4;    
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer intStatus = 4;
+
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
 	        intStatus = 4;
@@ -1594,41 +1485,40 @@ public class VmBix {
             }
           }
         }
-	      out.print(intStatus);
-	      out.flush();
-      }
+	    }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+	  return intStatus.toString();      
     }
     
     /**
       * Returns the display name of a host
     */
-    private void getHostName(String hostName, PrintWriter out) throws IOException {
-    	try {
+    private String getHostName(String hostName) throws IOException {
+      String name = "";
+      try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      String name = "";
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
-          } else {
+        } else {
 	        name = host.getName();
         }
-	      out.print(name);
-	      out.flush();
-      }
+
+	    }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+	    return name;      
     }
     
     /**
       * Returns the number of dead paths to the storage of a host
     */
-    private void getHostDeadPaths(String hostName, PrintWriter out) throws IOException {
+    private String getHostDeadPaths(String hostName) throws IOException {
+      Integer nb = 0;
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer nb = 0;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
           } else {
@@ -1640,21 +1530,22 @@ public class VmBix {
             }
           }
         }
-	      out.print(nb);
-	      out.flush();
-      }
+
+	    }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+	    return nb.toString();      
     }
     
     /**
       * Returns the number of active paths to the storage of a host
     */
-    private void getHostActivePaths(String hostName, PrintWriter out) throws IOException {
+    private String getHostActivePaths(String hostName) throws IOException {
+	    Integer nb = 0;    
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer nb = 0;
+
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
           } else {
@@ -1667,21 +1558,20 @@ public class VmBix {
             }
           }
         }
-	      out.print(nb);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return nb.toString();
     }
     
     /**
       * Returns the number of standby paths to the storage of a host
     */
-    private void getHostStandbyPaths(String hostName, PrintWriter out) throws IOException {
+    private String getHostStandbyPaths(String hostName) throws IOException {
+	    Integer nb = 0;
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer nb = 0;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
           } else {
@@ -1693,21 +1583,20 @@ public class VmBix {
             }
           }
         }
-	      out.print(nb);
-	      out.flush();
-      }
+	    }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return nb.toString();      
     }
     
     /**
       * Returns the number of disabled paths to the storage of a host
     */
-    private void getHostDisabledPaths(String hostName, PrintWriter out) throws IOException {
-    	try {
+    private String getHostDisabledPaths(String hostName) throws IOException {
+      Integer nb = 0;
+      try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer nb = 0;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
           } else {
@@ -1719,41 +1608,39 @@ public class VmBix {
             }
           }
         }
-	      out.print(nb);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return nb.toString();
     }
     
     /**
       * Returns the display name of a VM
     */
-    private void getVmName(String vmName, PrintWriter out) throws IOException {
-    	try {
+    private String getVmName(String vmName) throws IOException {
+    	String name = "";
+      try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      String name = "";
 	      if (vm == null) {
 	        LOG.warn("No VM named '" + vmName + "' found");
           } else {
 	        name = vm.getName();
         }
-	      out.print(name);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return name;
     }
     
     /**
       * Returns the status of a virtual machine
     */
-    private void getVmStatus(String vmName, PrintWriter out) throws IOException {
-    	try {
+    private String getVmStatus(String vmName) throws IOException {
+      Integer intStatus = 4;
+      try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer intStatus = 4;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
 	        intStatus = 4;
@@ -1780,21 +1667,21 @@ public class VmBix {
             }
           }
         }
-	      out.print(intStatus);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return intStatus.toString();
     }
     
     /**
       * Returns the maintenance state of a host
     */
-    private void getHostMaintenance(String hostName, PrintWriter out) throws IOException {
-    	try {
+    private String getHostMaintenance(String hostName) throws IOException {
+	    Boolean is = false;
+      try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Boolean is;
+
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
 	        is = false;
@@ -1805,19 +1692,19 @@ public class VmBix {
 	          is = false;
           }
         }
-	      out.print(is ? "1" : "0");
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return (is ? "1" : "0");
     }
     
     /**
       * Returns a JSON-formatted array with the virtual machines list for use
       * with Zabbix low-level discovery
     */
-    private void getVMs(PrintWriter out) throws IOException {
+    private String getVMs() throws IOException {
+      JsonObject jOutput = new JsonObject();      
     	try {
 	      ManagedEntity[] vms = getManagedEntities("VirtualMachine");
 	      JsonArray jArray = new JsonArray();
@@ -1833,21 +1720,20 @@ public class VmBix {
 	          jArray.add(jObject);
           }
         }
-	      JsonObject jOutput = new JsonObject();
 	      jOutput.add("data", jArray);
-	      out.print(jOutput);
-	      out.flush();
-      }
+	      }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+	    return jOutput.toString();
     }
     
     /**
       * Returns a JSON-formatted array with the virtual machines list for use
       * with Zabbix low-level discovery
     */
-    private void getVMsFullDiscovery(PrintWriter out) throws IOException {
+    private String getVMsFullDiscovery() throws IOException {
+	    JsonObject jOutput = new JsonObject();    
     	try {
 	      ManagedEntity[] vms = getManagedEntities("VirtualMachine");
 	      JsonArray jArray = new JsonArray();
@@ -1883,21 +1769,20 @@ public class VmBix {
 	          jArray.add(jObject);
           }
         }
-	      JsonObject jOutput = new JsonObject();
 	      jOutput.add("data", jArray);
-	      out.print(jOutput);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return jOutput.toString();
     }
     
     /**
       * Returns a JSON-formatted array with the hosts list for use with
       * Zabbix low-level discovery
     */
-    private void getHosts(PrintWriter out) throws IOException {
+    private String getHosts() throws IOException {
+      JsonObject jOutput = new JsonObject();
     	try {
 	      ManagedEntity[] hs = getManagedEntities("HostSystem");
 	      JsonArray jArray = new JsonArray();
@@ -1915,21 +1800,20 @@ public class VmBix {
             }
           }
         }
-	      JsonObject jOutput = new JsonObject();
 	      jOutput.add("data", jArray);
-	      out.print(jOutput);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return jOutput.toString();
     }
     
     /**
       * Returns a JSON-formatted array with the clusters list for use with
       * Zabbix low-level discovery
     */
-    private void getClusters(PrintWriter out) throws IOException {
+    private String getClusters() throws IOException {
+	    JsonObject jOutput = new JsonObject();    
     	try {
 	      ManagedEntity[] cl = getManagedEntities("ClusterComputeResource");
 	      JsonArray jArray = new JsonArray();
@@ -1942,21 +1826,20 @@ public class VmBix {
 	        jObject.addProperty("{#CLUSTER}", name);
 	        jArray.add(jObject);
         }
-	      JsonObject jOutput = new JsonObject();
 	      jOutput.add("data", jArray);
-	      out.print(jOutput);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return jOutput.toString();
     }
     
     /**
       * Returns a JSON-formatted array with the datacenter list for use with
       * Zabbix low-level discovery
     */
-    private void getDatacenters(PrintWriter out) throws IOException {
+    private String getDatacenters() throws IOException {
+      JsonObject jOutput = new JsonObject();
     	try {
 	      ManagedEntity[] dc = getManagedEntities("Datacenter");
 	      JsonArray jArray = new JsonArray();
@@ -1970,20 +1853,18 @@ public class VmBix {
 	          jArray.add(jObject);
           }
         }
-	      JsonObject jOutput = new JsonObject();
 	      jOutput.add("data", jArray);
-	      out.print(jOutput);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return jOutput.toString();
     }
     
-    private void getDatacenterStatus(String dcName, String type, PrintWriter out) throws IOException {
+    private String getDatacenterStatus(String dcName, String type) throws IOException {
+      Integer intStatus = 4;
       try {
 	      ManagedEntity dc = getManagedEntity(dcName, "Datacenter");
-	      int intStatus = 4;
 	      String status = null;
 	      if (dc != null) {
 	        if ("overall".equals(type)) {
@@ -2012,19 +1893,19 @@ public class VmBix {
             }
           }
         }
-	      out.print(intStatus);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return intStatus.toString();
     }
     
     /**
       * Returns a JSON-formatted array with the datastores list for use with
       * Zabbix low-level discovery
     */
-    private void getDatastores(PrintWriter out) throws IOException {
+    private String getDatastores() throws IOException {
+      JsonObject jOutput = new JsonObject();
     	try {
 	      ManagedEntity[] ds = getManagedEntities("Datastore");
 	      JsonArray jArray = new JsonArray();
@@ -2061,23 +1942,21 @@ public class VmBix {
             }
           }
         }
-	      JsonObject jOutput = new JsonObject();
 	      jOutput.add("data", jArray);
-	      out.print(jOutput);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return jOutput.toString();
     }
     
     /**
       * Returns the uptime of a host in seconds
     */
-    private void getHostUptime(String hostName, PrintWriter out) throws IOException {
-    	try {
+    private String getHostUptime(String hostName) throws IOException {
+      Integer uptime = 0;
+      try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer uptime = 0;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
           } else {
@@ -2091,21 +1970,20 @@ public class VmBix {
             }
           }
         }
-	      out.print(uptime);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return uptime.toString();
     }
     
     /**
       * Returns the CPU usage of a host
     */
-    private void getHostCpuUsed(String hostName, PrintWriter out) throws IOException {
+    private String getHostCpuUsed(String hostName) throws IOException {
+      Integer usedMhz = 0;
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer usedMhz;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
 	        usedMhz = 0;
@@ -2118,41 +1996,39 @@ public class VmBix {
 	          usedMhz = 0;
           }
         }
-	      out.print(usedMhz);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return usedMhz.toString();
     }
-    
+
     /**
       * Returns the total CPU power of a host
     */
-    private void getHostCpuTotal(String hostName, PrintWriter out) throws IOException {
+    private String getHostCpuTotal(String hostName) throws IOException {
+      Integer totalMhz = 0;
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer totalMhz = 0;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
           } else {
 	        totalMhz = getHostMHZ(host);
         }
-	      out.print(totalMhz);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return totalMhz.toString();
     }
     
     /**
       * Returns the number of CPU cores of a host
     */
-    private void getHostCpuCores(String hostName, PrintWriter out) throws IOException {
+    private String getHostCpuCores(String hostName) throws IOException {
+      Short cores = 0;
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Short cores = 0;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
           } else {
@@ -2163,21 +2039,20 @@ public class VmBix {
 	          cores = 0;
           }
         }
-	      out.print(cores);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return cores.toString();
     }
     
     /**
       * Returns the memory usage of a host
     */
-    private void getHostMemUsed(String hostName, PrintWriter out) throws IOException {
+    private String getHostMemUsed(String hostName) throws IOException {
+      Integer usedMB = 0;
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer usedMB = 0;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
           } else {
@@ -2189,21 +2064,20 @@ public class VmBix {
 	          usedMB = 0;
           }
         }
-	      out.print(usedMB);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return usedMB.toString();
     }
     
     /**
       * Returns the total memory of a host
     */
-    private void getHostMemTotal(String hostName, PrintWriter out) throws IOException {
+    private String getHostMemTotal(String hostName) throws IOException {
+      Long totalMemBytes = new Long(0);
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Long totalMemBytes = new Long(0);
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
           } else {
@@ -2215,21 +2089,20 @@ public class VmBix {
 	          totalMemBytes = new Long(0);
           }
         }
-	      out.print(totalMemBytes);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return totalMemBytes.toString();
     }
     
     /**
       * Returns the number of VMs running on a host
     */
-    private void getHostVMs(String hostName, PrintWriter out) throws IOException {
+    private String getHostVMs(String hostName) throws IOException {
+      Integer nbVM = 0;
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer nbVM = 0;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
           } else {
@@ -2241,21 +2114,20 @@ public class VmBix {
             }
           }
         }
-	      out.print(nbVM);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return nbVM.toString();
     }
     
     /**
       * Returns the virtual machines private memory usage of a host
     */
-    private void getHostVmsStatsPrivate(String hostName, PrintWriter out) throws IOException {
+    private String getHostVmsStatsPrivate(String hostName) throws IOException {
+      Integer amount = 0;
 			try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer amount = 0;
 	      int sum = 0;
 	      int activeVms = 0;
 	      if (host == null) {
@@ -2271,21 +2143,20 @@ public class VmBix {
           }
 	        amount = activeVms == 0 ? 0 : sum / activeVms;
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the virtual machines shared memory usage of a host
     */
-    private void getHostVmsStatsShared(String hostName, PrintWriter out) throws IOException {
+    private String getHostVmsStatsShared(String hostName) throws IOException {
+    	Integer amount = 0;
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer amount = 0;
 	      int sum = 0;
 	      int activeVms = 0;
 	      if (host == null) {
@@ -2301,21 +2172,20 @@ public class VmBix {
           }
 	        amount = activeVms == 0 ? 0 : sum / activeVms;
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the virtual machines swapped memory usage of a host
     */
-    private void getHostVmsStatsSwapped(String hostName, PrintWriter out) throws IOException {
+    private String getHostVmsStatsSwapped(String hostName) throws IOException {
+      Integer amount = 0;
 			try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer amount = 0;
 	      int sum = 0;
 	      int activeVms = 0;
 	      if (host == null) {
@@ -2333,21 +2203,20 @@ public class VmBix {
           }
 	        amount = activeVms == 0 ? 0 : sum / activeVms;
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the virtual machines compressed memory usage of a host
     */
-    private void getHostVmsStatsCompressed(String hostName, PrintWriter out) throws IOException {
+    private String getHostVmsStatsCompressed(String hostName) throws IOException {
+      Integer amount = 0;
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer amount = 0;
 	      int sum = 0;
 	      int activeVms = 0;
 	      if (host == null) {
@@ -2363,21 +2232,20 @@ public class VmBix {
           }
 	        amount = activeVms == 0 ? 0 : sum / activeVms;
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the virtual machines overhead memory usage of a host
     */
-    private void getHostVmsStatsOverhCons(String hostName, PrintWriter out) throws IOException {
+    private String getHostVmsStatsOverhCons(String hostName) throws IOException {
+      Integer amount = 0;
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer amount = 0;
 	      int sum = 0;
 	      int activeVms = 0;
 	      if (host == null) {
@@ -2393,21 +2261,20 @@ public class VmBix {
           }
 	        amount = activeVms == 0 ? 0 : sum / activeVms;
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the virtual machines memory usage of a host
     */
-    private void getHostVmsStatsConsumed(String hostName, PrintWriter out) throws IOException {
+    private String getHostVmsStatsConsumed(String hostName) throws IOException {
+	    Integer amount = 0;    
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer amount = 0;
 	      int sum = 0;
 	      int activeVms = 0;
 	      if (host == null) {
@@ -2423,21 +2290,20 @@ public class VmBix {
           }
 	        amount = activeVms == 0 ? 0 : sum / activeVms;
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the virtual machines ballooned memory usage of a host
     */
-    private void getHostVmsStatsBallooned(String hostName, PrintWriter out) throws IOException {
+    private String getHostVmsStatsBallooned(String hostName) throws IOException {
+	    Integer amount = 0;    
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer amount = 0;
 	      int sum = 0;
 	      int activeVms = 0;
 	      if (host == null) {
@@ -2453,21 +2319,20 @@ public class VmBix {
           }
 	        amount = activeVms == 0 ? 0 : sum / activeVms;
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the virtual machines active memory usage of a host
     */
-    private void getHostVmsStatsActive(String hostName, PrintWriter out) throws IOException {
+    private String getHostVmsStatsActive(String hostName) throws IOException {
+      Integer amount = 0;    
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      Integer amount = 0;
 	      int sum = 0;
 	      int activeVms = 0;
 	      if (host == null) {
@@ -2483,21 +2348,20 @@ public class VmBix {
           }
 	        amount = activeVms == 0 ? 0 : sum / activeVms;
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the CPU usage of a virtual machine
     */
-    private void getVmCpuUsed(String vmName, PrintWriter out) throws IOException {
+    private String getVmCpuUsed(String vmName) throws IOException {
+      Integer usedMhz = 0;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer usedMhz = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -2508,49 +2372,46 @@ public class VmBix {
 	          usedMhz = 0;
           }
         }
-	      out.print(usedMhz);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return usedMhz.toString();
     }
     
     /**
       * Returns the total CPU of a virtual machine in MHz
     */
-    private void getVmCpuTotal(String vmName, PrintWriter out) throws IOException {
+    private String getVmCpuTotal(String vmName) throws IOException {
+      Integer mhz = 0;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer mhz = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
 	        VirtualMachineRuntimeInfo vmrti = vm.getRuntime();
 	        ManagedObjectReference hostMor = vmrti.getHost();
-	        if (hostMor == null) {
-	          return;
+          if (hostMor != null) {
+            ManagedEntity me = MorUtil.createExactManagedEntity(serviceInstance.getServerConnection(), hostMor);
+            HostSystem host = (HostSystem) me;
+            
+            mhz = getHostMHZ(host);
           }
-	        ManagedEntity me = MorUtil.createExactManagedEntity(serviceInstance.getServerConnection(), hostMor);
-	        HostSystem host = (HostSystem) me;
-          
-	        mhz = getHostMHZ(host);
         }
-	      out.print(mhz);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return mhz.toString();
     }
     
     /**
       * Returns the number of CPU cores of a virtual machine
     */
-    private void getVmCpuCores(String vmName, PrintWriter out) throws IOException {
+    private String getVmCpuCores(String vmName) throws IOException {
+	    Integer cores = 0;    
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer cores = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -2563,42 +2424,40 @@ public class VmBix {
             }
           }
         }
-	      out.print(cores);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return cores.toString();
     }
     
     /**
       * Returns the annotation of a virtual machine
     */
-    private void getVmAnnotation(String vmName, PrintWriter out) throws IOException {
+    private String getVmAnnotation(String vmName) throws IOException {
+      String an = "";
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      String an = "";
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
 	        VirtualMachineConfigInfo vmcfg = vm.getConfig();
 	        an = vmcfg.getAnnotation();
         }
-	      out.print(an);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return an.toString();
     }
     
     /**
       * Returns 1 if the virtual machine has at least one snapshot
     */
-    private void getVmSnapshot(String vmName, PrintWriter out) throws IOException {
+    private String getVmSnapshot(String vmName) throws IOException {
+      Integer snapshot = 0;    
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer snapshot = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -2607,21 +2466,20 @@ public class VmBix {
 	          snapshot = 1;
           }
         }
-	      out.print(snapshot);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return snapshot.toString();
     }
     
     /**
       * Returns the power state of a virtual machine
     */
-    private void getVmPowerState(String vmName, PrintWriter out) throws IOException {
+    private String getVmPowerState(String vmName) throws IOException {
+      Integer intStatus = 3;    
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer intStatus = 3;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -2644,12 +2502,11 @@ public class VmBix {
             }
           }
         }
-	      out.print(intStatus);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return intStatus.toString();
     }
     
     /**
@@ -2659,8 +2516,9 @@ public class VmBix {
       * optional query interval (default is defined in the configuration file
       * with the "interval" keyword)
     */
-    private void getVmPerfCounterDiscovery(String[] params, PrintWriter out) throws IOException {
-    	try {
+    private String getVmPerfCounterDiscovery(String[] params) throws IOException {
+    	JsonObject jOutput = new JsonObject();
+      try {
 	      String vmName = params[0];
 	      String perfCounterName = params[1];
 	      Integer newInterval = interval;
@@ -2696,14 +2554,12 @@ public class VmBix {
 	          LOG.info("VM '" + vmName + "' is not powered on. Performance counters unavailable.");
           }
         }
-	      JsonObject jOutput = new JsonObject();
 	      jOutput.add("data", jArray);
-	      out.print(jOutput);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return jOutput.toString();
     }
     
     /**
@@ -2717,7 +2573,8 @@ public class VmBix {
       * For rate and absolute values, we calculate the average value. For
       * delta values, we sum the results.
     */
-    private void getVmPerfCounterValue(String[] params, PrintWriter out) throws IOException {
+    private String getVmPerfCounterValue(String[] params) throws IOException {
+      Integer value = 0;
     	try {
 	      String vmName = params[0];
 	      String perfCounterName = params[1];
@@ -2730,7 +2587,6 @@ public class VmBix {
 	        newInterval = Integer.parseInt(params[3]);
         }
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      int value = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -2775,11 +2631,9 @@ public class VmBix {
 	                  PerfEntityMetric pem = (PerfEntityMetric) pValues[i];
 	                  PerfMetricSeries[] vals = pem.getValue();
 	                  value = getPerfCounterValue(vals, perfCounterName, perfCounterUnitInfo, perfCounterStatsType, perfCounterRollupType);
-	                  out.print(value);
                   }
                 }
-	              out.flush();
-              }
+	            }
             }
             } else {
 	          LOG.info("VM '" + vmName + "' is not powered on. Performance counters unavailable.");
@@ -2789,6 +2643,7 @@ public class VmBix {
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return value.toString();
     }
     
     /**
@@ -2838,7 +2693,8 @@ public class VmBix {
       * name - an optional query interval (default is defined in the
       * configuration file with the "interval" keyword)
     */
-    private void getHostPerfCounterDiscovery(String[] params, PrintWriter out) throws IOException {
+    private String getHostPerfCounterDiscovery(String[] params) throws IOException {
+      JsonObject jOutput = new JsonObject();
     	try {
 	      String hostName = params[0];
 	      String perfCounterName = params[1];
@@ -2879,14 +2735,12 @@ public class VmBix {
 	          LOG.info("Host '" + hostName + "' is not powered on. Performance counters unavailable.");
           }
         }
-	      JsonObject jOutput = new JsonObject();
 	      jOutput.add("data", jArray);
-	      out.print(jOutput);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return jOutput.toString();
     }
     
     /**
@@ -2900,7 +2754,8 @@ public class VmBix {
       * For rate and absolute values, we calculate the average value. For
       * delta values, we sum the results.
     */
-    private void getHostPerfCounterValue(String[] params, PrintWriter out) throws IOException {
+    private String getHostPerfCounterValue(String[] params) throws IOException {
+      Integer value = 0;
     	try {
 	      String hostName = params[0];
 	      String perfCounterName = params[1];
@@ -2913,7 +2768,6 @@ public class VmBix {
 	        newInterval = Integer.parseInt(params[3]);
         }
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
-	      int value = 0;
 	      if (host == null) {
 	        LOG.warn("No host named '" + hostName + "' found");
           } else {
@@ -2957,11 +2811,9 @@ public class VmBix {
 	                  PerfEntityMetric pem = (PerfEntityMetric) pValues[i];
 	                  PerfMetricSeries[] vals = pem.getValue();
 	                  value = getPerfCounterValue(vals, perfCounterName, perfCounterUnitInfo, perfCounterStatsType, perfCounterRollupType);
-	                  out.print(value);
                   }
                 }
-	              out.flush();
-              }
+	            }
             }
             } else {
 	          LOG.info("Host '" + hostName + "' is not powered on. Performance counters unavailable.");
@@ -2971,12 +2823,14 @@ public class VmBix {
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return value.toString();
     }
     
     /**
       * Returns the list of available performance counters of a host
     */
-    private void getHostAvailablePerfCounters(String hostName, PrintWriter out) throws IOException {
+    private String getHostAvailablePerfCounters(String hostName) throws IOException {
+      String perfCounterString = "";
     	try {
 	      HostSystem host = (HostSystem) getManagedEntity(hostName, "HostSystem");
 	      if (host == null) {
@@ -3004,11 +2858,9 @@ public class VmBix {
             
 	          for (int i = 0; i < ciList.length; i++) {
 	            PerfCounterInfo perfCounterInfo = ciList[i];
-	            String perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + "." + perfCounterInfo.getRollupType().toString() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + ")";
-	            out.print(perfCounterString + "\n");
+	            perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + "." + perfCounterInfo.getRollupType().toString() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + ")";
             }
-	          out.flush();
-            } else {
+	        } else {
 	          LOG.info("Host '" + hostName + "' is not powered on. Performance counters unavailable.");
           }
         }
@@ -3016,12 +2868,14 @@ public class VmBix {
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return perfCounterString;
     }
     
     /**
       * Returns the list of available performance counters of a vm
     */
-    private void getVmAvailablePerfCounters(String vmName, PrintWriter out) throws IOException {
+    private String getVmAvailablePerfCounters(String vmName) throws IOException {
+      String perfCounterString = "";
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
 	      if (vm == null) {
@@ -3049,11 +2903,9 @@ public class VmBix {
             
 	          for (int i = 0; i < ciList.length; i++) {
 	            PerfCounterInfo perfCounterInfo = ciList[i];
-	            String perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + "." + perfCounterInfo.getRollupType().toString() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + ")";
-	            out.print(perfCounterString + "\n");
+	            perfCounterString = perfCounterInfo.getKey() + " : " + perfCounterInfo.getGroupInfo().getKey() + "." + perfCounterInfo.getNameInfo().getKey() + "." + perfCounterInfo.getRollupType().toString() + " : " + perfCounterInfo.getNameInfo().getLabel() + " in " + perfCounterInfo.getUnitInfo().getLabel() + " (" + perfCounterInfo.getStatsType().toString() + ")";
             }
-	          out.flush();
-            } else {
+	        } else {
 	          LOG.info("VM '" + vmName + "' is not powered on. Performance counters unavailable.");
           }
         }
@@ -3061,106 +2913,81 @@ public class VmBix {
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return perfCounterString;
     }
     
     /**
       * Returns the about info of the VMWare API
     */
-    private void getAbout(PrintWriter out) throws IOException {
+    private String getAbout() throws IOException {
+      String fullName = "";
     	try {
 	      AboutInfo about = serviceInstance.getAboutInfo();
-	      out.print(about.getFullName());
-	      out.flush();
+	      fullName = about.getFullName();
+	    }
+      catch (Exception ex) {
+        LOG.error("An error occurred : " + ex.toString());
+      }
+      return fullName;
+    }
+
+    /**
+     * Returns a byte[] array of the Zabbix header and data.
+     */
+    private byte[] makeZabbixPacket(String message) {
+      byte[] data = message.getBytes();
+
+      byte[] header = new byte[] {
+        'Z', 'B', 'X', 'D', '\1',
+            (byte)(data.length & 0xFF),
+            (byte)((data.length >> 8) & 0xFF),
+            (byte)((data.length >> 16) & 0xFF),
+            (byte)((data.length >> 24) & 0xFF),
+            '\0', '\0', '\0', '\0'
+      };
+
+      byte[] packet = new byte[header.length + data.length];
+      System.arraycopy(header, 0, packet, 0, header.length);
+      System.arraycopy(data, 0, packet, header.length, data.length);
+
+      return packet;
+    }
+
+    /**
+     * Sends the formatted Zabbix packet to the Zabbix server
+     */
+    private void sendZabbixPacket(byte[] packet, OutputStream out) throws IOException {
+      try {
+        out.write(packet);
+        out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
     }
-    /**
-     * Returns about info of the VMware API as a string
-     */
-    /* WHOSGONNA:
-     * Only a test method. Ultimately all of the methods that retrieve data
-     * from vmware should return a string(?).
-     *
-     * How to handle exceptions here, though?
-     */
-    public String getAbout2() throws IOException {
-        try {
-            AboutInfo about = serviceInstance.getAboutInfo();
-            return about.getFullName();
-        }
-        catch (Exception ex) {
-            LOG.error("An error occurred : " + ex.toString());
-            /* WHOSGONNA:
-             * Is this the best way to handle the exception?
-             */
-            return null;
-        }
-    }
-
-    /**
-     * Returns a byte[] array of the zabbix header and data.
-     */
-    /*
-     * Again:  How to handle exceptions here?
-     */
-    private byte[] makeZabbix4Packet(String message) {
-        byte[] data = message.getBytes();
-
-        byte[] header = new byte[] {
-            'Z', 'B', 'X', 'D', '\1',
-                (byte)(data.length & 0xFF),
-                (byte)((data.length >> 8) & 0xFF),
-                (byte)((data.length >> 16) & 0xFF),
-                (byte)((data.length >> 24) & 0xFF),
-                '\0', '\0', '\0', '\0'
-        };
-
-        byte[] packet = new byte[header.length + data.length];
-        System.arraycopy(header, 0, packet, 0, header.length);
-        System.arraycopy(data, 0, packet, header.length, data.length);
-
-        return packet;
-    }
-
-    /**
-     * Sends the formated Zabbix 4 packet to the zabbix server
-     */
-    private void sendZabbix4Packet(byte[] packet, OutputStream out) throws IOException {
-       try {
-           out.write(packet);
-           out.flush();   // WHOSGONNA:  Is it necessary to flush a stream?
-       }
-       catch (Exception ex) {
-           LOG.error("An error occurred : " + ex.toString());
-       }
-    }
-
-
-
     
     /**
       * Returns the latest event on the vCenter
     */
-    private void getLatestEvent(PrintWriter out) throws IOException {
+    private String getLatestEvent() throws IOException {
+      String latestEvent = "";
     	try {
 	      EventManager eventManager = serviceInstance.getEventManager();
-	      out.print(eventManager.getLatestEvent().getFullFormattedMessage());
-	      out.flush();
-      }
+	      latestEvent = eventManager.getLatestEvent().getFullFormattedMessage();
+	    }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return latestEvent;
     }
     
     /**
       * Returns the vCenter folder of a virtual machine
     */
-    private void getVmFolder(String vmName, PrintWriter out) throws IOException {
+    private String getVmFolder(String vmName) throws IOException {
+      String vmFolder = "";
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      String vmFolder = "";
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3170,21 +2997,20 @@ public class VmBix {
 	          fd = fd.getParent();
           }
         }
-	      out.print(vmFolder);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return vmFolder;
     }
     
     /**
       * Returns the uptime in seconds of a virtual machine
     */
-    private void getVmUptime(String vmName, PrintWriter out) throws IOException {
+    private String getVmUptime(String vmName) throws IOException {
+      Integer uptime = 0;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer uptime = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3198,21 +3024,20 @@ public class VmBix {
             }
           }
         }
-	      out.print(uptime);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return uptime.toString();
     }
     
     /**
       * Returns the private memory of a virtual machine
     */
-    private void getVmMemPrivate(String vmName, PrintWriter out) throws IOException {
+    private String getVmMemPrivate(String vmName) throws IOException {
+      Integer amount = 0;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer amount = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3224,21 +3049,20 @@ public class VmBix {
 	          amount = 0;
           }
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the shared memory of a virtual machine
     */
-    private void getVmMemShared(String vmName, PrintWriter out) throws IOException {
+    private String getVmMemShared(String vmName) throws IOException {
+      Integer amount = 0;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer amount = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3250,21 +3074,20 @@ public class VmBix {
 	          amount = 0;
           }
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the swapped memory of a virtual machine
     */
-    private void getVmMemSwapped(String vmName, PrintWriter out) throws IOException {
+    private String getVmMemSwapped(String vmName) throws IOException {
+      Integer amount = 0;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer amount = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3276,21 +3099,20 @@ public class VmBix {
 	          amount = 0;
           }
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the compressed memory of a virtual machine
     */
-    private void getVmMemCompressed(String vmName, PrintWriter out) throws IOException {
+    private String getVmMemCompressed(String vmName) throws IOException {
+      Long amount = new Long(0);
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Long amount = new Long(0);
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3302,21 +3124,20 @@ public class VmBix {
 	          amount = new Long(0);
           }
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the overhead memory of a virtual machine
     */
-    private void getVmMemOverheadConsumed(String vmName, PrintWriter out) throws IOException {
+    private String getVmMemOverheadConsumed(String vmName) throws IOException {
+      Integer amount = 0;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer amount = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3328,21 +3149,20 @@ public class VmBix {
 	          amount = 0;
           }
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the consumed memory of a virtual machine
     */
-    private void getVmMemConsumed(String vmName, PrintWriter out) throws IOException {
+    private String getVmMemConsumed(String vmName) throws IOException {
+      Integer amount = 0;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer amount = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3354,21 +3174,20 @@ public class VmBix {
 	          amount = 0;
           }
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the ballooned memory of a virtual machine
     */
-    private void getVmMemBallooned(String vmName, PrintWriter out) throws IOException {
+    private String getVmMemBallooned(String vmName) throws IOException {
+      Integer amount = 0;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer amount = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3380,21 +3199,20 @@ public class VmBix {
 	          amount = 0;
           }
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the active memory of a virtual machine
     */
-    private void getVmMemActive(String vmName, PrintWriter out) throws IOException {
+    private String getVmMemActive(String vmName) throws IOException {
+      Integer amount = 0;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer amount = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3406,43 +3224,45 @@ public class VmBix {
 	          amount = 0;
           }
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns the consolidation status of a virtual machine
     */
-    private void getVmConsolidationNeeded(String vmName, PrintWriter out) throws IOException {
+    private String getVmConsolidationNeeded(String vmName) throws IOException {
+      String isConsolidationNeeded = "0";
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Boolean is = false;
+        Boolean is = false;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
-          } else {
+        } 
+        else {
 	        VirtualMachineRuntimeInfo vmRuntime = vm.getRuntime();
 	        is = vmRuntime.getConsolidationNeeded();
 	        if (is == null) {
 	          is = false;
           }
         }
-	      out.print(is ? "1" : "0");
-	      out.flush();
-      }
+	      isConsolidationNeeded = (is ? "1" : "0");
+	    }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return isConsolidationNeeded;
     }
     
     /**
       * Returns a true if the VM Tools installer is mounted of a virtual
       * machine Returns false if not
     */
-    private void getVmToolsInstallerMounted(String vmName, PrintWriter out) throws IOException {
+    private String getVmToolsInstallerMounted(String vmName) throws IOException {
+      String isToolsInstallerMounted = "";
 			try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
 	      Boolean is = false;
@@ -3455,21 +3275,21 @@ public class VmBix {
 	          is = false;
           }
         }
-	      out.print(is ? "1" : "0");
-	      out.flush();
-      }
+	      isToolsInstallerMounted = (is ? "1" : "0");
+	    }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return isToolsInstallerMounted;
     }
     
     /**
       * Returns the running host of a virtual machine
     */
-    private void getVmHost(String vmName, PrintWriter out) throws IOException {
+    private String getVmHost(String vmName) throws IOException {
+      String vmHost = "";
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      String vmHost = "";
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3478,21 +3298,20 @@ public class VmBix {
 	        HostSystem host = new HostSystem(vm.getServerConnection(), hmor);
 	        vmHost = host.getName();
         }
-	      out.print(vmHost);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return vmHost;
     }
     
     /**
       * Returns the guest OS full description of a virtual machine
     */
-    private void getVmGuestFullName(String vmName, PrintWriter out) throws IOException {
+    private String getVmGuestFullName(String vmName) throws IOException {
+       String guestFullName = "";
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      String guestFullName = "";
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3504,21 +3323,20 @@ public class VmBix {
 	          guestFullName = vmGuest.getGuestFullName();
           }
         }
-	      out.print(guestFullName);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return guestFullName;
     }
     
     /**
       * Returns the guest OS short description of a virtual machine
     */
-    private void getVmGuestShortName(String vmName, PrintWriter out) throws IOException {
+    private String getVmGuestShortName(String vmName) throws IOException {
+      String guestShortName = "";
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      String guestShortName = "";
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3529,21 +3347,20 @@ public class VmBix {
 	          guestShortName = gInfo.getGuestFamily();
           }
         }
-	      out.print(guestShortName);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return guestShortName;
     }
     
     /**
       * Returns the guest OS hostname of a virtual machine
     */
-    private void getVmGuestHostName(String vmName, PrintWriter out) throws IOException {
+    private String getVmGuestHostName(String vmName) throws IOException {
+      String guestHostName = "";
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      String guestHostName = "";
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3556,19 +3373,19 @@ public class VmBix {
 	          guestHostName = vmGuest.getHostName();
           }
         }
-	      out.print(guestHostName);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return guestHostName;
     }
     
     /**
       * Returns the list of the guest OS disks of a virtual machine Formatted
       * in JSON for use with Zabbix LLD
     */
-    private void getVmGuestDisks(String vmName, PrintWriter out) throws IOException {
+    private String getVmGuestDisks(String vmName) throws IOException {
+      JsonObject jOutput = new JsonObject();
     	try {
       	VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
       	JsonArray jArray = new JsonArray();
@@ -3597,23 +3414,21 @@ public class VmBix {
             }
           }
         }
-        JsonObject jOutput = new JsonObject();
         jOutput.add("data", jArray);
-        out.print(jOutput);
-        out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return jOutput.toString();
     }
     
     /**
       * Returns a disk capacity for the guest OS of a virtual machine
     */
-    private void getVmGuestDiskCapacity(String vmName, String vmDisk, PrintWriter out) throws IOException {
+    private String getVmGuestDiskCapacity(String vmName, String vmDisk) throws IOException {
+      Long size = 0L;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Long size = 0L;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3630,11 +3445,9 @@ public class VmBix {
 	            for (int j = 0; j < vmDisks.length; j++) {
 	              if (vmDisks[j].getDiskPath().equals(vmDisk)) {
 	                size = vmDisks[j].getCapacity();
-	                out.print(size);
                 }
               }
-	            out.flush();
-              } else {
+	          } else {
 	            LOG.info("Cannot query disks for VM '" + vmName);
             }
           }
@@ -3643,15 +3456,16 @@ public class VmBix {
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return size.toString();
     }
     
     /**
       * Returns a disk free space for the guest OS of a virtual machine
     */
-    private void getVmGuestDiskFreeSpace(String vmName, String vmDisk, PrintWriter out) throws IOException {
+    private String getVmGuestDiskFreeSpace(String vmName, String vmDisk) throws IOException {
+      Long size = 0L;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Long size = 0L;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3668,11 +3482,9 @@ public class VmBix {
 	            for (int j = 0; j < vmDisks.length; j++) {
 	              if (vmDisks[j].getDiskPath().equals(vmDisk)) {
 	                size = vmDisks[j].getFreeSpace();
-	                out.print(size);
                 }
               }
-	            out.flush();
-              } else {
+	          } else {
 	            LOG.info("Cannot query disks for VM '" + vmName);
             }
           }
@@ -3681,15 +3493,16 @@ public class VmBix {
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return size.toString();
     }
     
     /**
       * Returns the guest OS IP address of a virtual machine
     */
-    private void getVmGuestIpAddress(String vmName, PrintWriter out) throws IOException {
+    private String getVmGuestIpAddress(String vmName) throws IOException {
+      String guestIpAddress = "";
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      String guestIpAddress = "";
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3701,21 +3514,20 @@ public class VmBix {
 	          guestIpAddress = vmGuest.getIpAddress();
           }
         }
-	      out.print(guestIpAddress);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return guestIpAddress;
     }
     
     /**
       * Returns the committed storage of a virtual machine
     */
-    private void getVmStorageCommitted(String vmName, PrintWriter out) throws IOException {
+    private String getVmStorageCommitted(String vmName) throws IOException {
+      Long size = 0L;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Long size = 0L;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3723,21 +3535,20 @@ public class VmBix {
 	        VirtualMachineStorageSummary vmStorage = vmSummary.getStorage();
 	        size = vmStorage.getCommitted();
         }
-	      out.print(size);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return size.toString();
     }
     
     /**
       * Returns the uncommitted storage of a virtual machine
     */
-    private void getVmStorageUncommitted(String vmName, PrintWriter out) throws IOException {
+    private String getVmStorageUncommitted(String vmName) throws IOException {
+      Long size = 0L;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Long size = 0L;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3745,21 +3556,20 @@ public class VmBix {
 	        VirtualMachineStorageSummary vmStorage = vmSummary.getStorage();
 	        size = vmStorage.getUncommitted();
         }
-	      out.print(size);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return size.toString();
     }
     
     /**
       * Returns the unshared storage of a virtual machine
     */
-    private void getVmStorageUnshared(String vmName, PrintWriter out) throws IOException {
+    private String getVmStorageUnshared(String vmName) throws IOException {
+      Long size = 0L;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Long size = 0L;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3767,12 +3577,11 @@ public class VmBix {
 	        VirtualMachineStorageSummary vmStorage = vmSummary.getStorage();
 	        size = vmStorage.getUnshared();
         }
-	      out.print(size);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return size.toString();
     }
     
     /**
@@ -3780,10 +3589,10 @@ public class VmBix {
       * guestToolsNotInstalled 1 -> guestToolsCurrent 2 ->
       * guestToolsNeedUpgrade 3 -> guestToolsUnmanaged 4 -> other
     */
-    private void getVmGuestToolsVersionStatus(String vmName, PrintWriter out) throws IOException {
+    private String getVmGuestToolsVersionStatus(String vmName) throws IOException {
+      Integer intStatus = 9;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer intStatus = 9;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3829,12 +3638,11 @@ public class VmBix {
             }
           }
         }
-	      out.print(intStatus);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return intStatus.toString();
     }
     
     /**
@@ -3842,10 +3650,10 @@ public class VmBix {
       * guestToolsNotRunning 1 -> guestToolsRunning 2 ->
       * guestToolsExecutingScripts 3 -> other
     */
-    private void getVmGuestToolsRunningStatus(String vmName, PrintWriter out) throws IOException {
+    private String getVmGuestToolsRunningStatus(String vmName) throws IOException {
+      Integer intStatus = 3;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer intStatus = 3;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3873,21 +3681,20 @@ public class VmBix {
             }
           }
         }
-	      out.print(intStatus);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return intStatus.toString();
     }
     
     /**
       * Returns the memory size of a virtual machine
     */
-    private void getVmMemSize(String vmName, PrintWriter out) throws IOException {
+    private String getVmMemSize(String vmName) throws IOException {
+      Integer amount = 0;
     	try {
 	      VirtualMachine vm = (VirtualMachine) getManagedEntity(vmName, "VirtualMachine");
-	      Integer amount = 0;
 	      if (vm == null) {
 	        LOG.warn("No vm named '" + vmName + "' found");
           } else {
@@ -3899,41 +3706,39 @@ public class VmBix {
 	          amount = 0;
           }
         }
-	      out.print(amount);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return amount.toString();
     }
     
     /**
       * Returns 1 if the datastore is local
     */
-    private void getDatastoreLocal(String dsName, PrintWriter out) throws IOException {
+    private String getDatastoreLocal(String dsName) throws IOException {
+      Integer local = 0;
     	try {
 	      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
-	      Integer local = 0;
 	      if (ds == null) {
 	        LOG.warn("No datastore named '" + dsName + "' found");
           } else {
 	        local = (ds.getSummary().multipleHostAccess == true) ? 0 : 1; // return 1 for local datastores
         }
-	      out.print(local);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return local.toString();
     }
     
     /**
       * Returns the free space of a datastore
     */
-    private void getDatastoreSizeFree(String dsName, PrintWriter out) throws IOException {
+    private String getDatastoreSizeFree(String dsName) throws IOException {
+      Long freeSpace = new Long(0);
     	try {
 	      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
-	      Long freeSpace = new Long(0);
 	      if (ds == null) {
 	        LOG.warn("No datastore named '" + dsName + "' found");
           } else {
@@ -3943,21 +3748,20 @@ public class VmBix {
 	          freeSpace = new Long(0);
           }
         }
-	      out.print(freeSpace);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return freeSpace.toString();
     }
     
     /**
       * Returns the size of a datastore
     */
-    private void getDatastoreSizeTotal(String dsName, PrintWriter out) throws IOException {
+    private String getDatastoreSizeTotal(String dsName) throws IOException {
+      Long capacity = new Long(0);
     	try {
 	      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
-	      Long capacity = new Long(0);
 	      if (ds == null) {
 	        LOG.warn("No datastore named '" + dsName + "' found");
           } else {
@@ -3967,21 +3771,20 @@ public class VmBix {
 	          capacity = new Long(0);
           }
         }
-	      out.print(capacity);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return capacity.toString();
     }
     
     /**
       * Returns the provisioned size of a datastore
     */
-    private void getDatastoreSizeProvisioned(String dsName, PrintWriter out) throws IOException {
+    private String getDatastoreSizeProvisioned(String dsName) throws IOException {
+      Long provSpace = new Long(0);
     	try {
 	      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
-	      Long provSpace = new Long(0);
 	      if (ds == null) {
 	        LOG.warn("No datastore named '" + dsName + "' found");
           } else {
@@ -3995,21 +3798,20 @@ public class VmBix {
 	          provSpace = new Long(0);
           }
         }
-	      out.print(provSpace);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return provSpace.toString();
     }
     
     /**
       * Returns the uncommitted size of a datastore
     */
-    private void getDatastoreSizeUncommitted(String dsName, PrintWriter out) throws IOException {
+    private String getDatastoreSizeUncommitted(String dsName) throws IOException {
+      Long freeSpace = new Long(0);
     	try {
 	      Datastore ds = (Datastore) getManagedEntity(dsName, "Datastore");
-	      Long freeSpace = new Long(0);
 	      if (ds == null) {
 	        LOG.warn("No datastore named '" + dsName + "' found");
           } else {
@@ -4019,136 +3821,130 @@ public class VmBix {
 	          freeSpace = new Long(0);
           }
         }
-	      out.print(freeSpace);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return freeSpace.toString();
     }
     
     /**
       * Returns the CPU free of a cluster
     */
-    private void getClusterCpuFree(String name, PrintWriter out) throws IOException {
+    private String getClusterCpuFree(String name) throws IOException {
+      long cpuFree = 0;
     	try {
 	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-	      long cpuFree = 0;
 	      if (cl != null) {
 	        cpuFree = cl.getSummary().effectiveCpu;
           } else {
 	        LOG.warn("No cluster named '" + name + "' found");
         }
-	      out.print(cpuFree);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return Long.toString(cpuFree);
     }
     
     /**
       * Returns the total CPU of a cluster
     */
-    private void getClusterCpuTotal(String name, PrintWriter out) throws IOException {
+    private String getClusterCpuTotal(String name) throws IOException {
+      long cpuTotal = 0;
     	try {
 	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-	      long cpuTotal = 0;
 	      if (cl != null) {
 	        cpuTotal = cl.getSummary().totalCpu;
           } else {
 	        LOG.warn("No cluster named '" + name + "' found");
         }
-	      out.print(cpuTotal);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return Long.toString(cpuTotal);
     }
     
     /**
       * Returns the CPU usage of a cluster
     */
-    private void getClusterCpuUsage(String name, PrintWriter out) throws IOException {
+    private String getClusterCpuUsage(String name) throws IOException {
+      long cpuUsage = 0;
     	try {
 	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-	      long cpuUsage = 0;
 	      if (cl != null) {
 	        cpuUsage = cl.getSummary().totalCpu - cl.getSummary().effectiveCpu;
           } else {
 	        LOG.warn("No cluster named '" + name + "' found");
         }
-	      out.print(cpuUsage);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return Long.toString(cpuUsage);
     }
     
     /**
       * Returns the number of CPU threads of a cluster
     */
-    private void getClusterCpuThreads(String name, PrintWriter out) throws IOException {
+    private String getClusterCpuThreads(String name) throws IOException {
+      short numCpuThreads = 0;
     	try {
 	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-	      short numCpuThreads = 0;
 	      if (cl != null) {
 	        numCpuThreads = cl.getSummary().numCpuThreads;
           } else {
 	        LOG.warn("No cluster named '" + name + "' found");
         }
-	      out.print(numCpuThreads);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return Short.toString(numCpuThreads);
     }
     
     /**
       * Returns the number of CPU cores of a cluster
     */
-    private void getClusterCpuCores(String name, PrintWriter out) throws IOException {
+    private String getClusterCpuCores(String name) throws IOException {
+      short numCpuCores = 0;
     	try {
 	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-	      short numCpuCores = 0;
 	      if (cl != null) {
 	        numCpuCores = cl.getSummary().numCpuCores;
           } else {
 	        LOG.warn("No cluster named '" + name + "' found");
         }
-	      out.print(numCpuCores);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return Short.toString(numCpuCores);
     }
     
     /**
       * Returns the free memory of a cluster
     */
-    private void getClusterMemFree(String name, PrintWriter out) throws IOException {
+    private String getClusterMemFree(String name) throws IOException {
+      long memFree = 0;
     	try {
 	      //effectiveMemory returned in MB
 	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-	      long memFree = 0;
 	      if (cl != null) {
 	        memFree = cl.getSummary().effectiveMemory * 1024 * 1024;
           } else {
 	        LOG.warn("No cluster named '" + name + "' found");
         }
-	      out.print(memFree);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return Long.toString(memFree);
     }
     
-    private void getPools(PrintWriter out) throws IOException {
+    private String getPools() throws IOException {
+      JsonObject jOutput = new JsonObject();
       try {
         ManagedEntity[] cl = getManagedEntities("ResourcePool");
         JsonArray jArray = new JsonArray();
@@ -4161,20 +3957,18 @@ public class VmBix {
           jObject.addProperty("{#POOL}", name);
           jArray.add(jObject);
         }
-        JsonObject jOutput = new JsonObject();
         jOutput.add("data", jArray);
-        out.print(jOutput);
-        out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return jOutput.toString();
     }
     
-    private void getPoolMemUsage(String name, PrintWriter out) throws IOException {
+    private String getPoolMemUsage(String name) throws IOException {
+      long memUsage = 0;
       try {
         ResourcePool rp = (ResourcePool) getManagedEntityByName(name, "ResourcePool");
-        long memUsage = 0;
         if (rp != null) {
           ResourcePoolSummary rpSummary = rp.getSummary();
           ResourcePoolRuntimeInfo rpInfo = rpSummary.getRuntime();
@@ -4183,18 +3977,17 @@ public class VmBix {
           } else {
           LOG.warn("No ResourcePool named '" + name + "' found");
         }
-        out.print(memUsage);
-        out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return Long.toString(memUsage);
     }
     
-    private void getPoolCpuUsage(String name, PrintWriter out) throws IOException {
+    private String getPoolCpuUsage(String name) throws IOException {
+      long CpuUsage = 0;
       try {
         ResourcePool rp = (ResourcePool) getManagedEntityByName(name, "ResourcePool");
-        long CpuUsage = 0;
         if (rp != null) {
           ResourcePoolSummary rpSummary = rp.getSummary();
           ResourcePoolRuntimeInfo rpInfo = rpSummary.getRuntime();
@@ -4203,113 +3996,107 @@ public class VmBix {
           } else {
           LOG.warn("No ResourcePool named '" + name + "' found");
         }
-        out.print(CpuUsage);
-        out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return Long.toString(CpuUsage);
     }
     
     /**
       * Returns the total memory of a cluster
     */
-    private void getClusterMemTotal(String name, PrintWriter out) throws IOException {
+    private String getClusterMemTotal(String name) throws IOException {
+      long memTotal = 0;
     	try {
 	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-	      long memTotal = 0;
 	      if (cl != null) {
 	        memTotal = cl.getSummary().totalMemory;
           } else {
 	        LOG.warn("No cluster named '" + name + "' found");
         }
-	      out.print(memTotal);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return Long.toString(memTotal);
     }
     
     /**
       * Returns the memory usage of a cluster
     */
-    private void getClusterMemUsage(String name, PrintWriter out) throws IOException {
+    private String getClusterMemUsage(String name) throws IOException {
+      long memUsage = 0;
     	try {
 	      //effectiveMemory returned in MB
 	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-	      long memUsage = 0;
 	      if (cl != null) {
 	        memUsage = cl.getSummary().totalMemory - (cl.getSummary().effectiveMemory * 1024 * 1024);
           } else {
 	        LOG.warn("No cluster named '" + name + "' found");
         }
-	      out.print(memUsage);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return Long.toString(memUsage);
     }
     
     /**
       * Returns the number of online ESX hosts of a cluster
     */
-    private void getClusterHostsOnline(String name, PrintWriter out) throws IOException {
+    private String getClusterHostsOnline(String name) throws IOException {
+      Integer hostOnline = 0;
     	try {
 	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-	      int hostOnline = 0;
 	      if (cl != null) {
 	        hostOnline = cl.getSummary().numEffectiveHosts;
           } else {
 	        LOG.warn("No cluster named '" + name + "' found");
         }
-	      out.print(hostOnline);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return hostOnline.toString();
     }
     
     /**
       * Returns the number of ESX hosts in maintenance of a cluster
     */
-    private void getClusterHostsMaint(String name, PrintWriter out) throws IOException {
+    private String getClusterHostsMaint(String name) throws IOException {
+      Integer hostMaint = 0;
     	try {
 	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-	      int hostMaint = 0;
 	      if (cl != null) {
 	        hostMaint = cl.getSummary().numHosts - cl.getSummary().numEffectiveHosts;
           } else {
 	        LOG.warn("No cluster named '" + name + "' found");
         }
-	      out.print(hostMaint);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return hostMaint.toString();
     }
     
     /**
       * Returns the number of ESX hosts of a cluster
     */
-    private void getClusterHostsTotal(String name, PrintWriter out) throws IOException {
+    private String getClusterHostsTotal(String name) throws IOException {
+      Integer hostTotal = 0;
     	try {
 	      ClusterComputeResource cl = (ClusterComputeResource) getManagedEntityByName(name, "ClusterComputeResource");
-	      int hostTotal = 0;
 	      if (cl != null) {
 	        hostTotal = cl.getSummary().numHosts;
           } else {
 	        LOG.warn("No cluster named '" + name + "' found");
         }
-	      out.print(hostTotal);
-	      out.flush();
       }
       catch (Exception ex) {
         LOG.error("An error occurred : " + ex.toString());
       }
+      return hostTotal.toString();
     }
     
     public void run() {
@@ -4328,39 +4115,21 @@ public class VmBix {
           serviceInstance = request.serviceInstance;
           alive = 0;
           try {
-            /* WHOSGONNA:
-             * The output will need to be just the outputStream, not PrintWriter.
-             * Here, 'outputStream' is temporary until 'out' can be refactored
-             */
-            //PrintWriter out = new PrintWriter(connected.getOutputStream());
             OutputStream outputStream = connected.getOutputStream();
-
-            /* WHOSGONNA:
-             * Input of BufferedReader hangs because there is no end of line/ EOF.
-             * Use a DataInputStream instead.  
-             */
-            /* BufferedReader in = new BufferedReader(new InputStreamReader(connected.getInputStream())); */
             DataInputStream in = new DataInputStream( connected.getInputStream());
 
-            /* WHOSGONNA:
-             * Start reading in the request here.  Grabbing just the first four
-             * bytes should let us know if it is zabbix 4 (first four bytes
+            /* Start reading in the request here.  Grabbing just the first four
+             * bytes should let us know if it is zabbix 4+ (first four bytes
              * will be "ZBXD".
              */
             byte[] protoCheck = new byte[4];
             in.read(protoCheck, 0, protoCheck.length);
-            String headerStr = new String(protoCheck, "UTF-8"); // need better variable name than 'proto'?
-
+            String headerStr = new String(protoCheck, "UTF-8");
             String msgBodyStr = "";
-            LOG.debug("headerStr : " + headerStr);
-
-            /* WHOSGONNA:
-             * Possibly a way to handle back compatibility?  I'm not sure how
-             * much this condition is needed. (though the actions in it are 
-             * needed for 4.0)
-             */
+            
+            /* Check for a Zabbix 4+ header */
             if (Objects.equals(headerStr, new String("ZBXD"))) {
-              LOG.debug("Is using zabbix 4.0 header");
+              /* Zabbix 4+ */
 
               byte[] zbxFlags = new byte[1];
               in.read(zbxFlags);
@@ -4375,38 +4144,26 @@ public class VmBix {
               byte[] msgBodyBin = new byte[msgLen];
               in.read(msgBodyBin);
               msgBodyStr = new String(msgBodyBin);
-              LOG.debug("Message is " + msgBodyStr);
             }
             else { // Zabbix pre-4.0
               BufferedReader next = new BufferedReader(new InputStreamReader(connected.getInputStream()));
               String nextBodyStr = next.readLine();
               msgBodyStr = headerStr + nextBodyStr;
             }
-            LOG.debug("msgBodyStr : " + msgBodyStr);            
 
             int continues = 1;
             while (continues == 1) {            
               if (msgBodyStr != null) {
                 long timerStart = System.currentTimeMillis();
-                
-                /* WHOSGONNA:
-                 * In this (test) build, we won't try to parse and handle the
-                 * request, because all of the checks expect the printWriter
-                 * `out`, which will generate incorrect output.
-                 *
-                 * Instead we're just statically calling the new (test) 
-                 * getAbout2() function for everything (this will change)
-                 */
+
                 String value = checkAllPatterns(msgBodyStr);
-                //String value = getAbout2();
 
                 /* Get the byte array for the packet */
-                //byte[] packet = makeZabbix4Packet(value);
+                byte[] packet = makeZabbixPacket(value);
 
                 /* Send the packet */
-                //sendZabbix4Packet(packet, outputStream);
+                sendZabbixPacket(packet, outputStream);
 
-                
                 long timerEnd = System.currentTimeMillis();
                 LOG.debug("Request took " + (timerEnd - timerStart) + " ms");
               }
@@ -4414,7 +4171,6 @@ public class VmBix {
               
             }
             in.close();
-            out.close();
             connected.close();
             } catch (IOException e) {
             LOG.info("thread I/O error: "
