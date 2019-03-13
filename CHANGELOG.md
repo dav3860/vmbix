@@ -1,5 +1,6 @@
-2.8-beta
-* First attempt to support Zabbix 4+ message header (thank you *whosgonna*)
+2.8
+* Added Zabbix 4.0 message header support (thank you *whosgonna*).
+  The [loadable module](https://github.com/dav3860/vmbix_zabbix_module) has also been updated to v1.3 to support Zabbix 4.0.
 
 2.7
 * Clear all caches on reconnect (in case of a vCenter HA failover)
