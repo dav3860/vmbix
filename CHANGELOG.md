@@ -1,3 +1,6 @@
+2.8.1
+ * Improvements to logging and Zabbix sync add-on
+
 2.8
 * Added Zabbix 4.0 message header support (thank you *whosgonna*).
   The [loadable module](https://github.com/dav3860/vmbix_zabbix_module) has also been updated to v1.3 to support Zabbix 4.0.
