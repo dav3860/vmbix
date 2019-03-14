@@ -754,17 +754,11 @@ class ZabbixConnector(object):
         else:
           # Protection against accidental errors or bugs
           if (100 * len(extra_hosts)/len(zabbix_hosts)) > 10:
-            logging.warning(
-              "[%s] Anomaly detected. More than 10% extra hosts in Zabbix.", type
-            )
+            logging.warning("[%s] Anomaly detected. More than 10%% extra hosts in Zabbix.", type)
             if self.force:
-              logging.info(
-                "[%s] Force option is enabled. The action [%s] will be applied.", type, self.action
-              )
+              logging.info("[%s] Force option is enabled. The action [%s] will be applied.", type, self.action)
             else:
-              logging.info(
-                "[%s] Force option is disabled. Skipping.", type
-              )
+              logging.info("[%s] Force option is disabled. Skipping.", type)
               return
 
         i = 0

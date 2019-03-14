@@ -13,7 +13,7 @@
       <maxHistory>7</maxHistory>
     </rollingPolicy>
     <encoder>
-      <pattern>%date %-5level [%thread] [%file:%line] %msg%n</pattern>
+      <pattern>%date %-5level [%-12thread] [%file:%-4line] %msg%n</pattern>
     </encoder>
   </appender>
 
