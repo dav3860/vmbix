@@ -31,7 +31,7 @@ install:
 - if [ "$TARGET_PLATFORM" == "deb" ]; then export FILE_NAME="${PROJECT_NAME}_${VERSION}-1_amd64";
   export JAVA_PACKAGE="default-jre-headless"; fi
 - if [ "$TARGET_PLATFORM" == "rpm" ]; then export FILE_NAME="${PROJECT_NAME}-${VERSION}-1.x86_64";
-  export JAVA_PACKAGE="java-1.7.0-openjdk-devel"; fi
+  export JAVA_PACKAGE="java-1.8.0-openjdk-devel"; fi
 script:
 - mvn package
 - cp -dR ${TRAVIS_BUILD_DIR}/target/vmbix-${VERSION}-jar-with-dependencies.jar ${DEPLOY_ROOT}/usr/local/vmbix/vmbix.jar
