@@ -1,5 +1,6 @@
 2.9
- * Returns an error code (ZBX_ERROR) in case of an error instead of 0 or null values
+ * Returns an error code (ZBX_NOTSUPPORTED) with a message in case of an error instead of 0 or null values
+ * Returns an error in case of unknown method
 
 2.8.1
  * Improvements to logging and Zabbix sync add-on

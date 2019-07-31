@@ -694,7 +694,8 @@ public class VmBix {
       
       String found;
       String[] founds;
-      ValidationResult result = new ValidationResult();
+      // ValidationResult result = new ValidationResult();
+      ValidationResult result = new ValidationResult(1, String.format("Unknown method: %s", string));
       
       found = checkPattern(pPoolCpuUsage, string);
       if (found != null) {
@@ -3196,18 +3197,11 @@ public class VmBix {
       byte[] data = result.message.getBytes();
       byte[] err = new byte[] {};
       
-      if (result.status == 1) {
+      if (result.status == 1 || result.status == 2) {
         err = new byte[] { 
           'Z', 'B', 'X', '_', 'N', 'O',
           'T', 'S', 'U', 'P', 'P', 'O',
           'R', 'T', 'E', 'D', '\0' 
-        };
-      }
-      
-      if (result.status == 2) {
-        err = new byte[] { 
-          'Z', 'B', 'X', '_', 'E', 'R',
-          'R', 'O', 'R', '\0'
         };
       }
       
@@ -3230,34 +3224,11 @@ public class VmBix {
 
       try {
         String s = new String(packet, "UTF-8");
-        LOG.debug(s);
-        LOG.debug(Arrays.toString(packet));
       }
       catch (Exception ex) {}
       
       return packet;
     }
-    
-    /*
-    private byte[] makeZabbixPacket(String message) {
-      byte[] data = message.getBytes();
-      
-      byte[] header = new byte[] {
-        'Z', 'B', 'X', 'D', '\1',
-            (byte)(data.length & 0xFF),
-            (byte)((data.length >> 8) & 0xFF),
-            (byte)((data.length >> 16) & 0xFF),
-            (byte)((data.length >> 24) & 0xFF),
-            '\0', '\0', '\0', '\0'
-      };
-
-      byte[] packet = new byte[header.length + data.length];
-      System.arraycopy(header, 0, packet, 0, header.length);
-      System.arraycopy(data, 0, packet, header.length, data.length);
-
-      return packet;
-    }    
-    */
     
     /**
      * Sends the formatted Zabbix packet to the Zabbix server
@@ -4592,7 +4563,7 @@ public class VmBix {
         if (request == null) {
           VmBix.sleep(10);
           alive += 10;
-          } else {
+        } else {
           connected = request.socket;
           serviceInstance = request.serviceInstance;
           alive = 0;
